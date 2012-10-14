@@ -3,7 +3,6 @@ package mockatoo;
 
 import msys.File;
 import msys.Directory;
-
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
@@ -138,13 +137,16 @@ class MockCreator
 
 		var fields = createFields();
 
-		//trace(Printer.printFields("", fields));
+		if(classType.isInterface)
+			fields.unshift(createEmptyConstructor());
+
+		trace(Printer.printFields("", fields));
 
 		return {
 			pos: Context.currentPos(),
 			params: paramTypes,
 			pack: classType.pack,
-			name: "__" + id + "Mock",
+			name: id + "_Mockatoo",
 			meta: classType.meta.get(),
 			kind: kind,
 			isExtern:false,
@@ -173,12 +175,24 @@ class MockCreator
 
 		trace(extendPath);
 
+		var mockInterface = TypeTools.asTypePath("mockatoo.Mock");
 
-		var interfaces:Array<TypePath> = [TypeTools.asTypePath("mockatoo.Mock")];
-		
+		var extension:TypePath = null;
+		var interfaces:Array<TypePath> = null;
+
+		if(classType.isInterface)
+		{
+			interfaces = [extendPath, mockInterface];
+		}
+		else
+		{
+			extension = extendPath;
+			interfaces = [mockInterface];
+		}
+
 		var kind:TypeDefKind = TDClass(
 
-			extendPath,
+			extension,
 			interfaces,
 			false
 			);
@@ -213,7 +227,8 @@ class MockCreator
 					}
 					else
 					{
-						field.access.push(AOverride);
+						if(!classType.isInterface)
+							field.access.push(AOverride);
 
 						if(f.ret != null && !StringTools.endsWith(TypeTools.toString(f.ret), "Void"))
 						{
