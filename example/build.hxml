@@ -1,0 +1,6 @@
+-main Main
+-neko bin/main.n
+-cp src
+-cp ../src
+-lib mpartial
+-cmd neko bin/main.n

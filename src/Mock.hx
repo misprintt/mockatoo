@@ -1,0 +1,6 @@
+package ;
+
+interface Mock
+{
+	
+}
