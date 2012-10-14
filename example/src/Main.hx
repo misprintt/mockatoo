@@ -1,5 +1,6 @@
 import example.List;
-import Mockatoo;
+import mockatoo.Mockatoo;
+import mockatoo.Mock;
 
 typedef StringList = SimpleList<String>;
 
@@ -21,5 +22,8 @@ class Main
 		mockList.add("first");
 		trace(mockList.get(0));
 		mockList.clear();
+
+		trace(Std.is(mockList, Mock));
+		trace(Std.is(mockList, StringList));
 	}
 }

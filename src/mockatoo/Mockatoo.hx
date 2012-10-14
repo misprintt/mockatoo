@@ -1,4 +1,8 @@
-package ;
+package mockatoo;
+
+
+import msys.File;
+import msys.Directory;
 
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -13,23 +17,40 @@ using tink.macro.tools.Printer;
 using tink.macro.tools.ExprTools;
 using tink.macro.tools.TypeTools;
 
-
-
 class Mockatoo
 {
 	@:macro static public function mock<T>(e:ExprOf<Class<T>>):ExprOf<T>
 	{
+		init();
 		return MockCreator.createMock(e);
-		
 	}
+
+	#if macro
+
+	public static var TEMP_DIR:String = ".temp/mockatoo/";
+	static var initialized = false;
+
+	static function init()
+	{
+		if (initialized) return;
+
+		initialized = true;
+		
+		Directory.create(TEMP_DIR);
+
+		Console.addPrinter(new FilePrinter(TEMP_DIR + "mockatoo.log"));
+
+		Console.start();
+		Console.removePrinter(Console.defaultPrinter);
+	}
+
+	#end
 }
 
 #if macro
 
 class MockCreator
 {
-	static var idCount = 0;
-
 	static public function createMock(e:Expr):Expr
 	{
 		var m = new MockCreator(e);
@@ -45,8 +66,6 @@ class MockCreator
 	var classType:ClassType;
 	var params:Array<Type>;
 
-
-
 	var typeDefinition:TypeDefinition;
 	var typeDefinitionId:String;
 
@@ -61,10 +80,10 @@ class MockCreator
 
 		id = actualType.getID().split(".").pop();
 
-		trace(expr);
-		trace(id);
-		trace(type);
-		trace(actualType);
+		trace("expr: " + expr);
+		trace("id: " + id);
+		trace("type: " + type);
+		trace("actual: " + actualType);
 
 		switch(actualType)
 		{
@@ -75,30 +94,17 @@ class MockCreator
 			default: throw "not implementend";
 		}
 
-		trace(params);
-
-		trace(classType.name);
-		trace(classType.params);
-		trace(classType.pos);
-		trace(classType.module);
+		trace("params: " + params);
+		trace("class " +  classType.name);
+		trace("   params: " + classType.params);
+		trace("   pos: " + classType.pos);
+		trace("   module: " + classType.module);
 
 		typeDefinition = createTypeDefinition();
 
 		typeDefinitionId = (typeDefinition.pack.length > 0 ? typeDefinition.pack.join(".")  + "." : "") + typeDefinition.name;
 
-
 		Context.defineType(typeDefinition);
-
-
-		var mockType = Context.getType(typeDefinitionId);
-
-		trace(mockType);
-
-
-		var c = mockType.toComplex(true);
-
-		trace(Printer.printType("",c));
-		//trace(typeDefinition);
 	}
 
 	/**
@@ -106,18 +112,9 @@ class MockCreator
 	*/
 	public function toExpr():Expr
 	{
-		//return original type ident
-		//var exprDef = EConst(CIdent(id));
-		//return exprDef.at(expr.pos);
-
-		//return instance of original type
-		//var typeParams = untyped TypeTools.paramsToComplex(params);
-		//return ExprTools.instantiate(classType.name, null, typeParams, pos);
-
-
 		var typeParams = untyped TypeTools.paramsToComplex(params);
 
-		trace(typeParams);
+		//trace(typeParams);
 
 		var expr = ExprTools.instantiate(typeDefinitionId, null, typeParams, pos);
 
@@ -132,28 +129,22 @@ class MockCreator
 
 		for(param in classType.params)
 		{
-			trace(param);
 			paramTypes.push({name:param.name, constraints:[]});
 		}
 
-		trace(paramTypes);
+		//trace(paramTypes);
 
 		var kind = createKind();
 
 		var fields = createFields();
 
-		trace(Printer.printFields("", fields));
-
-		var pack = classType.module.split(".");
-		//pack.push(id);
-
-		pack = id.split(".");
+		//trace(Printer.printFields("", fields));
 
 		return {
 			pos: Context.currentPos(),
 			params: paramTypes,
 			pack: classType.pack,
-			name: "__" + id + "Mock",//+ Std.string(idCount ++),
+			name: "__" + id + "Mock",
 			meta: classType.meta.get(),
 			kind: kind,
 			isExtern:false,
@@ -176,17 +167,19 @@ class MockCreator
 
 		trace(typeParams);
 
-		trace(type.getID());
-
 		var extendId = classType.module + "." + classType.name;
 
 		var extendPath = TypeTools.asTypePath(extendId, typeParams);
 
 		trace(extendPath);
+
+
+		var interfaces:Array<TypePath> = [TypeTools.asTypePath("mockatoo.Mock")];
+		
 		var kind:TypeDefKind = TDClass(
 
 			extendPath,
-			null,
+			interfaces,
 			false
 			);
 
@@ -268,6 +261,18 @@ class MockCreator
 			doc:null,
 			access:[APublic]
 		}
+	}
+}
+
+class FilePrinter extends mconsole.FilePrinter
+{
+	var currentClass:String;
+	var currentMethod:String; 
+
+	public function new(path:String)
+	{
+		File.remove(path);
+		super(path);
 	}
 }
 

@@ -1,4 +1,4 @@
-package ;
+package mockatoo;
 
 interface Mock
 {
