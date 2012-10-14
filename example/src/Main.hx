@@ -24,7 +24,6 @@ class Main
 		var mockList = Mockatoo.mock(StringList);
 
 		trace(mockList);
-
 		trace(Type.getClassName(Type.getClass(mockList)));
 
 		mockList.add("first");

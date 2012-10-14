@@ -72,11 +72,7 @@ class MockCreator
 		trace("   pos: " + classType.pos);
 		trace("   module: " + classType.module);
 
-
-
-
 		typeDefinition = createTypeDefinition();
-
 		typeDefinitionId = (typeDefinition.pack.length > 0 ? typeDefinition.pack.join(".")  + "." : "") + typeDefinition.name;
 
 		Context.defineType(typeDefinition);
@@ -228,7 +224,6 @@ class MockCreator
 		return fields;
 	}
 
-
 	/**
 	Returns an empty block expression.
 	*/
@@ -236,7 +231,6 @@ class MockCreator
 	{
 		var exprs = ExprTools.toBlock([]);
 		return exprs;
-
 	}
 
 	/**
