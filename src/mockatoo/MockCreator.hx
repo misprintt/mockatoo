@@ -33,6 +33,8 @@ class MockCreator
 	var classType:ClassType;
 	var params:Array<Type>;
 
+	var isInterface:Bool;
+
 	var typeDefinition:TypeDefinition;
 	var typeDefinitionId:String;
 
@@ -61,11 +63,17 @@ class MockCreator
 			default: throw "not implementend";
 		}
 
+		isInterface = classType.isInterface;
+
 		trace("params: " + params);
 		trace("class " +  classType.name);
+		trace("   interface: " + isInterface);
 		trace("   params: " + classType.params);
 		trace("   pos: " + classType.pos);
 		trace("   module: " + classType.module);
+
+
+
 
 		typeDefinition = createTypeDefinition();
 
@@ -90,6 +98,10 @@ class MockCreator
 		return expr;
 	}
 
+	/**
+	Returns a new type definition based on the target class or interface that
+	mocks the contents of all function fields
+	*/
 	function createTypeDefinition():TypeDefinition
 	{
 		var paramTypes:Array<{name:String, constraints:Array<ComplexType>}> = [];
@@ -105,7 +117,7 @@ class MockCreator
 
 		var fields = createFields();
 
-		if(classType.isInterface)
+		if(isInterface)
 			fields.unshift(createEmptyConstructor());
 
 		trace(Printer.printFields("", fields));
@@ -147,7 +159,7 @@ class MockCreator
 		var extension:TypePath = null;
 		var interfaces:Array<TypePath> = null;
 
-		if(classType.isInterface)
+		if(isInterface)
 		{
 			interfaces = [extendPath, mockInterface];
 		}
@@ -168,8 +180,8 @@ class MockCreator
 	}
 
 	/**
-	Overrides all functions defined in the target class (i.e. super class).
-	Also cleans up constructor to call super and to not return Void
+	Returns mocked versions of all functions within the target class or interface.
+	Also cleans up constructor to call super (if a class) and to not return Void.
 	*/
 	function createFields():Array<Field>
 	{
@@ -183,8 +195,6 @@ class MockCreator
 			{
 				case FFun(f):
 
-					
-
 					if(field.name == "new")
 					{
 						f.ret = null; //remove Void return type from constructor.
@@ -194,18 +204,13 @@ class MockCreator
 					}
 					else
 					{
-						if(!classType.isInterface)
+						if(!isInterface)
 							field.access.push(AOverride);
 
 						if(f.ret != null && !StringTools.endsWith(TypeTools.toString(f.ret), "Void"))
 						{
-							trace(untyped f.ret);
-
-							//var evar = ExprTools.define("ret", null, f.ret, null);
-							//var eref = EConst(CIdent("ret")).at(null);
 							var eref = EConst(CIdent("null")).at(null);
 							var ereturn = EReturn(eref).at(null);
-
 							f.expr = ExprTools.toBlock([ereturn]);
 						}
 						else
@@ -223,6 +228,10 @@ class MockCreator
 		return fields;
 	}
 
+
+	/**
+	Returns an empty block expression.
+	*/
 	function createEmptyBlock():Expr
 	{
 		var exprs = ExprTools.toBlock([]);
@@ -230,6 +239,9 @@ class MockCreator
 
 	}
 
+	/**
+	Returns an empty constructor field.
+	*/
 	function createEmptyConstructor():Field
 	{	
 		var exprs = createEmptyBlock();
