@@ -13,18 +13,17 @@ class ClassFields
 {
 	static inline var PRETTY = true;
 
-
 	/**
 	Recursively aggregates fields from class and super classes, ensuring that
 	inherited/overriden fields take precidence.
 	*/
-	public static function getClassFields(c:ClassType, ?fieldHash:Hash<Field>):Array<Field>
+	public static function getClassFields(c:ClassType, ?includeStatics:Bool=false, ?fieldHash:Hash<Field>):Array<Field>
 	{
 		if(fieldHash == null) fieldHash = new Hash();
 
 		if(c.superClass != null)
 		{
-			var superFields = getClassFields(c.superClass.t.get(), fieldHash);
+			var superFields = getClassFields(c.superClass.t.get(), includeStatics, fieldHash);
 
 			for(field in superFields)
 			{
@@ -38,6 +37,15 @@ class ClassFields
 			fieldHash.set(field.name, field);
 		}
 
+		if(includeStatics)
+		{
+			for(classField in c.statics.get())
+			{
+				var field = getClassField(classField, true);
+				fieldHash.set(field.name, field);
+			}
+		}
+
 		if(c.constructor != null)
 		{
 			var field = getConstructorField(c);
@@ -48,7 +56,7 @@ class ClassFields
 	}
 
 
-	public static function getClassField(field:ClassField):Field
+	public static function getClassField(field:ClassField, ?isStatic:Bool=false):Field
 	{
 		var kind = getFieldType(field);
 
@@ -57,11 +65,15 @@ class ClassFields
 		if(kind == null)
 			throw "FieldType is null. Cannot create field [" + field + "]";
 
+		var access:Array<Access> = field.isPublic ? [APublic] : [APrivate];
+
+		if(isStatic) access.push(AStatic);
+
 		return {
 			name:field.name,
 			pos:field.pos,
 			kind:kind,
-			access: field.isPublic ? [APublic] : [APrivate],
+			access: access,
 			meta:meta
 		}
 	}
