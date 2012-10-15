@@ -13,27 +13,38 @@ class ClassFields
 {
 	static inline var PRETTY = true;
 
-	public static function getClassFields(c:ClassType):Array<Field>
+
+	/**
+	Recursively aggregates fields from class and super classes, ensuring that
+	inherited/overriden fields take precidence.
+	*/
+	public static function getClassFields(c:ClassType, ?fieldHash:Hash<Field>):Array<Field>
 	{
+		if(fieldHash == null) fieldHash = new Hash();
+
 		if(c.superClass != null)
-				throw "not implemented";
+		{
+			var superFields = getClassFields(c.superClass.t.get(), fieldHash);
 
-		var fields:Array<Field> = [];
-
+			for(field in superFields)
+			{
+				fieldHash.set(field.name, field);
+			}
+		}
+		
 		for(classField in c.fields.get())
 		{
 			var field = getClassField(classField);
-			
-			fields.push(field);
+			fieldHash.set(field.name, field);
 		}
 
 		if(c.constructor != null)
 		{
 			var field = getConstructorField(c);
-			fields.unshift(field);
+			fieldHash.set(field.name, field);
 		}
 
-		return fields;
+		return Lambda.array(fieldHash);
 	}
 
 

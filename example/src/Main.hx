@@ -3,8 +3,8 @@ import mockatoo.Mockatoo;
 import mockatoo.Mock;
 
 typedef StringList = SimpleList<String>;
-
 typedef StringListInterface = List<String>;
+typedef StringListWithConstructorArg = SimpleListWithConstructorArg<String>;
 
 class Main
 {
@@ -15,8 +15,27 @@ class Main
 		trace(list.get(0));
 		list.clear();
 
-		mockFromClass();
-		mockFromInterface();
+
+		mockFromClassWithConstructorArg();
+		// mockFromClass();
+		// mockFromInterface();
+	}
+
+	static function mockFromClassWithConstructorArg()
+	{
+		var args:Array<String> = ["one", "two", "three"];
+		var mockList = Mockatoo.mock(StringListWithConstructorArg, args);
+
+		trace(mockList);
+		trace(Type.getClassName(Type.getClass(mockList)));
+
+		mockList.add("first");
+		trace(mockList.get(0));
+		mockList.clear();
+
+		trace(Std.is(mockList, Mock));
+		trace(Std.is(mockList, List));
+		trace(Std.is(mockList, StringListWithConstructorArg));
 	}
 
 	static function mockFromClass()

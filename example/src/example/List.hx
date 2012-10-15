@@ -31,11 +31,8 @@ class SimpleList<T> implements List<T>
 	public function get(index:Int):T
 	{
 		if(index < 0 || index > values.length-1) throw "Range exception";
-
 		return values[index];
 	}
-
-
 }
 
 class SimpleListWithConstructorArg<T> extends SimpleList<T>

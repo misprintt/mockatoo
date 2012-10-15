@@ -6,10 +6,6 @@ implementations of classes and interfaces for testing.
 
 
 
-
-
-
-
 To build the haxelib, execute:
 
 	haxelib run mtask build haxelib

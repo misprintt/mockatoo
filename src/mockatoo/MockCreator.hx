@@ -11,19 +11,23 @@ import tink.macro.tools.Printer;
 import tink.macro.tools.ExprTools;
 import tink.macro.tools.TypeTools;
 import tink.macro.tools.FunctionTools;
+import tink.core.types.Outcome;
 
 using tink.macro.tools.Printer;
 using tink.macro.tools.ExprTools;
 using tink.macro.tools.TypeTools;
+using tink.core.types.Outcome;
+
 
 class MockCreator
 {
-	static public function createMock(e:Expr):Expr
+	static public function createMock(e:Expr, ?constructorArgs:Expr):Expr
 	{
-		var m = new MockCreator(e);
+		var m = new MockCreator(e, constructorArgs);
 		return m.toExpr();
 	}
 
+	var constructorArgs:Expr;
 	var expr:Expr;
 	var pos:Position;
 	var id:String;
@@ -38,7 +42,23 @@ class MockCreator
 	var typeDefinition:TypeDefinition;
 	var typeDefinitionId:String;
 
-	public function new(e:Expr)
+
+	function isNotNull(expr:Expr):Bool
+	{
+		switch(expr.expr)
+		{
+			case EConst(c):
+				switch(c)
+				{
+					case CIdent(id):
+						if(id == "null") return false;
+					default: null;
+				}
+			default: null;
+		}
+		return true;
+	}
+	public function new(e:Expr, constructorArgs:Expr)
 	{
 		expr = e;
 		id = e.toString();
@@ -72,6 +92,12 @@ class MockCreator
 		trace("   pos: " + classType.pos);
 		trace("   module: " + classType.module);
 
+		if(isNotNull(constructorArgs))
+		{
+			trace("constructorArgs: " + constructorArgs);
+			this.constructorArgs = constructorArgs;
+		}
+
 		typeDefinition = createTypeDefinition();
 		typeDefinitionId = (typeDefinition.pack.length > 0 ? typeDefinition.pack.join(".")  + "." : "") + typeDefinition.name;
 
@@ -87,7 +113,9 @@ class MockCreator
 
 		//trace(typeParams);
 
-		var expr = ExprTools.instantiate(typeDefinitionId, null, typeParams, pos);
+		var args = constructorArgs != null ? [constructorArgs] : null;
+
+		var expr = ExprTools.instantiate(typeDefinitionId, args, typeParams, pos);
 
 		trace(Printer.print(expr));
 
@@ -196,7 +224,22 @@ class MockCreator
 						f.ret = null; //remove Void return type from constructor.
 
 						var e = EConst(CIdent("super")).at(null);
-						f.expr = ExprTools.toBlock([ExprTools.call(e)]);
+
+						if(f.args.length == 0)
+						{
+							e = e.call();
+						}
+						else 
+						{
+							var args:Array<Expr> = [];
+
+							for(arg in f.args)
+							{
+								args.push(EConst(CIdent(arg.name)).at(null));
+							}
+							e = e.call(args);
+						}
+						f.expr = ExprTools.toBlock([e]);
 					}
 					else
 					{

@@ -8,10 +8,10 @@ import haxe.macro.Type;
 
 class Mockatoo
 {
-	@:macro static public function mock<T>(e:ExprOf<Class<T>>):ExprOf<T>
+	@:macro static public function mock<T>(e:ExprOf<Class<T>>, ?constructorArgs:ExprOf<Array<Dynamic>>):ExprOf<T>
 	{
 		init();
-		return MockCreator.createMock(e);
+		return MockCreator.createMock(e,constructorArgs);
 	}
 
 	#if macro
