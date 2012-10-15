@@ -14,13 +14,41 @@ To build the haxelib, execute:
 
 ## Overview
 
+
+Import Mockatoo;
+
+
 	import mockatoo.Mockatoo;
 
-	...
+
+### Creating a mock instance
+
+Create a mock instance
 
 	var mockList = Mockatoo.mock(List);
 
 
+If a class requires Type paramaters then you can either create a typedef
+
+	typedef StringList = List<String;
+
+	...
+
+	var mockList =  Mockatoo.mock(StringList);
+
+Or use the mockTyped function
+
+	var mockList = Mockatoo.mockTyped(List, [String]);
+
+
+Both these generates the equivalent expressions:
+
+	var mockList = 
+	{
+		var mockInstance = Type.createEmptyInstance(ListMock<String>);
+		mockInstance.initializeMockatoo();
+		return mockInstance;
+	}
 
 
 ## References
