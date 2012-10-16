@@ -15,7 +15,6 @@ class Main
 		trace(list.get(0));
 		list.clear();
 
-
 		mockFromClassWithConstructorArg();
 		// mockFromClass();
 		// mockFromInterface();

@@ -4,13 +4,9 @@
 Mockatoo is a Haxe mocking library that uses macros to generated mock
 implementations of classes and interfaces for testing.
 
-
-
 To build the haxelib, execute:
 
 	haxelib run mtask build haxelib
-
-
 
 ## Overview
 
