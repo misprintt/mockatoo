@@ -23,8 +23,7 @@ class Main
 
 	static function mockFromClassWithConstructorArg()
 	{
-		var args:Array<String> = ["one", "two", "three"];
-		var mockList = Mockatoo.mock(StringListWithConstructorArg, args);
+		var mockList = Mockatoo.mock(StringListWithConstructorArg);
 
 		trace(mockList);
 		trace(Type.getClassName(Type.getClass(mockList)));

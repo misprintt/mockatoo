@@ -17,38 +17,35 @@ To build the haxelib, execute:
 
 Import Mockatoo;
 
-
 	import mockatoo.Mockatoo;
-
 
 ### Creating a mock instance
 
-Create a mock instance
+Mocks can be generated from both classes and interfaces:
 
-	var mockList = Mockatoo.mock(List);
+	var mockedClass = Mockatoo.mock(SomeClass);
+	var mockedInterface = Mockatoo.mock(SomeInterface);
+
+A Mock class type will be generated that extends the Class (or Interface), stubbing all methods, and generate the code to instanciate the instance:
+
+	var mockedClass = new SomeClassMocked();
+	var mockedInterface = new SomeInterfaceMocked();
 
 
-If a class requires Type paramaters then you can either create a typedef
+If a class requires Type paramaters then you need to create a typedef alias.
 
-	typedef StringList = List<String;
+	typedef FooBar = Foo<Bar>;
 
 	...
 
-	var mockList =  Mockatoo.mock(StringList);
-
-Or use the mockTyped function
-
-	var mockList = Mockatoo.mockTyped(List, [String]);
-
+	var mockFoo =  Mockatoo.mock(FooBar);
 
 Both these generates the equivalent expressions:
 
-	var mockList = 
-	{
-		var mockInstance = Type.createEmptyInstance(ListMock<String>);
-		mockInstance.initializeMockatoo();
-		return mockInstance;
-	}
+	var mockFoo = new Foo<Bar>();
+
+
+> Note: Typedef aliases are required for Type paramaters in order to circumvent limitation of compiler with generics. You cannot compile `Foo.doSomething(Array<String>)`
 
 
 ## References
