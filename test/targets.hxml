@@ -3,22 +3,12 @@
 -lib munit
 -lib hamcrest
 -cp src
-
+-lib mconsole
+-lib tink_macros
 -cp test
 -swf-version 9
 -swf bin/test/as3_test.swf
-
---next
-
-## Flash 8
--main TestMain
--lib munit
--lib hamcrest
--cp src
-
--cp test
--swf-version 8
--swf bin/test/as2_test.swf
+--no-inline
 
 --next
 
@@ -27,9 +17,11 @@
 -lib munit
 -lib hamcrest
 -cp src
-
+-lib mconsole
+-lib tink_macros
 -cp test
 -js bin/test/js_test.js
+--no-inline
 
 --next
 
@@ -38,20 +30,24 @@
 -lib munit
 -lib hamcrest
 -cp src
-
+-lib mconsole
+-lib tink_macros
 -cp test
 -neko bin/test/neko_test.n
+--no-inline
 
---next
+# --next
 
-## CPP
--main TestMain
--lib munit
--lib hamcrest
--cp src
-
--cp test
-#-D HXCPP_M64
--cpp bin/test/cpp_test
+# ## CPP
+# -main TestMain
+# -lib munit
+# -lib hamcrest
+# -cp src
+# -lib mconsole
+#-lib tink_macros
+# -cp test
+# #-D HXCPP_M64
+# -cpp bin/test/cpp_test
+#--no-inline
 
 

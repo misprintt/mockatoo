@@ -9,10 +9,12 @@ class Build extends mtask.core.BuildBase
 
 	@target function haxelib(t:HaxeLib)
 	{
-		t.description = "A description of your library.";
-		t.versionDescription = "Initial release.";
+		t.description = "Haxe mocking framework";
+		t.url = "http://github.com/misprintt/mockatoo";
+		t.versionDescription = "First release. generate mock from class or interface. methods are just empty stubs for now.";
 		
-		// t.addDependency("library");
+		t.addDependency("mconsole");
+		t.addDependency("tink_macros");
 
 		t.afterCompile = function(path)
 		{
@@ -40,8 +42,8 @@ class Build extends mtask.core.BuildBase
 	@task function release()
 	{
 		invoke("clean");
-		cmd("haxe", ["run/build.hxml"]);
 		invoke("build haxelib");
 		invoke("test");
+		invoke("example");
 	}
 }

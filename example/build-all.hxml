@@ -1,0 +1,39 @@
+-cmd rm -rf bin
+-cmd cp -rf resource bin
+
+--next
+
+-main Main
+-neko bin/main.n
+-cp src
+-cp ../src
+-lib mpartial
+-cmd neko bin/main.n
+
+--next
+
+-main Main
+-swf bin/main.swf
+-swf-version 11
+-swf-header 1024:769:60:FFFFFF
+-cp src
+-cp ../src
+-lib mpartial
+
+--next
+
+-main Main
+-js bin/main.js
+-cp src
+-cp ../src
+-lib mpartial
+-D web
+
+--next
+
+-main Main
+-cpp bin/main_cpp
+-cp src
+-cp ../src
+-lib mpartial
+-cmd bin/main_cpp/Main

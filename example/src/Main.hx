@@ -10,14 +10,15 @@ class Main
 {
 	public static function main()
 	{
+		mconsole.Console.start();
 		var list= new SimpleList<String>();
 		list.add("first");
 		trace(list.get(0));
 		list.clear();
 
 		mockFromClassWithConstructorArg();
-		// mockFromClass();
-		// mockFromInterface();
+		mockFromClass();
+		mockFromInterface();
 	}
 
 	static function mockFromClassWithConstructorArg()

@@ -1,8 +1,9 @@
-package mockatoo;
+package mockatoo.internal;
 
-
+#if macro
 import msys.File;
 import msys.Directory;
+import haxe.macro.Compiler;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
@@ -12,12 +13,13 @@ import tink.macro.tools.ExprTools;
 import tink.macro.tools.TypeTools;
 import tink.macro.tools.FunctionTools;
 import tink.core.types.Outcome;
+import mockatoo.Mock;
+import mockatoo.internal.util.ClassFields;
 
 using tink.macro.tools.Printer;
 using tink.macro.tools.ExprTools;
 using tink.macro.tools.TypeTools;
 using tink.core.types.Outcome;
-
 
 class MockCreator
 {
@@ -40,6 +42,9 @@ class MockCreator
 
 	var typeDefinition:TypeDefinition;
 	var typeDefinitionId:String;
+
+
+	var hasConstructor = false;
 
 
 	public function new(e:Expr)
@@ -140,21 +145,59 @@ class MockCreator
 
 		var fields = createFields();
 
-		if(isInterface)
+		if(isInterface || !hasConstructor)
 			fields.unshift(createEmptyConstructor());
 
-		trace(Printer.printFields("", fields));
+
+		var preview = "class " + id + "Mocked\n{";
+
+		for(field in fields)
+		{
+			for(meta in field.meta)
+			{
+				preview += "\n	@" + meta.name;
+			}
+
+			preview += "\n	" + Printer.printField("	", field);
+		}
+
+		preview += "\n}";
+
+		trace(preview);
+
+		var metas = updateMeta(classType.meta.get());
 
 		return {
 			pos: Context.currentPos(),
 			params: paramTypes,
 			pack: classType.pack,
 			name: id + "Mocked",
-			meta: classType.meta.get(),
+			meta: metas,
 			kind: kind,
 			isExtern:false,
 			fields:fields
 		}
+	}
+
+	function updateMeta(source:Metadata):Metadata
+	{
+		var metadata:Metadata = [];
+
+		for(meta in source)
+		{
+			trace(meta.name);
+
+			switch(meta.name)
+			{
+				case ":core_api",":final": null;
+				default: metadata.push(meta);
+			}
+		}
+
+		metadata.push({pos:Context.currentPos(), name:":hack", params:[]});
+		//metadata.push({pos:Context.currentPos(), name:":extern", params:[]});
+
+		return metadata;
 	}
 
 	/**
@@ -210,17 +253,24 @@ class MockCreator
 	{
 		var fields:Array<Field> = [];//[createEmptyConstructor()];
 
-		var superFields = util.ClassFields.getClassFields(classType);
+		var superFields = ClassFields.getClassFields(classType);
 		
+
 		for(field in superFields)
 		{
+			trace(field.name);
+			field.meta = updateMeta(field.meta);
 			switch(field.kind)
 			{
 				case FFun(f):
 
 					if(field.name == "new")
 					{
+						hasConstructor = true;
+
 						f.ret = null; //remove Void return type from constructor.
+						field.access.remove(APublic);
+						field.access.push(APublic);
 
 						var eReturn = EReturn().at();
 						var e = EConst(CIdent("super")).at();
@@ -253,11 +303,17 @@ class MockCreator
 					else
 					{
 						if(!isInterface)
-							field.access.push(AOverride);
+							field.access.unshift(AOverride);
 
 						if(f.ret != null && !StringTools.endsWith(TypeTools.toString(f.ret), "Void"))
 						{
+
+							f.ret = normaliseReturnType(f.ret);
+
+							trace(field.name + ":" + Std.string(f.ret));
+
 							var eref = getDefaultValueForType(f.ret);
+
 							var ereturn = EReturn(eref).at(null);
 							f.expr = ExprTools.toBlock([ereturn]);
 						}
@@ -265,8 +321,27 @@ class MockCreator
 						{
 							f.expr = createEmptyBlock();
 						}
-					}					
+
+						field.kind = FFun(f);
+					}
+
+					if(field.access.remove(AInline))
+					{
+						field.access.push(AInline);
+
+						if(Context.defined("no_inline"))
+						{
+							Context.warning("Cannot mock inline method [" + id + "." + field.name + "] even with '--no-inline' compiler flag.", Context.currentPos());
+						}
+						else
+						{
+							Context.error("Cannot mock inline method [" + id + "." + field.name + "]\nDisable inlining using Haxe's '--no-inline' compiler flag.", Context.currentPos());
+						}
+					}
+						
+					
 					fields.push(field);
+					
 				case FVar(t, e):
 					null;
 				case FProp(get, set, t, e):
@@ -274,6 +349,24 @@ class MockCreator
 			}
 		}
 		return fields;
+	}
+
+	function normaliseReturnType(ret:ComplexType)
+	{
+		var typePath:TypePath = switch(ret)
+		{
+			case TPath(p): p;
+			default: null;
+		}
+
+		if(typePath != null && typePath.name == "StdTypes")
+		{
+			typePath.name = typePath.sub;
+			typePath.sub = null;
+			ret = TPath(typePath);
+		}
+
+		return ret;
 	}
 
 	/**
@@ -333,9 +426,7 @@ class MockCreator
 				default: null;
 			}
 		}
-
-		 return EConst(CIdent("null")).at();
-
+		return EConst(CIdent("null")).at();
 	}
 
 	/**
@@ -365,3 +456,5 @@ class MockCreator
 		}
 	}
 }
+
+#end

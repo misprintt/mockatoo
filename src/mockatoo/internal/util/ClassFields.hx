@@ -1,4 +1,4 @@
-package util;
+package mockatoo.internal.util;
 
 #if macro
 
@@ -58,16 +58,17 @@ class ClassFields
 
 	public static function getClassField(field:ClassField, ?isStatic:Bool=false):Field
 	{
+
 		var kind = getFieldType(field);
+
+		var access = getFieldAccess(field);
+
+		if(isStatic) access.push(AStatic);
 
 		var meta = field.meta.get();
 
 		if(kind == null)
 			throw "FieldType is null. Cannot create field [" + field + "]";
-
-		var access:Array<Access> = field.isPublic ? [APublic] : [APrivate];
-
-		if(isStatic) access.push(AStatic);
 
 		return {
 			name:field.name,
@@ -76,6 +77,27 @@ class ClassFields
 			access: access,
 			meta:meta
 		}
+	}
+
+	static function getFieldAccess(field:ClassField)
+	{
+		var access:Array<Access> = field.isPublic ? [APublic] : [APrivate];
+
+		switch(field.kind)
+		{
+			case FMethod(k):
+				switch(k)
+				{
+					case MethInline: access.push(AInline);
+					case MethDynamic: access.push(ADynamic);
+					default: null;
+				}
+			default: null;
+		}
+
+		return access;
+
+		
 	}
 
 	static function getConstructorField(c:ClassType):Field
@@ -104,7 +126,7 @@ class ClassFields
 				switch(k)
 				{
 					case MethMacro: null;
-					default: 
+					default:
 						switch(Context.follow(field.type))
 						{
 							case TFun(args, ret):
@@ -112,7 +134,7 @@ class ClassFields
 								return FFun(
 								{
 									args:convertTFunArgsToFunctionArgs(args),
-									ret: ret.toComplex(PRETTY),
+									ret: convertReturnType(ret),
 									expr:expr,
 									params:[]
 								});
@@ -124,6 +146,14 @@ class ClassFields
 		}
 
 		return null;
+	}
+
+	static function convertReturnType(type:Type)
+	{
+		// trace(type);
+		var complex = type.toComplex(PRETTY);
+		// trace(complex);
+		return complex;
 	}
 
 	static function convertTFunArgsToFunctionArgs(args : Array<{ t : Type, opt : Bool, name : String }>):Array<FunctionArg>
