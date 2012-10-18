@@ -21,10 +21,10 @@ class Mockatoo
 	 * @param classToMock class or interface to mock
 	 * @return mock object
 	 */
-	@:macro static public function mock<T>(classToMock:ExprOf<Class<T>>):ExprOf<T>
+	@:macro static public function mock<T>(classToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
 	{
 		init();
-		return MockCreator.createMock(classToMock);
+		return MockCreator.createMock(classToMock, paramTypes);
 	}
 
 	/**

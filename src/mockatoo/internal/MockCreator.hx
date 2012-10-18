@@ -23,9 +23,9 @@ using tink.core.types.Outcome;
 
 class MockCreator
 {
-	static public function createMock(e:Expr):Expr
+	static public function createMock(e:Expr, ?paramTypes:Expr):Expr
 	{
-		var m = new MockCreator(e);
+		var m = new MockCreator(e, paramTypes);
 		return m.toExpr();
 	}
 
@@ -49,7 +49,7 @@ class MockCreator
 	var hasConstructor = false;
 
 
-	public function new(e:Expr)
+	public function new(e:Expr, ?paramTypes:Expr)
 	{
 		expr = e;
 		id = e.toString();
@@ -61,6 +61,28 @@ class MockCreator
 
 		id = actualType.getID().split(".").pop();
 
+		params = [];
+
+		if(paramTypes != null && isNotNull(paramTypes))
+		{
+			switch(paramTypes.expr)
+			{
+				case EArrayDecl(values):
+
+					for(value in values)
+					{
+						var ident = Printer.print(value);
+						params.push(Context.getType(ident));
+					}
+
+					trace(params);
+
+				case EConst(c):
+
+				default: throw "invalid param [" + Printer.print(paramTypes) + "]";
+			}
+		}
+
 		trace("expr: " + expr);
 		trace("id: " + id);
 		trace("type: " + type);
@@ -68,12 +90,15 @@ class MockCreator
 
 		switch(actualType)
 		{
-			case TInst(t, params):
+			case TInst(t, typeParams):
 				classType = t.get();
-				this.params = params; 
+
+				if(params.length == 0)
+					params = typeParams;
 
 			default: throw "not implementend";
 		}
+
 
 
 		if(mockedClassHash.exists(id))

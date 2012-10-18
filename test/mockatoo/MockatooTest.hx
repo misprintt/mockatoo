@@ -115,7 +115,6 @@ class MockatooTest
 
 		var mock = Mockatoo.mock(IntefaceWithFields);
 		assertMock(mock, IntefaceWithFields, fields);
-		
 	}
 
 	@Test
@@ -125,7 +124,6 @@ class MockatooTest
 
 		var mock = Mockatoo.mock(ClassWithConstructorAgs);
 		assertMock(mock, ClassWithConstructorAgs, fields);
-		
 	}
 
 	// ------------------------------------------------------------------------- generics & typdefs
@@ -178,7 +176,6 @@ class MockatooTest
 		Assert.isTrue(Std.is(mock, TypedClass));
 	}
 
-
 	@Test
 	public function should_mock_typedef_typedInterfaceImplementation():Void
 	{
@@ -205,7 +202,16 @@ class MockatooTest
 
 
 
+	@Test
+	public function should_mock_untyped_interface():Void
+	{
+		var fields:Array<Field> = [];
+		addField(fields, "toTypeWithArg", [""]);
 
+		var mock = Mockatoo.mock(TypedInterface, [String]);
+		assertMock(mock, TypedInterface, fields);
+
+	}
 
 	// ------------------------------------------------------------------------- edge cases
 

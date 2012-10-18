@@ -173,7 +173,5 @@ typedef TypedefToSimpleClass = SimpleClass;
 typedef TypedefToStringTypedInterface = TypedInterface<String>;
 typedef TypedefToStringTypedClass = TypedClass<String>;
 
-
 typedef TypedefToImplementsTypedInterface = ImplementsTypedInterface<String, String>;
 typedef TypedefToExtendsTypedClass = ExtendsTypedClass<String, String>;
-
