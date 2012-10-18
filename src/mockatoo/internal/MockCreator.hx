@@ -75,10 +75,6 @@ class MockCreator
 						params.push(Context.getType(ident));
 					}
 
-					trace(params);
-
-				case EConst(c):
-
 				default: throw "invalid param [" + Printer.print(paramTypes) + "]";
 			}
 		}
