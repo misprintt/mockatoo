@@ -7,7 +7,7 @@
 -neko bin/main.n
 -cp src
 -cp ../src
--lib mpartial
+-lib mockatoo
 -cmd neko bin/main.n
 
 --next
@@ -18,7 +18,7 @@
 -swf-header 1024:769:60:FFFFFF
 -cp src
 -cp ../src
--lib mpartial
+-lib mockatoo
 
 --next
 
@@ -26,7 +26,7 @@
 -js bin/main.js
 -cp src
 -cp ../src
--lib mpartial
+-lib mockatoo
 -D web
 
 --next
@@ -35,5 +35,5 @@
 -cpp bin/main_cpp
 -cp src
 -cp ../src
--lib mpartial
+-lib mockatoo
 -cmd bin/main_cpp/Main

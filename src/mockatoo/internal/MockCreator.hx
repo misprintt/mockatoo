@@ -95,8 +95,6 @@ class MockCreator
 			default: throw "not implementend";
 		}
 
-
-
 		if(mockedClassHash.exists(id))
 		{
 			typeDefinitionId = mockedClassHash.get(id);

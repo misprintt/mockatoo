@@ -30,7 +30,7 @@ Import Mockatoo;
 
 ### Creating a mock instance
 
-Mocks can be generated from both classes and interfaces:
+Mocks can be generated from any Class, Interface or Typedef alias (not typedef structure)
 
 	var mockedClass = Mockatoo.mock(SomeClass);
 	var mockedInterface = Mockatoo.mock(SomeInterface);
@@ -41,7 +41,7 @@ A Mock class type will be generated that extends the Class (or Interface), stubb
 	var mockedInterface = new SomeInterfaceMocked();
 
 
-If a class requires Type paramaters then you need to create a typedef alias.
+If a class requires Type paramaters then you can either use a typedef alias.
 
 	typedef FooBar = Foo<Bar>;
 
@@ -49,13 +49,21 @@ If a class requires Type paramaters then you need to create a typedef alias.
 
 	var mockFoo =  Mockatoo.mock(FooBar);
 
+Or pass through the types as a second paramater
+
+	var mockFoo = Mockatoo.mock(Foo, [Bar]);
+
 Both these generates the equivalent expressions:
 
-	var mockFoo = new Foo<Bar>();
+	var mockFoo = new FooMocked<Bar>();
 
 
-> Note: Typedef aliases are required for Type paramaters in order to circumvent limitation of compiler with generics. You cannot compile `Foo.doSomething(Array<String>)`
+> Note: These usages are required in order to circumvent limitation of compiler with generics. You cannot compile `Foo.doSomething(Array<String>)`
 
+## Limitations[limitations]
+
+* inlined methods will not be mocked (prints a compiler warning)
+* @:final methods throw runtime errors in flash (AVM2) 
 
 ## Release Notes[release]
 
@@ -63,9 +71,9 @@ Both these generates the equivalent expressions:
 
 Basic class and interface mocking (generates empty stub methods)
 
-* Generate a mock class for any Class or Interface
+* Generate a mock class for any Class, Interface or Typedef alias
 * Generates sub class for Class targets
-* Generates implementation for Interface targets
+* Generates implementation for Interface targets (including super classes)
 * Generate a mock class for classes with typed parameters  (and typedef aliases)
 * Generate mocks for classes with super classes (mocks all non-overridden functions from super classes)
 * Return correct 'null' types for methods with return types  (including default Int, Bool and Float types for static platforms) 
@@ -76,14 +84,6 @@ Basic class and interface mocking (generates empty stub methods)
 This is the active roadmap.
 
 ### Release 0.2
-
-**Typed paramaters without typedef**
-
-Remove the need to use a typedef to generate a mock for a class or interface with
-Type paramaters.
-
-	//You can mock both concrete classes and interfaces
-	var mockedList:List<String> = Mockatoo.mock(List, [String]);
 
 
 **Basic Verification**
@@ -127,7 +127,20 @@ Partial mock that defers to concrete implementation if not stubbed
 	trace(hash.get(1)); // traces 'b'
 
 
-	
+
+### Other proposed features
+
+**Mockable Typedef stuctures**
+
+
+	typedef SomeType = 
+	{
+		name:String,
+		doSomething:Void->Void
+	}
+
+	var mock:Sometype = Mockatoo.mock(SomeType);
+
 
 
 
