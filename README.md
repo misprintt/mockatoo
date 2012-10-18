@@ -20,7 +20,7 @@ Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode
 
 Install the latest directly from github:
 
-	haxelib git mockatoo https://github.com/misprintt/mockatoo.git src/lib/src
+	haxelib git mockatoo https://github.com/misprintt/mockatoo.git src
 
 Or point to your local fork:
 
