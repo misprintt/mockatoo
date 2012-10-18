@@ -189,12 +189,16 @@ class MockCreator
 
 			switch(meta.name)
 			{
-				case ":core_api",":final": null;
-				default: metadata.push(meta);
+				case ":final":
+					metadata.push({pos:Context.currentPos(), name:":hack", params:[]});
+				case ":core_api":
+					null;
+				default:
+					metadata.push(meta);
 			}
 		}
 
-		metadata.push({pos:Context.currentPos(), name:":hack", params:[]});
+		
 		//metadata.push({pos:Context.currentPos(), name:":extern", params:[]});
 
 		return metadata;
@@ -327,25 +331,31 @@ class MockCreator
 
 					if(field.access.remove(AInline))
 					{
-						field.access.push(AInline);
-
-						if(Context.defined("no_inline"))
-						{
-							Context.warning("Cannot mock inline method [" + id + "." + field.name + "] even with '--no-inline' compiler flag.", Context.currentPos());
-						}
-						else
-						{
-							Context.error("Cannot mock inline method [" + id + "." + field.name + "]\nDisable inlining using Haxe's '--no-inline' compiler flag.", Context.currentPos());
-						}
+						Context.warning("Cannot mock inline method [" + id + "." + field.name + "] even with '--no-inline' compiler flag.", Context.currentPos());
+						
+						//field.access.push(AInline);
+						//Compiler.setFieldType(classType.name, field.name, "MethNormal", false);
+						// if(Context.defined("no_inline"))
+						// {
+						// 	Context.warning("Cannot mock inline method [" + id + "." + field.name + "] even with '--no-inline' compiler flag.", Context.currentPos());
+						// }
+						// else
+						// {
+						// 	Context.error("Cannot mock inline method [" + id + "." + field.name + "]\nDisable inlining using Haxe's '--no-inline' compiler flag.", Context.currentPos());
+						// }
+					}
+					else
+					{
+						fields.push(field);
 					}
 						
 					
-					fields.push(field);
+					
 					
 				case FVar(t, e):
-					null;
+					if(isInterface) fields.push(field);
 				case FProp(get, set, t, e):
-					null;
+					if(isInterface) fields.push(field);
 			}
 		}
 		return fields;
@@ -417,7 +427,7 @@ class MockCreator
 							return EConst(CInt("0")).at();
 						case "Float":
 							if(isFlash)
-								return EConst(CIdent("NaN")).at();
+								return "Math.NaN".resolve();
 							else
 								return EConst(CFloat("0.0")).at();
 						default: null;
