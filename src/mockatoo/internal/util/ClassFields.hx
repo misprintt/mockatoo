@@ -34,12 +34,21 @@ class ClassFields
 
 		var paramMap = getParamDeclarations(c.params, paramTypes);
 
+		
+		// recurse through super classes (or interfaces if an interface)
+		var superTypes:Array<{ t : Ref<ClassType>, params : Array<Type> }> = [];
+
 		if(c.superClass != null)
+			superTypes.push(c.superClass);
+		else if(c.isInterface)
+			superTypes = superTypes.concat(c.interfaces);
+
+		for(type in superTypes)
 		{
-			var superParams = replaceParamTypeArray( c.superClass.params, paramMap);
+			var superParams = replaceParamTypeArray( type.params, paramMap);
 
 			//trace("     superParams: " + superParams);
-			var superFields = getClassFields(c.superClass.t.get(), includeStatics, superParams, fieldHash);
+			var superFields = getClassFields(type.t.get(), includeStatics, superParams, fieldHash);
 
 			for(field in superFields)
 			{

@@ -29,7 +29,6 @@ class MockCreator
 		return m.toExpr();
 	}
 
-
 	static var mockedClassHash:Hash<String> = new Hash();
 
 	var expr:Expr;
@@ -267,13 +266,13 @@ class MockCreator
 	/**
 	Returns mocked versions of all functions within the target class or interface.
 	Also cleans up constructor to call super (if a class) and to not return Void.
+
 	*/
 	function createFields():Array<Field>
 	{
 		var fields:Array<Field> = [];//[createEmptyConstructor()];
 
 		var superFields = ClassFields.getClassFields(classType);
-		
 
 		for(field in superFields)
 		{
