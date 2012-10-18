@@ -5,11 +5,19 @@ Contains classes for testing mocking scenarios
 */
 // -----------------------------------------------------------------------------
 
-interface SimpleInterface {}
+interface SimpleInterface
+{
+	function test():Void;
+}
 
 class SimpleClass
 {
 	public function new()
+	{
+		throw "not mocked";
+	}
+
+	public function test()
 	{
 		throw "not mocked";
 	}
@@ -108,7 +116,7 @@ class ClassThatIsFinal
 
 interface TypedInterface<T>
 {
-	function update(value:T):T;
+	function toTypeWithArg(value:T):T;
 }
 
 interface StringTypedInterface implements TypedInterface<String>
@@ -116,7 +124,7 @@ interface StringTypedInterface implements TypedInterface<String>
 
 }
 
-interface ImplementsTypedInteface<TFoo, TBar> implements TypedInterface<TBar>
+interface ImplementsTypedInterface<TFoo, TBar> implements TypedInterface<TBar>
 {
 
 }
@@ -128,7 +136,7 @@ class TypedClass<T>
 
 	}
 
-	public function update(value:T):T
+	public function toTypeWithArg(value:T):T
 	{
 		return value;
 	}
@@ -160,11 +168,12 @@ class ExtendsTypedExtensionClass extends ExtendsTypedClass<String, String>
 }
 
 
-typedef TypedefToInteface = SimpleInterface;
-typedef TypedefToClass = SimpleClass;
-typedef TypedefToTypedInterface = TypedInterface<String>;
-typedef TypedefToTypedClass = TypedClass<String>;
+typedef TypedefToSimpleInterface = SimpleInterface;
+typedef TypedefToSimpleClass = SimpleClass;
+typedef TypedefToStringTypedInterface = TypedInterface<String>;
+typedef TypedefToStringTypedClass = TypedClass<String>;
 
-typedef TypedefToImplementsTypedInteface = ImplementsTypedInteface<String, String>;
+
+typedef TypedefToImplementsTypedInterface = ImplementsTypedInterface<String, String>;
 typedef TypedefToExtendsTypedClass = ExtendsTypedClass<String, String>;
 

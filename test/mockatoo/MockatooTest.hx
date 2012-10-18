@@ -47,15 +47,21 @@ class MockatooTest
 	@Test
 	public function should_mock_class():Void
 	{
+		var fields:Array<Field> = [];
+		addField(fields, "test");
+
 		var mock = Mockatoo.mock(SimpleClass);
-		assertMock(mock, SimpleClass);
+		assertMock(mock, SimpleClass, fields);
 	}
 
 	@Test
 	public function should_mock_interface():Void
 	{
+		var fields:Array<Field> = [];
+		addField(fields, "test");
+
 		var mock = Mockatoo.mock(SimpleInterface);
-		assertMock(mock, SimpleInterface);
+		assertMock(mock, SimpleInterface, fields);
 	}
 
 	@Test
@@ -122,18 +128,83 @@ class MockatooTest
 		
 	}
 
-	// ------------------------------------------------------------------------- generics
+	// ------------------------------------------------------------------------- generics & typdefs
 
 	@Test
-	public function should_mock_typedef_to_interface():Void
+	public function should_mock_typedef_interface():Void
 	{
 		var fields:Array<Field> = [];
+		addField(fields, "test");
 
-		var mock = Mockatoo.mock(TypedefToInteface);
-		assertMock(mock, TypedefToInteface, fields);
+		var mock = Mockatoo.mock(TypedefToSimpleInterface);
+		assertMock(mock, TypedefToSimpleInterface, fields);
 
 		Assert.isTrue(Std.is(mock, SimpleInterface));
 	}
+
+	@Test
+	public function should_mock_typedef_class():Void
+	{
+		var fields:Array<Field> = [];
+		addField(fields, "test");
+
+		var mock = Mockatoo.mock(TypedefToSimpleClass);
+		assertMock(mock, TypedefToSimpleClass, fields);
+
+		Assert.isTrue(Std.is(mock, SimpleClass));
+	}
+
+	@Test
+	public function should_mock_typedef_typedInterface():Void
+	{
+		var fields:Array<Field> = [];
+		addField(fields, "toTypeWithArg", [""]);
+
+		var mock = Mockatoo.mock(TypedefToStringTypedInterface);
+		assertMock(mock, TypedefToStringTypedInterface, fields);
+
+		Assert.isTrue(Std.is(mock, TypedInterface));
+	}
+
+	@Test
+	public function should_mock_typedef_typedClass():Void
+	{
+		var fields:Array<Field> = [];
+		addField(fields, "toTypeWithArg", [""]);
+
+		var mock = Mockatoo.mock(TypedefToStringTypedClass);
+		assertMock(mock, TypedefToStringTypedClass, fields);
+
+		Assert.isTrue(Std.is(mock, TypedClass));
+	}
+
+
+	@Test
+	public function should_mock_typedef_typedInterfaceImplementation():Void
+	{
+		var fields:Array<Field> = [];
+		addField(fields, "toTypeWithArg", [""]);
+
+		var mock = Mockatoo.mock(TypedefToImplementsTypedInterface);
+		assertMock(mock, TypedefToImplementsTypedInterface, fields);
+
+		Assert.isTrue(Std.is(mock, TypedInterface));
+	}
+
+	@Test
+	public function should_mock_typedef_typedClassExtension():Void
+	{
+		var fields:Array<Field> = [];
+		addField(fields, "toTypeWithArg", [""]);
+
+		var mock = Mockatoo.mock(TypedefToExtendsTypedClass);
+		assertMock(mock, TypedefToExtendsTypedClass, fields);
+
+		Assert.isTrue(Std.is(mock, TypedClass));
+	}
+
+
+
 
 
 	// ------------------------------------------------------------------------- edge cases
@@ -172,12 +243,12 @@ class MockatooTest
 
 	// ------------------------------------------------------------------------- utilities
 
-	function assertMock(mock:Mock, cls:Class<Dynamic>, ?fields:Array<Field>)
+	function assertMock(mock:Mock, cls:Class<Dynamic>, ?fields:Array<Field>, ?pos:haxe.PosInfos)
 	{
 		if(fields == null) fields = [];
 
-		Assert.isTrue(Std.is(mock, cls));
-		Assert.isTrue(Std.is(mock, Mock));
+		Assert.isTrue(Std.is(mock, cls), pos);
+		Assert.isTrue(Std.is(mock, Mock), pos);
 
 		var className = Type.getClassName(cls);
 
@@ -192,7 +263,7 @@ class MockatooTest
 			{
 				if(e == "not mocked")
 				{
-					Assert.fail(className + "." + field.name + " is not mocked.");
+					Assert.fail(className + "." + field.name + " is not mocked.", pos);
 				}
 			}
 		}
