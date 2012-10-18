@@ -29,6 +29,9 @@ class MockCreator
 		return m.toExpr();
 	}
 
+
+	static var mockedClassHash:Hash<String> = new Hash();
+
 	var expr:Expr;
 	var pos:Position;
 	var id:String;
@@ -73,6 +76,14 @@ class MockCreator
 			default: throw "not implementend";
 		}
 
+
+		if(mockedClassHash.exists(id))
+		{
+			typeDefinitionId = mockedClassHash.get(id);
+			trace("existing: " + id + ", " + typeDefinitionId);
+			return;
+		}
+
 		isInterface = classType.isInterface;
 
 		trace("params: " + params);
@@ -87,10 +98,7 @@ class MockCreator
 
 		Context.defineType(typeDefinition);
 
-		if(type != actualType)
-		{
-
-		}
+		mockedClassHash.set(id, typeDefinitionId);
 	}
 
 	/**
