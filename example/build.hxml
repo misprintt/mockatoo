@@ -1,3 +1,6 @@
+-cmd rm -rf bin
+-cmd mkdir -p bin
+--next
 
 -main Main
 -neko bin/main.n
