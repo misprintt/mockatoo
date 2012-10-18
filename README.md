@@ -8,7 +8,7 @@ Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode
 
 #### Mockatoo is in very early developement and is subject to change.
 
-* See [releases](#release) for details on the current stable release.
+* See [releases](#releases) for details on the current stable release.
 * See [roadmap](#roadmap) for more details on planned features.
 
 
@@ -22,7 +22,7 @@ Or point to your local fork:
 
 	haxelib dev mockatoo /ABSOLUTE_PATH_TO_REPO/src/lib
 
-## Usage[usage]
+## Usage
 
 Import Mockatoo;
 
@@ -60,12 +60,12 @@ Both these generates the equivalent expressions:
 
 > Note: These usages are required in order to circumvent limitation of compiler with generics. You cannot compile `Foo.doSomething(Array<String>)`
 
-## Limitations[limitations]
+## Limitations
 
 * inlined methods will not be mocked (prints a compiler warning)
 * @:final methods throw runtime errors in flash (AVM2) 
 
-## Release Notes[release]
+## Releases
 
 ### Release 0.1
 
@@ -79,7 +79,7 @@ Basic class and interface mocking (generates empty stub methods)
 * Return correct 'null' types for methods with return types  (including default Int, Bool and Float types for static platforms) 
 
 
-## Roadmap[roadmap]
+## Roadmap
 
 This is the active roadmap.
 
