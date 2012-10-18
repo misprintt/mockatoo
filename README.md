@@ -16,7 +16,7 @@ Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode
 
 Install the latest directly from github:
 
-	haxelib git mockatoo https://github.com/massiveinteractive/mockatoo.git src/lib
+	haxelib git mockatoo https://github.com/misprintt/mockatoo.git src/lib
 
 Or point to your local fork:
 
