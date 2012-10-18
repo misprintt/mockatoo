@@ -122,6 +122,22 @@ class MockatooTest
 		
 	}
 
+	// ------------------------------------------------------------------------- generics
+
+	@Test
+	public function should_mock_typedef_to_interface():Void
+	{
+		var fields:Array<Field> = [];
+
+		var mock = Mockatoo.mock(TypedefToInteface);
+		assertMock(mock, TypedefToInteface, fields);
+
+		Assert.isTrue(Std.is(mock, SimpleInterface));
+	}
+
+
+	// ------------------------------------------------------------------------- edge cases
+
 	@Test @Ignore("Cannot override inline methods")
 	public function should_mock_class_with_inlined_methods():Void
 	{
@@ -150,7 +166,6 @@ class MockatooTest
 
 		var mock = Mockatoo.mock(ClassThatIsFinal);
 		assertMock(mock, ClassThatIsFinal, fields);
-		
 	}
 
 	#end

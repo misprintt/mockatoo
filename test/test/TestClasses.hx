@@ -41,8 +41,6 @@ interface IntefaceWithFields
 	function withOptionalArgs(?arg1:Int, ?arg2:Bool):Void;
 }
 
-
-
 class ClassWithFields implements IntefaceWithFields
 {
 	public function new(){}
@@ -103,3 +101,70 @@ class ClassThatIsFinal
 		throw "not mocked";
 	}
 }
+
+
+// ----------------------------------------------------------------------------- Typed paramaters
+
+
+interface TypedInterface<T>
+{
+	function update(value:T):T;
+}
+
+interface StringTypedInterface implements TypedInterface<String>
+{
+
+}
+
+interface ImplementsTypedInteface<TFoo, TBar> implements TypedInterface<TBar>
+{
+
+}
+
+class TypedClass<T>
+{
+	public function new()
+	{
+
+	}
+
+	public function update(value:T):T
+	{
+		return value;
+	}
+}
+
+class StringTypedClass extends TypedClass<String>
+{
+	public function new()
+	{
+		super();
+	}	
+}
+
+class ExtendsTypedClass<TFoo, TBar> extends TypedClass<TBar>
+{
+	public function new(foo:TFoo, bar:TBar)
+	{
+		super();
+	}	
+}
+
+
+class ExtendsTypedExtensionClass extends ExtendsTypedClass<String, String>
+{
+	public function new(foo:String, bar:String)
+	{
+		super(foo,bar);
+	}	
+}
+
+
+typedef TypedefToInteface = SimpleInterface;
+typedef TypedefToClass = SimpleClass;
+typedef TypedefToTypedInterface = TypedInterface<String>;
+typedef TypedefToTypedClass = TypedClass<String>;
+
+typedef TypedefToImplementsTypedInteface = ImplementsTypedInteface<String, String>;
+typedef TypedefToExtendsTypedClass = ExtendsTypedClass<String, String>;
+
