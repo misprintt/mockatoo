@@ -6,6 +6,10 @@ implementations of classes and interfaces for testing. Tested against Haxe 2.10 
 Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode.com/hg/latest/org/mockito/Mockito.html>
 
 
+
+> Disambiguation: The **Mockatoo** belongs to the bird family *Cacatuidae* and look suspiciously like a taxidermied [Cockatoo](http://en.wikipedia.org/wiki/Cockatoo) but with fake plumage. They are mostly found nesting within testing habitats and may turn violent if mistaken for a *MockingBird* :)
+
+
 #### Mockatoo is in very early developement and is subject to change.
 
 * See [releases](#releases) for details on the current stable release.
@@ -16,7 +20,7 @@ Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode
 
 Install the latest directly from github:
 
-	haxelib git mockatoo https://github.com/misprintt/mockatoo.git src/lib
+	haxelib git mockatoo https://github.com/misprintt/mockatoo.git src
 
 Or point to your local fork:
 

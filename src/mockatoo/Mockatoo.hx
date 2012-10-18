@@ -14,7 +14,6 @@ import mockatoo.internal.MockCreator;
 
 class Mockatoo
 {	
-
 	/**
 	 * Creates mock object of given class or interface.
 	 * 
