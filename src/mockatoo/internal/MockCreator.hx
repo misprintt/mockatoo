@@ -150,6 +150,24 @@ class MockCreator
 			fields.unshift(createEmptyConstructor());
 
 
+		debugFields(fields);
+		
+		var metas = updateMeta(classType.meta.get());
+
+		return {
+			pos: Context.currentPos(),
+			params: paramTypes,
+			pack: classType.pack,
+			name: id + "Mocked",
+			meta: metas,
+			kind: kind,
+			isExtern:false,
+			fields:fields
+		}
+	}
+
+	function debugFields(fields:Array<Field>)
+	{
 		var preview = "class " + id + "Mocked\n{";
 
 		for(field in fields)
@@ -166,18 +184,6 @@ class MockCreator
 
 		trace(preview);
 
-		var metas = updateMeta(classType.meta.get());
-
-		return {
-			pos: Context.currentPos(),
-			params: paramTypes,
-			pack: classType.pack,
-			name: id + "Mocked",
-			meta: metas,
-			kind: kind,
-			isExtern:false,
-			fields:fields
-		}
 	}
 
 	function updateMeta(source:Metadata):Metadata

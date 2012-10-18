@@ -30,17 +30,15 @@ class ClassFields
 		if(paramTypes == null) paramTypes = [];
 		if(fieldHash == null) fieldHash = new Hash();
 
-		trace(c.name + ":" + paramTypes);
+		//trace(c.name + ":" + paramTypes);
 
 		var paramMap = getParamDeclarations(c.params, paramTypes);
-
-		trace("   paramDecl:"  + paramMap);
 
 		if(c.superClass != null)
 		{
 			var superParams = replaceParamTypeArray( c.superClass.params, paramMap);
 
-			trace("     superParams: " + superParams);
+			//trace("     superParams: " + superParams);
 			var superFields = getClassFields(c.superClass.t.get(), includeStatics, superParams, fieldHash);
 
 			for(field in superFields)

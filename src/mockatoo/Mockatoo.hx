@@ -71,42 +71,12 @@ class Mockatoo
 		
 		Directory.create(TEMP_DIR);
 
+
 		Console.addPrinter(new FilePrinter(TEMP_DIR + "mockatoo.log"));
 
 		Console.start();
 		Console.removePrinter(Console.defaultPrinter);
 	}
-
-
-	// /**
-	// Include for compilation all classes defined in the given package excluding the ones referenced in the ignore list.
-	// **/
-	// public static function removeInlines( ?pack : String = "", ?rec = true, ?ignore : Array<String>, ?classPaths : Array<String> )
-	// {
-	// 	if(null == classPaths)
-	// 		classPaths = Context.getClassPath();
-	// 	// normalize class path
-	// 	for( i in 0...classPaths.length ) {
-	// 		var cp = StringTools.replace(classPaths[i], "\\", "/");
-	// 		if(StringTools.endsWith(cp, "/"))
-	// 			cp = cp.substr(0, -1);
-	// 		classPaths[i] = cp;
-	// 	}
-	// 	var prefix = pack == '' ? '' : pack + '.';
-	// 	for( cp in classPaths ) {
-	// 		var path = pack == '' ? cp : cp + "/" + pack.split(".").join("/");
-	// 		if( !sys.FileSystem.exists(path) || !sys.FileSystem.isDirectory(path) )
-	// 			continue;
-	// 		for( file in sys.FileSystem.readDirectory(path) ) {
-	// 			if( StringTools.endsWith(file, ".hx") ) {
-	// 				var cl = prefix + file.substr(0, file.length - 3);
-	// 				Compiler.addMetadata(":build(mockatoo.Mockatoo.removeInlinesFrom")
-	// 				Context.getModule(cl);
-	// 			} else if( rec && sys.FileSystem.isDirectory(path + "/" + file) && !skip(prefix + file) )
-	// 				include(prefix + file, true, ignore, classPaths);
-	// 		}
-	// 	}
-	// }
 
 	#end
 }
