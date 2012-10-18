@@ -51,6 +51,7 @@ class MockCreator
 	{
 		expr = e;
 		id = e.toString();
+
 		pos = e.pos;
 
 		type = Context.getType(e.toString());
@@ -185,13 +186,13 @@ class MockCreator
 
 		for(meta in source)
 		{
-			trace(meta.name);
+			trace(meta.name + ":" + Printer.printExprList("", meta.params));
 
 			switch(meta.name)
 			{
 				case ":final":
 					metadata.push({pos:Context.currentPos(), name:":hack", params:[]});
-				case ":core_api":
+				case ":core_api", ":build":
 					null;
 				default:
 					metadata.push(meta);
@@ -262,7 +263,6 @@ class MockCreator
 
 		for(field in superFields)
 		{
-			trace(field.name);
 			field.meta = updateMeta(field.meta);
 			switch(field.kind)
 			{

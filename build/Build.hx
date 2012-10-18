@@ -16,15 +16,23 @@ class Build extends mtask.core.BuildBase
 		t.addDependency("mconsole");
 		t.addDependency("tink_macros");
 
-		t.afterCompile = function(path)
+		t.beforeCompile = function(path)
 		{
+			rm("src/haxelib.xml");
 			cp("src/*", path);
 		}
 	}
 
 	@task function sublime()
 	{
+		invoke("build haxelib");
 		invoke("example");
+		invoke("haxelibTest");
+	}
+
+	@task function haxelibTest()
+	{
+		cmd("haxelib", ["test", "bin/release/haxelib.zip"]);
 	}
 
 	@task function example()
@@ -44,6 +52,8 @@ class Build extends mtask.core.BuildBase
 		invoke("clean");
 		invoke("build haxelib");
 		invoke("test");
-		invoke("example");
+		//invoke("example");
+
+		invoke("haxelibTest");
 	}
 }

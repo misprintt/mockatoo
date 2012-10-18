@@ -138,7 +138,6 @@ class MockatooTest
 	@Test
 	public function should_mock_class_marked_final():Void
 	{
-	
 		
 	}
 

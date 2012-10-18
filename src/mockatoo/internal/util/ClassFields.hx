@@ -8,22 +8,40 @@ import haxe.macro.Compiler;
 import haxe.macro.Type;
 import haxe.PosInfos;
 using tink.macro.tools.MacroTools;
+using tink.macro.tools.ExprTools;
 
+
+typedef ParamDeclaration = 
+{
+	name:String,
+	type:Type
+}
 class ClassFields
 {
+
 	static inline var PRETTY = true;
 
 	/**
 	Recursively aggregates fields from class and super classes, ensuring that
 	inherited/overriden fields take precidence.
 	*/
-	public static function getClassFields(c:ClassType, ?includeStatics:Bool=false, ?fieldHash:Hash<Field>):Array<Field>
+	public static function getClassFields(c:ClassType, ?includeStatics:Bool=false, ?paramTypes:Array<Type>, ?fieldHash:Hash<Field>):Array<Field>
 	{
+		if(paramTypes == null) paramTypes = [];
 		if(fieldHash == null) fieldHash = new Hash();
+
+		trace(c.name + ":" + paramTypes);
+
+		var paramMap = getParamDeclarations(c.params, paramTypes);
+
+		trace("   paramDecl:"  + paramMap);
 
 		if(c.superClass != null)
 		{
-			var superFields = getClassFields(c.superClass.t.get(), includeStatics, fieldHash);
+			var superParams = replaceParamTypeArray( c.superClass.params, paramMap);
+
+			trace("     superParams: " + superParams);
+			var superFields = getClassFields(c.superClass.t.get(), includeStatics, superParams, fieldHash);
 
 			for(field in superFields)
 			{
@@ -33,7 +51,7 @@ class ClassFields
 		
 		for(classField in c.fields.get())
 		{
-			var field = getClassField(classField);
+			var field = getClassField(classField, paramMap);
 			fieldHash.set(field.name, field);
 		}
 
@@ -41,14 +59,14 @@ class ClassFields
 		{
 			for(classField in c.statics.get())
 			{
-				var field = getClassField(classField, true);
+				var field = getClassField(classField, paramMap, true);
 				fieldHash.set(field.name, field);
 			}
 		}
 
 		if(c.constructor != null)
 		{
-			var field = getConstructorField(c);
+			var field = getConstructorField(c,paramMap);
 			fieldHash.set(field.name, field);
 		}
 
@@ -56,10 +74,80 @@ class ClassFields
 	}
 
 
-	public static function getClassField(field:ClassField, ?isStatic:Bool=false):Field
+		/**
+	Replaces abstract types (T, TData, etc) with concrete ones
+	*/
+	static function getParamDeclarations(paramTypes:Array<{t:Type, name:String}>, paramDecls:Array<Type>):Array<ParamDeclaration>
+	{
+		var results:Array<ParamDeclaration> = [];
+
+
+		for(i in 0...paramTypes.length)
+		{
+			var param = paramTypes[i];
+
+			var decl =
+			{
+				name:param.name,
+				type:paramDecls[i]
+			}
+			results.push(decl);
+
+		}
+		return results;
+
+	}
+
+	/**
+	Replaces abstract types with concrete declarations
+	*/
+	static function replaceParamTypeArray(superParams:Array<Type>, paramMap:Array<ParamDeclaration>):Array<Type>
+	{
+		var results:Array<Type> = [];
+
+		for(param in superParams)
+		{
+			var paramType:Type = replaceParamType(param, paramMap);
+			results.push(paramType);
+		}
+
+		return results;
+	}
+
+	static function replaceParamType(param:Type, paramMap:Array<ParamDeclaration>):Type
 	{
 
-		var kind = getFieldType(field);
+		var paramId = param.getID();
+		var paramName = paramId != null ? paramId.split(".").pop() : "";
+		var paramType:Type = null;
+		for(p in paramMap)
+		{
+			if(p.name == paramName)
+				paramType = p.type;
+		}
+
+		if(paramType == null) paramType = param;
+
+
+		return paramType;
+	}
+
+	static function isParamType(param:Type, paramMap:Array<ParamDeclaration>):Bool
+	{
+		var paramId = param.getID();
+		var paramName = paramId != null ? paramId.split(".").pop() : "";
+		for(p in paramMap)
+		{
+			if(p.name == paramName) return true;
+		}
+		return false;
+	}
+
+
+	public static function getClassField(field:ClassField, paramMap:Array<ParamDeclaration>, ?isStatic:Bool=false):Field
+	{
+
+		var kind = getFieldType(field,paramMap);
 
 		var access = getFieldAccess(field);
 
@@ -96,22 +184,44 @@ class ClassFields
 		}
 
 		return access;
-
-		
 	}
 
-	static function getConstructorField(c:ClassType):Field
+	static function getConstructorField(c:ClassType, paramMap:Array<ParamDeclaration>):Field
 	{
 		var classField = c.constructor.get();
 
 		classField.name = "new";
 
-		var field = getClassField(classField);
+		var field = getClassField(classField,paramMap);
 
 		return field;
 	}
 
-	public static function getFieldType(field:ClassField):FieldType
+	/**
+	Converts a Type to ComplexType and subsitutes Param types (e.g. <T>) with concrete ones
+	*/
+	static function convertType(type:Type, paramMap:Array<ParamDeclaration>):ComplexType
+	{
+		if(isParamType(type, paramMap))
+		{
+			type = replaceParamType(type, paramMap);
+		}
+
+		switch(type)
+		{
+			case TDynamic(t):
+				if(t == null)
+					return TPath({pack:[], name:"StdTypes", sub:"Dynamic", params:[]});
+
+				var param = TPType(t.toComplex(true));
+				return TPath({pack:[], name:"StdTypes", sub:"Dynamic", params:[param]});
+				
+			default:
+				return type.toComplex(PRETTY);
+		}
+	}
+
+	public static function getFieldType(field:ClassField, paramMap:Array<ParamDeclaration>):FieldType
 	{
 		var expr = getFieldExpr(field);
 
@@ -119,7 +229,7 @@ class ClassFields
 		{
 			case FVar(read, write):
 			{
-				return FProp(getVarAccess(read), getVarAccess(write), field.type.toComplex(PRETTY), expr);
+				return FProp(getVarAccess(read), getVarAccess(write), convertType(field.type, paramMap), expr);
 			}
 			case FMethod(k):
 			{
@@ -133,8 +243,8 @@ class ClassFields
 
 								return FFun(
 								{
-									args:convertTFunArgsToFunctionArgs(args),
-									ret: convertReturnType(ret),
+									args:convertTFunArgsToFunctionArgs(args, paramMap),
+									ret: convertType(ret, paramMap),
 									expr:expr,
 									params:[]
 								});
@@ -148,15 +258,7 @@ class ClassFields
 		return null;
 	}
 
-	static function convertReturnType(type:Type)
-	{
-		// trace(type);
-		var complex = type.toComplex(PRETTY);
-		// trace(complex);
-		return complex;
-	}
-
-	static function convertTFunArgsToFunctionArgs(args : Array<{ t : Type, opt : Bool, name : String }>):Array<FunctionArg>
+	static function convertTFunArgsToFunctionArgs(args : Array<{ t : Type, opt : Bool, name : String }>, paramMap:Array<ParamDeclaration>):Array<FunctionArg>
 	{
 		var converted:Array<FunctionArg> = [];
 
@@ -165,7 +267,7 @@ class ClassFields
 			var value = 
 			{
 				value : null, //Null<Expr>
-				type : arg.t.toComplex(PRETTY), //<ComplexType>
+				type : convertType(arg.t, paramMap), //<ComplexType>
 				opt : arg.opt,
 				name : arg.name
 			}
