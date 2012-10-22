@@ -73,13 +73,30 @@ class Mockatoo
 		Compiler.define("-no-inline");
 		Compiler.define("no-inline");
 		
-		if(!FileSystem.exists(TEMP_DIR)) FileSystem.createDirectory(TEMP_DIR);
+		createTempDirectory();
 
 
 		Console.addPrinter(new FilePrinter(TEMP_DIR + "mockatoo.log"));
 
 		Console.start();
 		Console.removePrinter(Console.defaultPrinter);
+	}
+
+	static function createTempDirectory()
+	{
+		var temp = TEMP_DIR.split("/");
+
+		var path = "";
+		
+		while(temp.length > 0)
+		{	
+			var part = temp.shift();
+			if(part == "" && temp.length == 0) break;
+
+			path += part + "/";
+
+			if(!FileSystem.exists(path)) FileSystem.createDirectory(path);
+		}
 	}
 
 	#end
