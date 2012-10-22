@@ -1,9 +1,12 @@
 package mockatoo;
 
+import mockatoo.internal.MockDelegate;
+
+
 /**
 Indicates a class is a generated Mock
 */
 interface Mock
 {
-	//var mockName:String;
+	var mockDelegate:MockDelegate;
 }

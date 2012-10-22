@@ -40,6 +40,9 @@ class MockCreator
 
 	var isInterface:Bool;
 
+
+	var extendTypePath:TypePath;
+
 	var typeDefinition:TypeDefinition;
 	var typeDefinitionId:String;
 
@@ -169,6 +172,22 @@ class MockCreator
 
 		//trace(paramTypes);
 
+		var a:Array<Type> = [];
+		for(p in classType.params)
+		{
+			a.push(p.t);
+		}
+		var typeParams = untyped TypeTools.paramsToComplex(a);
+
+		trace(typeParams);
+
+		var extendId = classType.module + "." + classType.name;
+
+		extendTypePath = TypeTools.asTypePath(extendId, typeParams);
+
+		trace(extendTypePath);
+
+
 		var kind = createKind();
 
 		var fields = createFields();
@@ -270,20 +289,6 @@ class MockCreator
 	*/
 	function createKind()
 	{
-		var a:Array<Type> = [];
-		for(p in classType.params)
-		{
-			a.push(p.t);
-		}
-		var typeParams = untyped TypeTools.paramsToComplex(a);
-
-		trace(typeParams);
-
-		var extendId = classType.module + "." + classType.name;
-
-		var extendPath = TypeTools.asTypePath(extendId, typeParams);
-
-		trace(extendPath);
 
 		var mockInterface = TypeTools.asTypePath("mockatoo.Mock");
 
@@ -292,11 +297,11 @@ class MockCreator
 
 		if(isInterface)
 		{
-			interfaces = [extendPath, mockInterface];
+			interfaces = [extendTypePath, mockInterface];
 		}
 		else
 		{
-			extension = extendPath;
+			extension = extendTypePath;
 			interfaces = [mockInterface];
 		}
 
@@ -341,32 +346,40 @@ class MockCreator
 					if(field.access.remove(AInline))
 					{
 						Context.warning("Cannot mock inline method [" + id + "." + field.name + "] even with '--no-inline' compiler flag. See http://code.google.com/p/haxe/issues/detail?id=1231", Context.currentPos());
-						
-						//field.access.push(AInline);
-						//Compiler.setFieldType(classType.name, field.name, "MethNormal", false);
-						// if(Context.defined("no_inline"))
-						// {
-						// 	Context.warning("Cannot mock inline method [" + id + "." + field.name + "] even with '--no-inline' compiler flag.", Context.currentPos());
-						// }
-						// else
-						// {
-						// 	Context.error("Cannot mock inline method [" + id + "." + field.name + "]\nDisable inlining using Haxe's '--no-inline' compiler flag.", Context.currentPos());
-						// }
 					}
 					else
 					{
 						fields.push(field);
 					}
 						
-					
-					
-					
 				case FVar(t, e):
 					if(isInterface) fields.push(field);
 				case FProp(get, set, t, e):
 					if(isInterface) fields.push(field);
 			}
 		}
+
+		fields = appendMockInterfaceFields(fields);
+		
+		return fields;
+	}
+
+	function appendMockInterfaceFields(fields:Array<Field>):Array<Field>
+	{
+		var mockInterface = Context.getType("mockatoo.Mock");
+
+		switch(mockInterface)
+		{
+			case TInst(t, typeParams):
+				var mockFields = ClassFields.getClassFields(t.get(), false);
+
+				for(field in mockFields)
+				{
+					fields.push(field);
+				}
+			default:null;
+		}
+
 		return fields;
 	}
 
@@ -380,6 +393,11 @@ class MockCreator
 		f.ret = null; //remove Void return type from constructor.
 		field.access.remove(APublic);
 		field.access.push(APublic);
+
+		//create mockDelegate instance
+		var eThis =  EConst(CIdent("this")).at();
+		var eInstance = "mockatoo.internal.MockDelegate".instantiate([eThis]);
+		var eInstanciateDelegate = EConst(CIdent("mockDelegate")).at().assign(eInstance);
 
 		var eReturn = EReturn().at();
 		var e = EConst(CIdent("super")).at();
@@ -406,7 +424,7 @@ class MockCreator
 
 		//deliberately call return before call to super
 		//to prevent target class constructor being executed
-		f.expr = ExprTools.toBlock([eReturn, e]);
+		f.expr = ExprTools.toBlock([eInstanciateDelegate,eReturn, e]);
 	}
 
 	/**

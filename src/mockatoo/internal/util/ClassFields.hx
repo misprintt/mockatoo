@@ -30,10 +30,9 @@ class ClassFields
 		if(paramTypes == null) paramTypes = [];
 		if(fieldHash == null) fieldHash = new Hash();
 
-		//trace(c.name + ":" + paramTypes);
+		// trace(c.name + ":" + paramTypes);
 
 		var paramMap = getParamDeclarations(c.params, paramTypes);
-
 		
 		// recurse through super classes (or interfaces if an interface)
 		var superTypes:Array<{ t : Ref<ClassType>, params : Array<Type> }> = [];
