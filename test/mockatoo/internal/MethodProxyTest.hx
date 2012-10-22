@@ -250,6 +250,73 @@ class MethodProxyTest
 	}
 
 
+	@Test
+	public function should_verify_between_values():Void
+	{
+		var args:Array<Dynamic> = ["foo"];
+		instance = createInstance();
+
+		try
+		{
+			instance.verify(between(1,2), args);
+			Assert.fail("Expected VerificationException");
+		}
+		catch(e:VerificationException) {}
+
+		instance.call(args);
+		instance.verify(between(1, 2), args);
+
+		instance.call(args);
+		instance.verify(between(1,2), args);
+
+		try
+		{
+			instance.call(args);
+			instance.verify(between(1,2), args);
+			Assert.fail("Expected VerificationException");
+		}
+		catch(e:VerificationException) {}
+	}
+
+
+	@Test
+	public function should_not_verify_with_different_number_of_args():Void
+	{
+		var args:Array<Dynamic> = ["foo", "bar"];
+		instance = createInstance();
+
+
+		instance.call(["foo"]);
+
+		try
+		{
+			instance.verify(times(1), args);
+			Assert.fail("Expected VerificationException");
+		}
+		catch(e:VerificationException) {}
+
+	}
+
+	@Test
+	public function should_not_verify_with_different_arg_values():Void
+	{
+		instance = createInstance();
+
+
+		instance.call(["foo"]);
+
+		try
+		{
+			instance.verify(times(1), ["bar"]);
+			Assert.fail("Expected VerificationException");
+		}
+		catch(e:VerificationException) {}
+
+		instance.call(["bar"]);
+		instance.verify(times(1), ["bar"]);
+		
+
+	}
 
 	// ------------------------
 

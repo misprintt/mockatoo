@@ -75,7 +75,7 @@ class MockDelegate
 					Reflect.setField(temp, proxy.fieldName,
 						function(?arg1,?arg2,?arg3)
 						{
-							return proxy.verify(mode, [arg1,arg2]);
+							return proxy.verify(mode, [arg1,arg2,arg3]);
 						}
 					);
 				case 4:
