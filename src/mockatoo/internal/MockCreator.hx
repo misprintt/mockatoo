@@ -112,6 +112,9 @@ class MockCreator
 		typeDefinition = createTypeDefinition();
 		typeDefinitionId = (typeDefinition.pack.length > 0 ? typeDefinition.pack.join(".")  + "." : "") + typeDefinition.name;
 
+		debugPrintClass();
+		
+
 		Context.defineType(typeDefinition);
 
 		mockedClassHash.set(id, typeDefinitionId);
@@ -174,9 +177,12 @@ class MockCreator
 			fields.unshift(createEmptyConstructor());
 
 
-		debugFields(fields);
-		
 		var metas = updateMeta(classType.meta.get());
+		metas.push({
+			pos:Context.currentPos(),
+			name:"mockatoo",
+			params:[EConst(CString(id)).at()]
+		});
 
 		return {
 			pos: Context.currentPos(),
@@ -190,15 +196,39 @@ class MockCreator
 		}
 	}
 
-	function debugFields(fields:Array<Field>)
+	function debugPrintClass()
 	{
-		var preview = "class " + id + "Mocked\n{";
+		var metas = typeDefinition.meta;
+		var fields = typeDefinition.fields;
+
+		var preview = "";
+
+		for(meta in metas)
+		{
+			if(meta.name == "mockatoo")
+			{
+				preview += "@" + meta.name;
+
+				if(meta.params.length > 0)
+					preview += Printer.printExprList("",meta.params, ",");
+
+				preview += "\n";
+				break;
+			}
+		}
+
+
+		preview += "class " + id + "Mocked " + (isInterface?"implements":"extends") + " " + id;
+		preview += "\n{";
 
 		for(field in fields)
 		{
 			for(meta in field.meta)
 			{
 				preview += "\n	@" + meta.name;
+
+				if(meta.params.length > 0)
+					preview += Printer.printExprList("",meta.params, ",");
 			}
 
 			preview += "\n	" + Printer.printField("	", field);
@@ -339,6 +369,7 @@ class MockCreator
 						if(!isInterface)
 							field.access.unshift(AOverride);
 
+
 						if(f.ret != null && !StringTools.endsWith(TypeTools.toString(f.ret), "Void"))
 						{
 
@@ -357,11 +388,16 @@ class MockCreator
 						}
 
 						field.kind = FFun(f);
+
+
+						var fieldMeta = createMockFieldMeta(field, f);
+						trace(fieldMeta);
+						field.meta.push(fieldMeta);
 					}
 
 					if(field.access.remove(AInline))
 					{
-						Context.warning("Cannot mock inline method [" + id + "." + field.name + "] even with '--no-inline' compiler flag.", Context.currentPos());
+						Context.warning("Cannot mock inline method [" + id + "." + field.name + "] even with '--no-inline' compiler flag. See http://code.google.com/p/haxe/issues/detail?id=1231", Context.currentPos());
 						
 						//field.access.push(AInline);
 						//Compiler.setFieldType(classType.name, field.name, "MethNormal", false);
@@ -389,6 +425,49 @@ class MockCreator
 			}
 		}
 		return fields;
+	}
+
+	/**
+	Creates a @mock metadata value for the field
+	E.g @mock([String, ?foo.Bar], ret)
+	*/
+	function createMockFieldMeta(field:Field, f:Function)
+	{
+		var args:Array<Expr> = [];
+		for(arg in f.args)
+		{
+			trace(arg);
+
+			var value:String = arg.opt ? "?" : "";
+
+			//add the return type including if optional (?)
+			if(arg.type == null)
+			{
+				
+			}
+			else
+			{
+				var ident = normaliseReturnType(arg.type).toString();
+				value += ident;
+			}
+			args.push(EConst(CString(value)).at());
+		}
+
+		var params:Array<Expr> = args.length > 0 ? [args.toArray()] : [];
+
+		if(f.ret != null && !StringTools.endsWith(TypeTools.toString(f.ret), "Void"))
+		{
+			var ident = normaliseReturnType(f.ret).toString();
+			params.push(EConst(CString(ident)).at());
+		}
+
+		return
+		{
+			pos:Context.currentPos(),
+			name:"mockatoo",
+			params:params
+
+		};
 	}
 
 	function normaliseReturnType(ret:ComplexType)
