@@ -324,75 +324,18 @@ class MockCreator
 		for(field in superFields)
 		{
 			field.meta = updateMeta(field.meta);
+
 			switch(field.kind)
 			{
 				case FFun(f):
 
 					if(field.name == "new")
 					{
-						hasConstructor = true;
-
-						f.ret = null; //remove Void return type from constructor.
-						field.access.remove(APublic);
-						field.access.push(APublic);
-
-						var eReturn = EReturn().at();
-						var e = EConst(CIdent("super")).at();
-
-						if(f.args.length == 0)
-						{
-							e = e.call();
-						}
-						else 
-						{
-							var args:Array<Expr> = [];
-
-							for(arg in f.args)
-							{
-								trace(arg);
-								var argExpr = getDefaultValueForType(arg.type);
-								args.push(argExpr);
-							}
-							e = e.call(args);
-
-							//remove super arg paramaters from constructor
-							f.args = [];
-						}
-
-						//deliberately call return before call to super
-						//to prevent target class constructor being executed
-						f.expr = ExprTools.toBlock([eReturn, e]);
-						
+						overrideConstructor(field, f);
 					}
 					else
 					{
-						if(!isInterface)
-							field.access.unshift(AOverride);
-
-
-						if(f.ret != null && !StringTools.endsWith(TypeTools.toString(f.ret), "Void"))
-						{
-
-							f.ret = normaliseReturnType(f.ret);
-
-							trace(field.name + ":" + Std.string(f.ret));
-
-							var eref = getDefaultValueForType(f.ret);
-
-							var ereturn = EReturn(eref).at(null);
-							f.expr = createBlock([ereturn]);
-						}
-						else
-						{
-							f.expr = createBlock();
-						}
-
-						field.kind = FFun(f);
-
-
-						var fieldMeta = createMockFieldMeta(field, f);
-						trace(fieldMeta);
-						field.meta.push(fieldMeta);
+						overrideField(field, f);
 					}
 
 					if(field.access.remove(AInline))
@@ -425,6 +368,95 @@ class MockCreator
 			}
 		}
 		return fields;
+	}
+
+	/**
+	Override an existing constructor, ensuring super call occurs after return
+	*/
+	function overrideConstructor(field:Field, f:Function)
+	{
+		hasConstructor = true;
+
+		f.ret = null; //remove Void return type from constructor.
+		field.access.remove(APublic);
+		field.access.push(APublic);
+
+		var eReturn = EReturn().at();
+		var e = EConst(CIdent("super")).at();
+
+		if(f.args.length == 0)
+		{
+			e = e.call();
+		}
+		else 
+		{
+			var args:Array<Expr> = [];
+
+			for(arg in f.args)
+			{
+				trace(arg);
+				var argExpr = getDefaultValueForType(arg.type);
+				args.push(argExpr);
+			}
+			e = e.call(args);
+
+			//remove super arg paramaters from constructor
+			f.args = [];
+		}
+
+		//deliberately call return before call to super
+		//to prevent target class constructor being executed
+		f.expr = ExprTools.toBlock([eReturn, e]);
+	}
+
+	/**
+	Override an existing field, normalising return types and generating default values
+	*/
+	function overrideField(field:Field, f:Function)
+	{
+		if(!isInterface)
+		field.access.unshift(AOverride);
+
+		if(f.ret != null && !StringTools.endsWith(TypeTools.toString(f.ret), "Void"))
+		{
+
+			f.ret = normaliseReturnType(f.ret);
+
+			trace(field.name + ":" + Std.string(f.ret));
+
+			var eref = getDefaultValueForType(f.ret);
+
+			var ereturn = EReturn(eref).at(null);
+			f.expr = createBlock([ereturn]);
+		}
+		else
+		{
+			f.expr = createBlock();
+		}
+
+		field.kind = FFun(f);
+
+
+		var fieldMeta = createMockFieldMeta(field, f);
+		field.meta.push(fieldMeta);
+	}
+
+	function normaliseReturnType(ret:ComplexType)
+	{
+		var typePath:TypePath = switch(ret)
+		{
+			case TPath(p): p;
+			default: null;
+		}
+
+		if(typePath != null && typePath.name == "StdTypes")
+		{
+			typePath.name = typePath.sub;
+			typePath.sub = null;
+			ret = TPath(typePath);
+		}
+
+		return ret;
 	}
 
 	/**
@@ -468,24 +500,6 @@ class MockCreator
 			params:params
 
 		};
-	}
-
-	function normaliseReturnType(ret:ComplexType)
-	{
-		var typePath:TypePath = switch(ret)
-		{
-			case TPath(p): p;
-			default: null;
-		}
-
-		if(typePath != null && typePath.name == "StdTypes")
-		{
-			typePath.name = typePath.sub;
-			typePath.sub = null;
-			ret = TPath(typePath);
-		}
-
-		return ret;
 	}
 
 	/**
