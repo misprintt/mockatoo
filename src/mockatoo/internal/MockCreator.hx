@@ -364,6 +364,9 @@ class MockCreator
 		return fields;
 	}
 
+	/**
+	Appends the fields required by the <code>mockatoo.Mock</code> interface
+	*/
 	function appendMockInterfaceFields(fields:Array<Field>):Array<Field>
 	{
 		var mockInterface = Context.getType("mockatoo.Mock");
@@ -392,13 +395,10 @@ class MockCreator
 
 		f.ret = null; //remove Void return type from constructor.
 		field.access.remove(APublic);
+		field.access.remove(APrivate);
 		field.access.push(APublic);
 
-		//create mockDelegate instance
-		var eThis =  EConst(CIdent("this")).at();
-		var eInstance = "mockatoo.internal.MockDelegate".instantiate([eThis]);
-		var eInstanciateDelegate = EConst(CIdent("mockDelegate")).at().assign(eInstance);
-
+		var eMockConstructorExprs = createMockConstructorExprs();
 		var eReturn = EReturn().at();
 		var e = EConst(CIdent("super")).at();
 
@@ -424,7 +424,16 @@ class MockCreator
 
 		//deliberately call return before call to super
 		//to prevent target class constructor being executed
-		f.expr = ExprTools.toBlock([eInstanciateDelegate,eReturn, e]);
+		f.expr = ExprTools.toBlock([eMockConstructorExprs,eReturn, e]);
+	}
+
+	function createMockConstructorExprs()
+	{
+		//create mockDelegate instance
+		var eThis =  EConst(CIdent("this")).at();
+		var eInstance = "mockatoo.internal.MockDelegate".instantiate([eThis]);
+		return EConst(CIdent("mockDelegate")).at().assign(eInstance);
+
 	}
 
 	/**
@@ -599,7 +608,8 @@ class MockCreator
 	*/
 	function createEmptyConstructor():Field
 	{	
-		var exprs = ExprTools.toBlock([]);
+		var constructorExprs = createMockConstructorExprs();
+		var exprs = ExprTools.toBlock([constructorExprs]);
 		var f:Function = FunctionTools.func(exprs, null, null, null, false);
 		return 
 		{
