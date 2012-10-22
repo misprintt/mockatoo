@@ -89,18 +89,13 @@ This is the active roadmap.
 
 ### Release 0.2
 
-
 **Basic Verification**
 
 Verify if a method has been executed with the specified arguments:
 
-	//using mock object
-	mockedList.add("one");
-	collection.clear();
-
 	//verification
-	verify(mockedList).add("one");
-	verify(mockedList).clear();
+	verify(mockedList).foo("one");
+	verify(mockedList, atLeast(2)).bar();
 
 
 ### Release 0.3

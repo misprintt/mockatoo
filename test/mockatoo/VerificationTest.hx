@@ -178,4 +178,30 @@ class VerificationTest
 		Mockatoo.verify(mock, atLeast(2)).test();
 	}
 
+	// ------------------ variable arguments
+
+	@Test
+	public function should_verify_with_one_arg():Void
+	{
+		var mock = Mockatoo.mock(VariableArgumentsClass);
+		mock.one(1);
+		Mockatoo.verify(mock).one(1);
+	}
+
+	@Test
+	public function should_verify_with_two_arg():Void
+	{
+		var mock = Mockatoo.mock(VariableArgumentsClass);
+		mock.two(1,2);
+		Mockatoo.verify(mock).two(1,2);
+	}
+
+	@Test
+	public function should_verify_with_two_optional_arg():Void
+	{
+		var mock = Mockatoo.mock(VariableArgumentsClass);
+		mock.twoOptional(1,2);
+		Mockatoo.verify(mock).twoOptional(1,2);
+	}
+
 }

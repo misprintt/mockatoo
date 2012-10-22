@@ -75,6 +75,14 @@ class MockDelegate
 							return proxy.verify(filter, [arg1,arg2]);
 						}
 					);
+				case 4:
+					Reflect.setField(temp, proxy.fieldName,
+						function(?arg1,?arg2,?arg3,?arg4)
+						{
+							return proxy.verify(filter, [arg1,arg2,arg3,arg4]);
+						}
+					);
+				default: throw "verify not implemented for functions with this [" + proxy.argCount + "] arguments.";
 			}
 		}
 
