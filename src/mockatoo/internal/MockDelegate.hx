@@ -8,4 +8,15 @@ class MockDelegate
 	{
 		this.target = target;
 	}
+
+	public function call(method:String, args:Array<Dynamic>)
+	{
+		//trace(method);
+	}
+
+	public function callWithReturn<T>(method:String, args:Array<Dynamic>, returnValue:T):T
+	{
+		//trace(method);
+		return returnValue;
+	}
 }

@@ -433,7 +433,6 @@ class MockCreator
 		var eThis =  EConst(CIdent("this")).at();
 		var eInstance = "mockatoo.internal.MockDelegate".instantiate([eThis]);
 		return EConst(CIdent("mockDelegate")).at().assign(eInstance);
-
 	}
 
 	/**
@@ -451,14 +450,17 @@ class MockCreator
 
 			trace(field.name + ":" + Std.string(f.ret));
 
-			var eref = getDefaultValueForType(f.ret);
 
-			var ereturn = EReturn(eref).at(null);
+			
+			var mockCall = createMockFieldExprs(field, f);
+			var ereturn = EReturn(mockCall).at();
 			f.expr = createBlock([ereturn]);
 		}
 		else
 		{
-			f.expr = createBlock();
+			var mockCall = createMockFieldExprs(field, f, false);
+
+			f.expr = mockCall;
 		}
 
 		field.kind = FFun(f);
@@ -467,6 +469,31 @@ class MockCreator
 		var fieldMeta = createMockFieldMeta(field, f);
 		field.meta.push(fieldMeta);
 	}
+
+	function createMockFieldExprs(field:Field, f:Function, ?includeReturn:Bool=true):Expr
+	{
+
+		var args:Array<Expr> = [];
+
+		for(arg in f.args)
+		{
+			args.push(EConst(CString(arg.name)).at());
+		}
+
+		var eArgs = args.toArray(); //reference to args
+		var eName = EConst(CString(field.name)).at(); //name of current method
+		
+		if(includeReturn)
+		{
+			var eDefaultReturnValue = getDefaultValueForType(f.ret); //default return type (usually 'null')
+			return "mockDelegate.callWithReturn".resolve().call([eName, eArgs, eDefaultReturnValue]);
+		}
+		else
+		{
+			return "mockDelegate.call".resolve().call([eName, eArgs]);
+		}
+	}
+		
 
 	function normaliseReturnType(ret:ComplexType)
 	{
