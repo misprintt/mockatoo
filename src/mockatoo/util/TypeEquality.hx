@@ -5,7 +5,7 @@ class TypeEquality
 	/**
 	Measures equality, including enumTypeEQ - see below
 	*/
-	public static function typeEq(a:Dynamic, b:Dynamic):Bool
+	public static function equals(a:Dynamic, b:Dynamic):Bool
 	{
 		if(a == b) return true;
 
@@ -13,7 +13,7 @@ class TypeEquality
 		{
 			case TEnum(e):
 			{
-				return enumTypeEq(cast a, cast b);
+				return equalsEnum(cast a, cast b);
 			}
 			default:
 				return false;
@@ -32,9 +32,9 @@ class TypeEquality
 	 * @param a the enum value to filter on
 	 * @param b the enum value being checked
 	*/
-	static public function enumTypeEq(a:EnumValue, b:EnumValue)
+	static public function equalsEnum(a:EnumValue, b:EnumValue)
 	{
-		if (a == b) return true;
+		//if (a == b) return true;
 		if (Type.getEnum(a) != Type.getEnum(b)) return false;
 		if (Type.enumIndex(a) != Type.enumIndex(b)) return false;
 
@@ -48,7 +48,7 @@ class TypeEquality
 			var bParam = bParams[i];
 
 			if (aParam == null) continue;
-			if(!typeEq(aParam, bParam)) return false;
+			if(!equals(aParam, bParam)) return false;
 		}
 
 		return true;

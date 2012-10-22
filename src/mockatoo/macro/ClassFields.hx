@@ -1,4 +1,4 @@
-package mockatoo.internal.util;
+package mockatoo.macro;
 
 #if macro
 

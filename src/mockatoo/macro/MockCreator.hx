@@ -1,4 +1,4 @@
-package mockatoo.internal;
+package mockatoo.macro;
 
 #if macro
 import haxe.macro.Compiler;
@@ -12,7 +12,7 @@ import tink.macro.tools.TypeTools;
 import tink.macro.tools.FunctionTools;
 import tink.core.types.Outcome;
 import mockatoo.Mock;
-import mockatoo.internal.util.ClassFields;
+import mockatoo.macro.ClassFields;
 
 using tink.macro.tools.Printer;
 using tink.macro.tools.ExprTools;

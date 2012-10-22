@@ -12,7 +12,7 @@ import sys.FileSystem;
 
 #end
 
-import mockatoo.internal.MockCreator;
+import mockatoo.macro.MockCreator;
 
 enum VerificationFilter
 {

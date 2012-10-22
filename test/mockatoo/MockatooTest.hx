@@ -70,6 +70,17 @@ class MockatooTest
 	}
 
 	@Test
+	public function should_use_custom_filter()
+	{
+		var instance = Mockatoo.mock(SimpleClass);
+
+		var verification = Mockatoo.verify(instance, never);
+
+		Asserts.assertEnumTypeEq(never, verification.filter);
+		
+	}
+
+	@Test
 	public function should_mock_class():Void
 	{
 		var fields:Array<Field> = [];
