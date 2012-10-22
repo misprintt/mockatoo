@@ -6,6 +6,7 @@ import massive.munit.async.AsyncFactory;
 import mockatoo.internal.MethodProxy;
 import mockatoo.exception.VerificationException;
 import mockatoo.Mockatoo;
+import mockatoo.VerificationMode;
 
 /**
 * Auto generated MassiveUnit Test Class  for mockatoo.internal.MethodProxy 
@@ -228,164 +229,27 @@ class MethodProxyTest
 		instance.verify(atLeast(2), args);
 	}
 
+	@Test
+	public function should_verify_atMost_one():Void
+	{
+		var args:Array<Dynamic> = ["foo"];
+		instance = createInstance();
+
+		instance.verify(atMost(1), args);
+
+		instance.call(args);
+		instance.verify(atMost(1), args);
+
+		try
+		{
+			instance.call(args);
+			instance.verify(atMost(1), args);
+			Assert.fail("Expected VerificationException");
+		}
+		catch(e:VerificationException) {}
+	}
 
 
-	// @Test
-	// public function should_verify_interface():Void
-	// {
-	// 	var mock = Mockatoo.mock(SimpleInterface);
-	// 	mock.test();
-
-	// 	var verified = instance.verify(mock).test();
-	// 	Assert.isTrue(verified);
-	// }
-
-	// @Test
-	// public function should_fail_verification():Void
-	// {
-	// 	var mock = Mockatoo.mock(SimpleClass);
-
-	// 	try
-	// 	{
-	// 		instance.verify(mock).test();
-	// 		Assert.fail("Expected VerificationException");
-	// 	}
-	// 	catch(e:VerificationException)
-	// 	{
-	// 		Assert.isTrue(true);
-	// 	}
-		
-	// }
-
-	// @Test
-	// public function should_verify_once():Void
-	// {
-	// 	var mock = Mockatoo.mock(SimpleClass);
-	// 	mock.test();
-	// 	instance.verify(mock, times(1)).test();
-	// }
-
-	// @Test
-	// public function should_verify_twice():Void
-	// {
-	// 	var mock = Mockatoo.mock(SimpleClass);
-	// 	mock.test();
-
-	// 	try
-	// 	{
-	// 		instance.verify(mock, times(2)).test();
-	// 		Assert.fail("Expected VerificationException");
-	// 	}
-	// 	catch(e:VerificationException){}
-
-	// 	mock.test();
-	// 	instance.verify(mock, times(2)).test();
-	// }
-
-
-	// @Test
-	// public function should_verify_never():Void
-	// {
-	// 	var mock = Mockatoo.mock(SimpleClass);
-	// 	instance.verify(mock, never).test();
-
-	// 	try
-	// 	{
-	// 		mock.test();
-	// 		instance.verify(mock, never).test();
-	// 		Assert.fail("Expected VerificationException");
-	// 	}
-	// 	catch(e:VerificationException){}
-	// }
-
-
-	// @Test
-	// public function should_verify_atLeastOnce():Void
-	// {
-	// 	var mock = Mockatoo.mock(SimpleClass);
-
-	// 	try
-	// 	{
-	// 		instance.verify(mock, atLeastOnce).test();
-	// 		Assert.fail("Expected VerificationException");
-	// 	}
-	// 	catch(e:VerificationException){}
-
-	// 	mock.test();
-	// 	instance.verify(mock, atLeastOnce).test();
-
-	// 	mock.test();
-	// 	instance.verify(mock, atLeastOnce).test();
-	// }
-
-	// @Test
-	// public function should_verify_atLeast_one():Void
-	// {
-	// 	var mock = Mockatoo.mock(SimpleClass);
-
-	// 	try
-	// 	{
-	// 		instance.verify(mock, atLeast(1)).test();
-	// 		Assert.fail("Expected VerificationException");
-	// 	}
-	// 	catch(e:VerificationException){}
-
-	// 	mock.test();
-	// 	instance.verify(mock, atLeast(1)).test();
-
-	// 	mock.test();
-	// 	instance.verify(mock, atLeast(1)).test();
-	// }
-
-	// @Test
-	// public function should_verify_atLeast_two():Void
-	// {
-	// 	var mock = Mockatoo.mock(SimpleClass);
-
-	// 	try
-	// 	{
-	// 		instance.verify(mock, atLeast(2)).test();
-	// 		Assert.fail("Expected VerificationException");
-	// 	}
-	// 	catch(e:VerificationException){}
-
-	// 	try
-	// 	{
-	// 		mock.test();
-	// 		instance.verify(mock, atLeast(2)).test();
-	// 		Assert.fail("Expected VerificationException");
-	// 	}
-	// 	catch(e:VerificationException){}
-
-	// 	mock.test();
-	// 	instance.verify(mock, atLeast(2)).test();
-	// }
-
-	// ------------------ variable arguments
-
-	// @Test
-	// public function should_verify_with_one_arg():Void
-	// {
-	// 	var mock = Mockatoo.mock(VariableArgumentsClass);
-	// 	mock.one(1);
-	// 	instance.verify(mock).one(1);
-	// }
-
-	// @Test
-	// public function should_verify_with_two_arg():Void
-	// {
-	// 	var mock = Mockatoo.mock(VariableArgumentsClass);
-	// 	mock.two(1,2);
-	// 	instance.verify(mock).two(1,2);
-	// }
-
-	// @Test
-	// public function should_verify_with_two_optional_arg():Void
-	// {
-	// 	var mock = Mockatoo.mock(VariableArgumentsClass);
-	// 	mock.twoOptional(1,2);
-	// 	instance.verify(mock).twoOptional(1,2);
-	// }
 
 	// ------------------------
 

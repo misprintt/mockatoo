@@ -14,13 +14,6 @@ import sys.FileSystem;
 
 import mockatoo.macro.MockCreator;
 
-enum VerificationMode
-{
-	times(value:Int);
-	atLeastOnce;
-	atLeast(value:Int);
-	never;
-}
 
 class Mockatoo
 {	

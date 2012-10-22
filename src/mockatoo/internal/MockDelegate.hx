@@ -1,5 +1,5 @@
 package mockatoo.internal;
-import mockatoo.Mockatoo;
+import mockatoo.VerificationMode;
 
 class MockDelegate
 {

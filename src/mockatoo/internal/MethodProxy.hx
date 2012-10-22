@@ -1,6 +1,6 @@
 package mockatoo.internal;
 import mockatoo.exception.VerificationException;
-import mockatoo.Mockatoo;
+import mockatoo.VerificationMode;
 class MethodProxy
 {
 	public var fieldName(default, null):String;
@@ -54,6 +54,8 @@ class MethodProxy
 				if(count == 0) return true;
 			case atLeast(value):
 				if(count >= value) return true;
+			case atMost(value):
+				if(count <= value) return true;
 		}
 
 		throw new VerificationException(className + "." + fieldName + " was not invoked.");
