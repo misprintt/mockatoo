@@ -1,8 +1,6 @@
 package mockatoo.internal;
 
 #if macro
-import msys.File;
-import msys.Directory;
 import haxe.macro.Compiler;
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -351,11 +349,11 @@ class MockCreator
 							var eref = getDefaultValueForType(f.ret);
 
 							var ereturn = EReturn(eref).at(null);
-							f.expr = ExprTools.toBlock([ereturn]);
+							f.expr = createBlock([ereturn]);
 						}
 						else
 						{
-							f.expr = createEmptyBlock();
+							f.expr = createBlock();
 						}
 
 						field.kind = FFun(f);
@@ -471,12 +469,17 @@ class MockCreator
 		return EConst(CIdent("null")).at();
 	}
 
+
+
+
 	/**
 	Returns an empty block expression.
+
 	*/
-	function createEmptyBlock():Expr
+	function createBlock(?args:Array<Expr>=null):Expr
 	{
-		var exprs = ExprTools.toBlock([]);
+		if(args == null) args = [];
+		var exprs = ExprTools.toBlock(args);
 		return exprs;
 	}
 
@@ -485,7 +488,7 @@ class MockCreator
 	*/
 	function createEmptyConstructor():Field
 	{	
-		var exprs = createEmptyBlock();
+		var exprs = ExprTools.toBlock([]);
 		var f:Function = FunctionTools.func(exprs, null, null, null, false);
 		return 
 		{

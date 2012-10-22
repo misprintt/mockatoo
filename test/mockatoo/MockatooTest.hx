@@ -7,7 +7,6 @@ import mockatoo.Mockatoo;
 import mockatoo.Mock;
 import test.TestClasses;
 
-
 typedef Field = 
 {
 	name:String,
@@ -42,7 +41,6 @@ class MockatooTest
 	public function tearDown():Void
 	{
 	}
-
 
 	@Test
 	public function should_mock_class():Void

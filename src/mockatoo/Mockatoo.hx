@@ -1,14 +1,19 @@
 package mockatoo;
 
 #if macro
-import msys.File;
-import msys.Directory;
 
 import haxe.macro.Compiler;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
+
+import sys.io.File;
+import sys.FileSystem;
+
+
 #end
+
+
 
 import mockatoo.internal.MockCreator;
 
@@ -68,7 +73,7 @@ class Mockatoo
 		Compiler.define("-no-inline");
 		Compiler.define("no-inline");
 		
-		Directory.create(TEMP_DIR);
+		if(!FileSystem.exists(TEMP_DIR)) FileSystem.createDirectory(TEMP_DIR);
 
 
 		Console.addPrinter(new FilePrinter(TEMP_DIR + "mockatoo.log"));
@@ -82,17 +87,22 @@ class Mockatoo
 
 #if macro
 
-
 class FilePrinter extends mconsole.FilePrinter
 {
-	var currentClass:String;
-	var currentMethod:String; 
-
 	public function new(path:String)
 	{
-		File.remove(path);
+		if(FileSystem.exists(path))
+			FileSystem.deleteFile(path);
 		super(path);
 	}
-}
 
+	/**
+	Fiters out any logs outside of current package.
+	*/
+	override public function print(level: mconsole.LogLevel, params:Array<Dynamic>, indent:Int, pos:haxe.PosInfos):Void
+	{
+		if(StringTools.startsWith(pos.className, "mockatoo"))
+			super.print(level, params, indent, pos);
+	}
+}
 #end
