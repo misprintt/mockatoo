@@ -64,12 +64,45 @@ Both these generates the equivalent expressions:
 
 > Note: These usages are required in order to circumvent limitation of compiler with generics. You cannot compile `Foo.doSomething(Array<String>)`
 
+
+### Verification
+
+Verification refers to validation of of if, and how often a method has been
+called (invoked) with particular argument values.
+
+To verify that a method has been invoked:
+
+	Mockatoo.verify(mock).foo();
+	Mockatoo.verify(mock).foo("bar");
+	Mockatoo.verify(mock).foo("foo");
+
+To verify the number of times a method was invoked
+
+	import mockatoo.VerificationMode;
+
+	... 
+
+	Mockatoo.verify(mock, times(2)).foo();
+	Mockatoo.verify(mock, atLeast(2)).foo();
+	Mockatoo.verify(mock, atLeastOnce).foo();
+	Mockatoo.verify(mock, never).foo();
+	Mockatoo.verify(mock, between(2,3)).foo();
+
+> Note: Default mode is times(1);
+
 ## Limitations
 
 * inlined methods will not be mocked (prints a compiler warning)
 * @:final methods throw runtime errors in flash (AVM2) 
 
 ## Releases
+
+### Release 0.2
+
+Verification
+
+* Added verification of methods being invoked
+* Added Verification mode (validate number of invocations)
 
 ### Release 0.1
 
