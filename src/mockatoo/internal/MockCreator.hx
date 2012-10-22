@@ -486,11 +486,11 @@ class MockCreator
 		if(includeReturn)
 		{
 			var eDefaultReturnValue = getDefaultValueForType(f.ret); //default return type (usually 'null')
-			return "mockDelegate.callWithReturn".resolve().call([eName, eArgs, eDefaultReturnValue]);
+			return "mockDelegate.callMethodAndReturn".resolve().call([eName, eArgs, eDefaultReturnValue]);
 		}
 		else
 		{
-			return "mockDelegate.call".resolve().call([eName, eArgs]);
+			return "mockDelegate.callMethod".resolve().call([eName, eArgs]);
 		}
 	}
 		
@@ -539,7 +539,7 @@ class MockCreator
 			args.push(EConst(CString(value)).at());
 		}
 
-		var params:Array<Expr> = args.length > 0 ? [args.toArray()] : [];
+		var params:Array<Expr> = [args.toArray()];
 
 		if(f.ret != null && !StringTools.endsWith(TypeTools.toString(f.ret), "Void"))
 		{

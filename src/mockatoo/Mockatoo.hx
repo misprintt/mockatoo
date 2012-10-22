@@ -10,12 +10,17 @@ import haxe.macro.Type;
 import sys.io.File;
 import sys.FileSystem;
 
-
 #end
 
-
-
 import mockatoo.internal.MockCreator;
+
+enum VerificationFilter
+{
+	times(value:Int);
+	atLeastOnce;
+	atLeast(value:Int);
+	never;
+}
 
 class Mockatoo
 {	
@@ -53,10 +58,15 @@ class Mockatoo
 	 *
 	 * @return mock object itself
 	 */
-	static public function verify(mock:Mock)
+	static public function verify(mock:Mock, ?filter:VerificationFilter):Dynamic
 	{
 		Console.assert(mock != null, "Cannot verify [null] mock");
+
+		if(filter == null) filter = VerificationFilter.times(1);
+
+		return mock.mockDelegate.verify(filter);
 	}
+	//verify(mock).foo("bar");
 
 	#if macro
 
