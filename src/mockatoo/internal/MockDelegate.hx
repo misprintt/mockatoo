@@ -41,7 +41,7 @@ class MockDelegate
 
 	public function verify(filter:VerificationFilter):MockVerification
 	{
-		var temp = new MockVerification();
+		var temp = new MockVerification(filter);
 
 		for(proxy in hash.iterator())
 		{

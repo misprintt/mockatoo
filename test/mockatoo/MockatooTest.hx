@@ -6,6 +6,7 @@ import massive.munit.async.AsyncFactory;
 import mockatoo.Mockatoo;
 import mockatoo.Mock;
 import test.TestClasses;
+import util.Asserts;
 
 typedef Field = 
 {
@@ -40,6 +41,32 @@ class MockatooTest
 	@After
 	public function tearDown():Void
 	{
+	}
+
+	@Test
+	public function should_throw_exception_if_verify_non_mock()
+	{
+		try
+		{
+			Mockatoo.verify(null);	
+			Assert.fail("Expected exception for non mock class");
+		}
+		catch(e:Dynamic)
+		{
+			Assert.isTrue(true);
+		}
+		
+	}
+
+	@Test
+	public function should_set_default_filter()
+	{
+		var instance = Mockatoo.mock(SimpleClass);
+
+		var verification = Mockatoo.verify(instance);
+
+		Asserts.assertEnumTypeEq(times(1), verification.filter);
+		
 	}
 
 	@Test

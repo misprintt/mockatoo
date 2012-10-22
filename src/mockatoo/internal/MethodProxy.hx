@@ -28,21 +28,6 @@ class MethodProxy
 
 		argCount = argumentTypes.length;
 		count = 0;
-
-		// for(arg in arguments)
-		// {
-		// 	try
-		// 	{
-		// 		var classType = Type.resolveClass(arg);
-
-		// 		if(classType != null)
-		// 		{
-
-		// 			var enumType = Type.resolveEnum(arg);
-		// 		}
-		// 	}
-
-		// }
 	}
 
 	public function call(args:Array<Dynamic>)
@@ -58,7 +43,7 @@ class MethodProxy
 
 	public function verify(filter:VerificationFilter, ?args:Array<Dynamic>):Bool
 	{
-		trace(fieldName + ":" + Std.string(filter) + ": " + Std.string(args) + ", " + count);
+		//trace(fieldName + ":" + Std.string(filter) + ": " + Std.string(args) + ", " + count);
 		switch(filter)
 		{
 			case times(value):
@@ -75,4 +60,5 @@ class MethodProxy
 
 		return false;
 	}
+
 }
