@@ -4,10 +4,10 @@ import mockatoo.Mockatoo;
 
 class MockVerification implements Dynamic<Bool>
 {
-	public var filter:VerificationFilter;
+	public var mode:VerificationMode;
 
-	public function new(filter:VerificationFilter)
+	public function new(mode:VerificationMode)
 	{
-		this.filter = filter;	
+		this.mode = mode;	
 	}
 }

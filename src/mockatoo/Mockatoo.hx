@@ -14,7 +14,7 @@ import sys.FileSystem;
 
 import mockatoo.macro.MockCreator;
 
-enum VerificationFilter
+enum VerificationMode
 {
 	times(value:Int);
 	atLeastOnce;
@@ -58,13 +58,10 @@ class Mockatoo
 	 *
 	 * @return mock object itself
 	 */
-	static public function verify(mock:Mock, ?filter:VerificationFilter):Dynamic
+	static public function verify(mock:Mock, ?mode:VerificationMode):Dynamic
 	{
 		Console.assert(mock != null, "Cannot verify [null] mock");
-
-		if(filter == null) filter = VerificationFilter.times(1);
-
-		return mock.mockDelegate.verify(filter);
+		return mock.mockDelegate.verify(mode);
 	}
 	//verify(mock).foo("bar");
 

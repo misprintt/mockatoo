@@ -59,24 +59,24 @@ class MockatooTest
 	}
 
 	@Test
-	public function should_set_default_filter()
+	public function should_set_default_mode()
 	{
 		var instance = Mockatoo.mock(SimpleClass);
 
 		var verification = Mockatoo.verify(instance);
 
-		Asserts.assertEnumTypeEq(times(1), verification.filter);
+		Asserts.assertEnumTypeEq(times(1), verification.mode);
 		
 	}
 
 	@Test
-	public function should_use_custom_filter()
+	public function should_use_custom_mode()
 	{
 		var instance = Mockatoo.mock(SimpleClass);
 
 		var verification = Mockatoo.verify(instance, never);
 
-		Asserts.assertEnumTypeEq(never, verification.filter);
+		Asserts.assertEnumTypeEq(never, verification.mode);
 		
 	}
 

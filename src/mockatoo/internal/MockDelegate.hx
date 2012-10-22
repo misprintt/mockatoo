@@ -39,9 +39,12 @@ class MockDelegate
 		//return returnValue;
 	}
 
-	public function verify(filter:VerificationFilter):MockVerification
+	public function verify(?mode:VerificationMode):MockVerification
 	{
-		var temp = new MockVerification(filter);
+
+		if(mode == null) mode = VerificationMode.times(1);
+		
+		var temp = new MockVerification(mode);
 
 		for(proxy in hash.iterator())
 		{
@@ -51,35 +54,35 @@ class MockDelegate
 					Reflect.setField(temp, proxy.fieldName,
 						function()
 						{
-							return proxy.verify(filter);
+							return proxy.verify(mode);
 						}
 					);
 				case 1:
 					Reflect.setField(temp, proxy.fieldName,
 						function(?arg)
 						{
-							return proxy.verify(filter, [arg]);
+							return proxy.verify(mode, [arg]);
 						}
 					);
 				case 2:
 					Reflect.setField(temp, proxy.fieldName,
 						function(?arg1,?arg2)
 						{
-							return proxy.verify(filter, [arg1,arg2]);
+							return proxy.verify(mode, [arg1,arg2]);
 						}
 					);
 				case 3:
 					Reflect.setField(temp, proxy.fieldName,
 						function(?arg1,?arg2,?arg3)
 						{
-							return proxy.verify(filter, [arg1,arg2]);
+							return proxy.verify(mode, [arg1,arg2]);
 						}
 					);
 				case 4:
 					Reflect.setField(temp, proxy.fieldName,
 						function(?arg1,?arg2,?arg3,?arg4)
 						{
-							return proxy.verify(filter, [arg1,arg2,arg3,arg4]);
+							return proxy.verify(mode, [arg1,arg2,arg3,arg4]);
 						}
 					);
 				default: throw "verify not implemented for functions with this [" + proxy.argCount + "] arguments.";

@@ -41,10 +41,10 @@ class MethodProxy
 		return ret;
 	}
 
-	public function verify(filter:VerificationFilter, ?args:Array<Dynamic>):Bool
+	public function verify(mode:VerificationMode, ?args:Array<Dynamic>):Bool
 	{
-		//trace(fieldName + ":" + Std.string(filter) + ": " + Std.string(args) + ", " + count);
-		switch(filter)
+		//trace(fieldName + ":" + Std.string(mode) + ": " + Std.string(args) + ", " + count);
+		switch(mode)
 		{
 			case times(value):
 				if(count == value) return true;
