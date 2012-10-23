@@ -1,10 +1,11 @@
 ## Overview
 
-Mockatoo is a Haxe mocking library that uses macros to generated mock
-implementations of classes and interfaces for testing. Tested against Haxe 2.10 across most platforms (AVM2, JavaScript, Neko, C++, etc)
+Mockatoo is a Haxe library for mocks creation, verification and stubbing.
+
+Uses Haxe macros to generated mock implementations of classes and interfaces for testing.
+Tested against Haxe 2.10 across most platforms (AVM2, JavaScript, Neko, C++, etc)
 
 Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode.com/hg/latest/org/mockito/Mockito.html>
-
 
 
 > Disambiguation: The **Mockatoo** belongs to the bird family *Cacatuidae* and look suspiciously like a taxidermied [Cockatoo](http://en.wikipedia.org/wiki/Cockatoo) with fake plumage. They are mostly found nesting within testing habitats and like  to repeat what you say (like a parrot). A Mockatoo may turn violent if mistaken for a *MockingBird* :)
@@ -14,7 +15,6 @@ Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode
 
 * See [milestones](#milestones) for details on the current stable release.
 * See [roadmap](#roadmap) for more details on planned features.
-
 
 
 ## Installation
@@ -153,8 +153,6 @@ Verifications use natural language to specify the minimum and maximum times a me
 	Mockatoo.verify(mock, atLeast(2)).foo();
 	Mockatoo.verify(mock, atLeastOnce).foo();
 	Mockatoo.verify(mock, never).foo();
-	Mockatoo.verify(mock, between(2,3)).foo();
-
 
 > Note: Default mode is times(1);
 
@@ -205,7 +203,6 @@ Stubbing
 * Added chaining of stubs - `thenReturn(1).thenThrow("empty")`
 * Added callback stub - `thenCall(function)`
 
-
 ### M1  - Completed
 
 Basic class and interface mocking (generates empty stub methods)
@@ -217,12 +214,30 @@ Basic class and interface mocking (generates empty stub methods)
 * Generate mocks for classes with super classes (mocks all non-overridden functions from super classes)
 * Return correct 'null' types for methods with return types  (including default Int, Bool and Float types for static platforms) 
 
-
 ## Roadmap
 
 This is the active roadmap.
 
 ### M3
+
+### Haxe 2.11 static imports
+
+Update Mockatoo to work with Haxe 2.11's static imports
+
+	import mockito.Mockatoo.*;
+
+Simplified API contract:
+
+	var mockClass = mock(SomeClass);
+	verify(mockClass, times(2)).someFunction();
+	when(mockClass.someFunction()).thenThrow("Foo");
+
+Investigate support for `using` to further naturalise syntax for verification counts
+
+	verify(mockClass, 2.times()).someFunction();
+
+
+### M4
 
 **Spying**
 
@@ -237,22 +252,4 @@ Partial mock that defers to concrete implementation if not stubbed
 
 	trace(hash.get(0)); // traces 'mocked'
 	trace(hash.get(1)); // traces 'b'
-
-
-
-### Other proposed features
-
-**Mockable Typedef stuctures**
-
-
-	typedef SomeType = 
-	{
-		name:String,
-		doSomething:Void->Void
-	}
-
-	var mock:Sometype = Mockatoo.mock(SomeType);
-
-
-
 
