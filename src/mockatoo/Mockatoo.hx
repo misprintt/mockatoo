@@ -10,6 +10,8 @@ import haxe.macro.Type;
 import sys.io.File;
 import sys.FileSystem;
 
+using tink.macro.tools.Printer;
+using tink.macro.tools.ExprTools;
 #end
 
 import mockatoo.macro.MockCreator;
@@ -59,6 +61,75 @@ class Mockatoo
 		return mock.mockDelegate.verify(mode);
 	}
 	//verify(mock).foo("bar");
+
+	/**
+     * Enables stubbing methods. Use it when you want the mock to return particular value when particular method is called. 
+     * <p>
+     * Simply put: "<b>When</b> the x method is called <b>then</b> return y".
+     * <p>
+     * Examples:
+     * 
+     * <pre class="code"><code class="java">
+     * <b>when</b>(mock.someMethod()).<b>thenReturn</b>(10);
+     *
+     * //you can use flexible argument matchers, e.g:
+     * when(mock.someMethod(<b>anyString()</b>)).thenReturn(10);
+     *
+     * //setting exception to be thrown:
+     * when(mock.someMethod("some arg")).thenThrow(new RuntimeException());
+     *
+     * //you can set different behavior for consecutive method calls.
+     * //Last stubbing (e.g: thenReturn("foo")) determines the behavior of further consecutive calls.
+     * when(mock.someMethod("some arg"))
+     *  .thenThrow(new RuntimeException())
+     *  .thenReturn("foo");
+     *  
+     * //Alternative, shorter version for consecutive stubbing:
+     * when(mock.someMethod("some arg"))
+     *  .thenReturn("one", "two");
+     * //is the same as:
+     * when(mock.someMethod("some arg"))
+     *  .thenReturn("one")
+     *  .thenReturn("two");
+     *
+     * //shorter version for consecutive method calls throwing exceptions:
+     * when(mock.someMethod("some arg"))
+     *  .thenThrow(new RuntimeException(), new NullPointerException();
+     *   
+     * </code></pre>
+     */
+	@:macro static public function when(expr:ExprOf<Dynamic>):ExprOf<Dynamic>
+	{
+
+		var str = expr.print();
+		trace(str);
+		trace(expr);
+
+		//converts instance.one(1)
+		//into instance.mockDelegate.when("one", [1])
+
+		switch(expr.expr)
+		{
+			case ECall(e, params):
+
+				var ident = e.toString();
+
+				var parts = ident.split(".");
+				var methodName = EConst(CString(parts.pop())).at();
+
+				var args = params.toArray();
+
+				ident = parts.join(".") + ".mockDelegate.stub";
+
+				var actualExpr = ident.resolve().call([methodName, args]);
+				trace(actualExpr.toString());
+				return actualExpr;
+
+			default: throw "Invalid arg [" + expr.print() + "]";
+		}
+		return expr;
+	}
+
 
 	#if macro
 

@@ -44,6 +44,10 @@ class MockatooTest
 	{
 	}
 
+
+	// ------------------------------------------------------------------------- verification
+
+
 	@Test
 	public function should_throw_exception_if_verify_non_mock()
 	{
@@ -70,6 +74,7 @@ class MockatooTest
 		
 	}
 
+
 	@Test
 	public function should_use_custom_mode()
 	{
@@ -80,6 +85,25 @@ class MockatooTest
 		Asserts.assertEnumTypeEq(never, verification.mode);
 		
 	}
+
+	// ------------------------------------------------------------------------- stubbing
+
+
+	@Test
+	public function should_when()
+	{
+		var instance = Mockatoo.mock(VariableArgumentsClass);
+
+		var stub = Mockatoo.when(instance.one(1));
+
+		trace(stub);
+
+		Assert.isTrue(true);
+		
+	}
+
+	// ------------------------------------------------------------------------- mocking
+
 
 	@Test
 	public function should_mock_class():Void

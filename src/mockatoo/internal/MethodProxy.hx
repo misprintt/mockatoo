@@ -1,5 +1,6 @@
 package mockatoo.internal;
 import mockatoo.exception.VerificationException;
+import mockatoo.exception.StubbingException;
 import mockatoo.VerificationMode;
 import mockatoo.Matcher;
 
@@ -14,20 +15,14 @@ class MethodProxy
 {
 	public var fieldName(default, null):String;
 
-	/**
-	Number of arguments 
-	*/
-	public var argCount(default, null):Int;
-
-	public var count(default, null):Int;
-
 	var argumentTypes:Array<String>;
 
-	var returnType:Null<String>;
+	public var returnType(default, null):Null<String>;
 
 	var className:String;
 
-	var invocations:Array<Dynamic>;
+	var invocations:Array<Array<Dynamic>>;
+	var stubbings:Array<Stub>;
 
 	public function new(className:String, fieldName:String, arguments:Array<String>, ?returns:String)
 	{
@@ -37,47 +32,129 @@ class MethodProxy
 		argumentTypes = arguments;
 		returnType = returns;
 
-		argCount = argumentTypes.length;
-		count = 0;
-
 		invocations = [];
+		stubbings = [];
 	}
-
+	
 	public function call(args:Array<Dynamic>)
 	{
 		invocations.push(args);
+
+		var stub = getStubForArgs(args);
+
+		if(stub != null && stub.values.length > 0)
+		{
+			switch(stub.values.shift())
+			{
+				case returns(value): //return value;
+				case throws(value): throw value;
+				case calls(value): value(args);
+			}
+		}
 		//specific, any value, null
-		count ++;
 	}
 
 	public function callAndReturn<T>(args:Array<Dynamic>, defaultReturn:T):T
 	{
 		invocations.push(args);
-		count ++;
-		return defaultReturn;
-	}
 
-	public function verify(mode:VerificationMode, ?args:Array<Dynamic>):Bool
-	{
-		var matches:Int = 0;
+		var stub = getStubForArgs(args);
 
-		for(invocation in invocations)
+		if(stub != null && stub.values.length > 0)
 		{
-			if(invocation.length != args.length) 
+			switch(stub.values.shift())
 			{
-				continue;
+				case returns(value): return value;
+				case throws(value): throw value;
+				case calls(value): return value(args);
 			}
 
+		}
+		else
+			return defaultReturn;
+	}
+
+	public function addReturnFor<T>(args:Array<Dynamic>, values:Array<T>)
+	{
+		if(returnType == null) throw new StubbingException("Method [" + fieldName + "] has no return type and cannot stub custom return values.");
+
+		var stub = getStubForArgs(args);
+
+		if(stub == null)
+		{
+			stub = {args:args, values:[]};
+			stubbings.push(stub);
+		}
+
+		for(value in values)
+		{
+			stub.values.push( returns(value) );
+		}
+	}
+
+
+	public function addThrowFor(args:Array<Dynamic>, values:Array<Dynamic>)
+	{
+		var stub = getStubForArgs(args);
+
+		if(stub == null)
+		{
+			stub = {args:args, values:[]};
+			stubbings.push(stub);
+		}
+
+		for(value in values)
+		{
+			stub.values.push(throws(value));
+		}
+	}
+
+	public function addCallbackFor(args:Array<Dynamic>, values:Array<Dynamic>)
+	{
+		var stub = getStubForArgs(args);
+
+		if(stub == null)
+		{
+			stub = {args:args, values:[]};
+			stubbings.push(stub);
+		}
+
+		for(value in values)
+		{
+			if(!Reflect.isFunction(value))
+				 throw new StubbingException("Value [" + value + "] is not a function.");
+
+			stub.values.push( calls(value) );
+		}
+	}
+
+	function getStubForArgs(args:Array<Dynamic>):Stub
+	{
+		for(stub in stubbings)
+		{
+			if(stub.args.length != args.length) continue;
+
 			var matchingArgs = 0;
+
 			for(i in 0...args.length)
 			{
-				if(compareArgs(args[i], invocation[i])) 
+				if(compareArgs(args[i], stub.args[i])) 
 					matchingArgs ++;
 			}
 
 			if(matchingArgs == args.length)
-				matches ++;
+			{
+				return stub;
+			}
 		}
+		return null;
+	}
+
+	public function verify(mode:VerificationMode, ?args:Array<Dynamic>):Bool
+	{
+		var matchingInvocations = getMatchingArgs(invocations, args);
+
+		var matches:Int = matchingInvocations.length;
 		
 		var range:Range = null;
 		//trace(fieldName + ":" + Std.string(mode) + ": " + Std.string(args) + ", " + count);
@@ -114,6 +191,31 @@ class MethodProxy
 		}
 		
 		return false;
+	}
+
+	function getMatchingArgs(argArrays:Array<Array<Dynamic>>, args:Array<Dynamic>):Array<Array<Dynamic>>
+	{
+		var matches:Array<Array<Dynamic>> = [];
+
+		for(targetArgs in argArrays)
+		{
+			if(targetArgs.length != args.length) 
+			{
+				continue;
+			}
+
+			var matchingArgs = 0;
+			for(i in 0...args.length)
+			{
+				if(compareArgs(args[i], targetArgs[i])) 
+					matchingArgs ++;
+			}
+
+			if(matchingArgs == args.length)
+				matches.push(targetArgs);
+		}
+
+		return matches;
 	}
 
 	function toTimes(value:Int):String
@@ -205,7 +307,21 @@ class MethodProxy
 	}
 }
 
-private typedef Range =
+
+typedef Stub = 
+{
+	args:Array<Dynamic>,
+	values:Array<StubValue>
+}
+
+enum StubValue
+{
+	returns(value:Dynamic);
+	throws(value:Dynamic);
+	calls(value:Dynamic);
+}
+
+typedef Range =
 {
 	min:Null<Int>,
 	max:Null<Int>
