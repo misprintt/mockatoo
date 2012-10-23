@@ -1,6 +1,9 @@
 package mockatoo.internal;
 import mockatoo.VerificationMode;
 
+/**
+ * Responsible for run time mocking behaviour
+ */
 class MockDelegate
 {
 	public var target:Mock;

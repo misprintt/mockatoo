@@ -14,7 +14,9 @@ import sys.FileSystem;
 
 import mockatoo.macro.MockCreator;
 
-
+/**
+ Mockatoo library enables mocks creation, verification and stubbing.
+*/
 class Mockatoo
 {	
 	/**

@@ -1,5 +1,8 @@
 package mockatoo.util;
 
+/**
+Utilities for checking type equality.
+*/
 class TypeEquality
 {
 	/**

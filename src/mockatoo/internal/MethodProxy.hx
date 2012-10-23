@@ -1,10 +1,15 @@
 package mockatoo.internal;
 import mockatoo.exception.VerificationException;
 import mockatoo.VerificationMode;
-import mockatoo.Matches;
+import mockatoo.Matcher;
 
 using mockatoo.util.TypeEquality;
 
+/**
+ * Represents a single method in a Mock class, storing all calls, verifications
+ * and stubs for that method.
+ * Created by <code>MockDelegate</code>
+ */
 class MethodProxy
 {
 	public var fieldName(default, null):String;
@@ -59,7 +64,9 @@ class MethodProxy
 		for(invocation in invocations)
 		{
 			if(invocation.length != args.length) 
+			{
 				continue;
+			}
 
 			var matchingArgs = 0;
 			for(i in 0...args.length)
@@ -116,7 +123,7 @@ class MethodProxy
 
 	/**
 	Compares to values to determine if they match.
-	Supports fuzzy matching using <code>mockatoo.Matches</code>
+	Supports fuzzy matching using <code>mockatoo.Matcher</code>
 	*/
 	function compareArgs(expected:Dynamic, actual:Dynamic):Bool
 	{
@@ -131,19 +138,23 @@ class MethodProxy
 			case TFunction:
 			case TFloat:
 			case TEnum(e): //Enum<Dynamic>
-				if(e == Matches)
+				if(e == Matcher)
 				{
 					switch(expected)
 					{
-						case AnyString: return Std.is(actual, String);
-						case AnyInt:  return Std.is(actual, Int);
-						case AnyFloat: return Std.is(actual, Float);
-						case AnyBool: return Std.is(actual, Bool);
-						case AnyEnumValue(en): return isEnumValueOf(actual, en);
-						case AnyObject: return isObject(actual);
-						case AnyInstanceOf(c): return Std.is(actual, c);
-						case AnyIterator: return isIterable(actual);
-						case NotNull: return actual != null;
+						case anyString: return Std.is(actual, String);
+						case anyInt:  return Std.is(actual, Int);
+						case anyFloat: return Std.is(actual, Float);
+						case anyBool: return Std.is(actual, Bool);
+						case anyIterator: return isIterable(actual);
+						case anyObject: return isObject(actual);
+						case anyEnum: return isEnumValueOf(actual, null);
+						case enumOf(en): return isEnumValueOf(actual, en);
+						case instanceOf(c): return Std.is(actual, c);
+						case isNotNull: return actual != null;
+						case isNull: return actual == null;
+						case any: return true;
+						case customMatcher(f): return f(actual);
 					}
 				}
 			case TClass(c): //Class<Dynamic>
@@ -172,7 +183,6 @@ class MethodProxy
 			default: return false;
 		}
 	}
-
 
 	function isIterable(value:Dynamic):Bool
 	{

@@ -7,7 +7,7 @@ import mockatoo.internal.MethodProxy;
 import mockatoo.exception.VerificationException;
 import mockatoo.Mockatoo;
 import mockatoo.VerificationMode;
-import mockatoo.Matches;
+import mockatoo.Matcher;
 /**
 * Auto generated MassiveUnit Test Class  for mockatoo.internal.MethodProxy 
 */
@@ -341,7 +341,7 @@ class MethodProxyTest
 		try
 		{
 			instance.call([false]);
-			instance.verify(times(1), [AnyString]);
+			instance.verify(times(1), [anyString]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
@@ -349,13 +349,13 @@ class MethodProxyTest
 		try
 		{
 			instance.call([null]);
-			instance.verify(times(1), [AnyString]);
+			instance.verify(times(1), [anyString]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
 		instance.call(["foo"]);
-		instance.verify(times(1), [AnyString]);
+		instance.verify(times(1), [anyString]);
 	}
 
 	@Test
@@ -366,7 +366,7 @@ class MethodProxyTest
 		try
 		{
 			instance.call([1.1]);
-			instance.verify(times(1), [AnyInt]);
+			instance.verify(times(1), [anyInt]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
@@ -374,13 +374,13 @@ class MethodProxyTest
 		try
 		{
 			instance.call([null]);
-			instance.verify(times(1), [AnyInt]);
+			instance.verify(times(1), [anyInt]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
 		instance.call([1]);
-		instance.verify(times(1), [AnyInt]);
+		instance.verify(times(1), [anyInt]);
 	}
 
 	@Test
@@ -391,17 +391,17 @@ class MethodProxyTest
 		try
 		{
 			instance.call([null]);
-			instance.verify(times(1), [AnyFloat]);
+			instance.verify(times(1), [anyFloat]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
 
 		instance.call([1.1]);
-		instance.verify(times(1), [AnyFloat]);
+		instance.verify(times(1), [anyFloat]);
 
 		instance.call([1]);
-		instance.verify(times(2), [AnyFloat]); //int is valid flaot
+		instance.verify(times(2), [anyFloat]); //int is valid flaot
 	}
 
 	@Test
@@ -412,7 +412,7 @@ class MethodProxyTest
 		try
 		{
 			instance.call([1]);
-			instance.verify(times(1), [AnyBool]);
+			instance.verify(times(1), [anyBool]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
@@ -420,16 +420,16 @@ class MethodProxyTest
 		try
 		{
 			instance.call([null]);
-			instance.verify(times(1), [AnyBool]);
+			instance.verify(times(1), [anyBool]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
 		instance.call([true]);
-		instance.verify(times(1), [AnyBool]);
+		instance.verify(times(1), [anyBool]);
 
 		instance.call([false]);
-		instance.verify(times(2), [AnyBool]);
+		instance.verify(times(2), [anyBool]);
 	}
 
 	@Test
@@ -440,7 +440,7 @@ class MethodProxyTest
 		try
 		{
 			instance.call([1]);
-			instance.verify(times(1), [AnyObject]);
+			instance.verify(times(1), [anyObject]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
@@ -448,7 +448,7 @@ class MethodProxyTest
 		try
 		{
 			instance.call([null]);
-			instance.verify(times(1), [AnyObject]);
+			instance.verify(times(1), [anyObject]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
@@ -456,16 +456,16 @@ class MethodProxyTest
 		try
 		{
 			instance.call(["foo"]);
-			instance.verify(times(1), [AnyObject]);
+			instance.verify(times(1), [anyObject]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
 		instance.call([{foo:true}]);
-		instance.verify(times(1), [AnyObject]);
+		instance.verify(times(1), [anyObject]);
 
 		instance.call([new Hash<String>()]);
-		instance.verify(times(1), [AnyObject]); //doesnt count instances - only annonomous objects
+		instance.verify(times(1), [anyObject]); //doesnt count instances - only annonomous objects
 	}
 
 	@Test
@@ -476,7 +476,7 @@ class MethodProxyTest
 		try
 		{
 			instance.call([1]);
-			instance.verify(times(1), [AnyEnumValue()]);
+			instance.verify(times(1), [anyEnum]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
@@ -484,17 +484,17 @@ class MethodProxyTest
 		try
 		{
 			instance.call([null]);
-			instance.verify(times(1), [AnyEnumValue()]);
+			instance.verify(times(1), [anyEnum]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
 
 		instance.call([SomeEnum.foo]);
-		instance.verify(times(1), [AnyEnumValue()]);
+		instance.verify(times(1), [anyEnum]);
 
 		instance.call([SomeOtherEnum.bar]);
-		instance.verify(times(2), [AnyEnumValue()]); 
+		instance.verify(times(2), [anyEnum]); 
 	}
 
 	@Test
@@ -505,17 +505,17 @@ class MethodProxyTest
 		try
 		{
 			instance.call([SomeOtherEnum.foo]);
-			instance.verify(times(1), [AnyEnumValue(SomeEnum)]);
+			instance.verify(times(1), [enumOf(SomeEnum)]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
 
 		instance.call([SomeEnum.foo]);
-		instance.verify(times(1), [AnyEnumValue(SomeEnum)]);
+		instance.verify(times(1), [enumOf(SomeEnum)]);
 
 		instance.call([SomeEnum.bar]);
-		instance.verify(times(2), [AnyEnumValue(SomeEnum)]); 
+		instance.verify(times(2), [enumOf(SomeEnum)]); 
 	}
 
 
@@ -527,7 +527,7 @@ class MethodProxyTest
 		try
 		{
 			instance.call([1]);
-			instance.verify(times(1), [AnyInstanceOf(SomeClass)]);
+			instance.verify(times(1), [instanceOf(SomeClass)]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
@@ -535,7 +535,7 @@ class MethodProxyTest
 		try
 		{
 			instance.call([null]);
-			instance.verify(times(1), [AnyInstanceOf(SomeClass)]);
+			instance.verify(times(1), [instanceOf(SomeClass)]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
@@ -543,48 +543,100 @@ class MethodProxyTest
 		try
 		{
 			instance.call([new Hash<String>()]);
-			instance.verify(times(1), [AnyInstanceOf(SomeClass)]);
+			instance.verify(times(1), [instanceOf(SomeClass)]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
 		instance.call([new SomeClass()]);
-		instance.verify(times(1), [AnyInstanceOf(SomeClass)]);
+		instance.verify(times(1), [instanceOf(SomeClass)]);
 
 		instance.call([new SomeSubClass()]);
-		instance.verify(times(2), [AnyInstanceOf(SomeClass)]); 
+		instance.verify(times(2), [instanceOf(SomeClass)]); 
 
-		instance.verify(times(1), [AnyInstanceOf(SomeSubClass)]); 
+		instance.verify(times(1), [instanceOf(SomeSubClass)]); 
 	}
 
 
 
 	@Test
-	public function should_verify_notNull():Void
+	public function should_verify_isNotNull():Void
 	{
 		instance = createInstance();
 
 		try
 		{
 			instance.call([null]);
-			instance.verify(times(1), [NotNull]);
+			instance.verify(times(1), [isNotNull]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
 		instance.call([1]);
-		instance.verify(times(1), [NotNull]);
+		instance.verify(times(1), [isNotNull]);
 
 		instance.call(["foo"]);
-		instance.verify(times(2), [NotNull]);
+		instance.verify(times(2), [isNotNull]);
 
 		instance.call([new SomeClass()]);
-		instance.verify(times(3), [NotNull]);
+		instance.verify(times(3), [isNotNull]);
 
 		instance.call([SomeEnum.foo]);
-		instance.verify(times(4), [NotNull]);
+		instance.verify(times(4), [isNotNull]);
 	}
 
+	@Test
+	public function should_verify_isNull():Void
+	{
+		instance = createInstance();
+
+		try
+		{
+			instance.call([1]);
+			instance.verify(times(1), [isNull]);
+			Assert.fail("Expected VerificationException");
+		}
+		catch(e:VerificationException) {}
+
+		instance.call([null]);
+		instance.verify(times(1), [isNull]);
+
+	}
+
+	@Test
+	public function should_verify_any():Void
+	{
+		instance = createInstance();
+
+		instance.call([1]);
+		instance.verify(times(1), [any]);
+
+		instance.call([null]);
+		instance.verify(times(2), [any]);
+	}
+
+	@Test
+	public function should_verify_custom():Void
+	{
+		instance = createInstance();
+
+		var f = function(value:Dynamic):Bool
+		{
+			return Std.is(value, String) && value.charAt(0) == "f";
+		}
+
+		try
+		{
+			instance.call(["bar"]);
+			instance.verify(times(1), [customMatcher(f)]);
+			Assert.fail("Expected VerificationException");
+		}
+		catch(e:VerificationException) {}
+
+
+		instance.call(["foo"]);
+		instance.verify(times(1), [customMatcher(f)]);
+	}
 
 
 	@Test
@@ -595,7 +647,7 @@ class MethodProxyTest
 		try
 		{
 			instance.call([1]);
-			instance.verify(times(1), [AnyIterator]);
+			instance.verify(times(1), [anyIterator]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
@@ -603,34 +655,34 @@ class MethodProxyTest
 		try
 		{
 			instance.call([null]);
-			instance.verify(times(1), [AnyIterator]);
+			instance.verify(times(1), [anyIterator]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 		
 		var hash = new Hash<String>();
 		instance.call([hash]);
-		instance.verify(times(1), [AnyIterator]);
+		instance.verify(times(1), [anyIterator]);
 
 		var array = new Array<Int>();
 		instance.call([array]);
-		instance.verify(times(2), [AnyIterator]);
+		instance.verify(times(2), [anyIterator]);
 
 		var intHash = new IntHash<Int>();
 		instance.call([intHash]);
-		instance.verify(times(3), [AnyIterator]);
+		instance.verify(times(3), [anyIterator]);
 
 		var list = new List<String>();
 		instance.call([list]);
-		instance.verify(times(4), [AnyIterator]);
+		instance.verify(times(4), [anyIterator]);
 
 		var someIterable = new SomeIterable("foo");
 		instance.call([someIterable]);
-		instance.verify(times(5), [AnyIterator]);
+		instance.verify(times(5), [anyIterator]);
 
 		var someIterator = new SomeIterator("foo");
 		instance.call([someIterator]);
-		instance.verify(times(6), [AnyIterator]);
+		instance.verify(times(6), [anyIterator]);
 	}
 
 	@Test
@@ -638,7 +690,7 @@ class MethodProxyTest
 	{
 		instance = createInstance();
 		instance.call([1, "foo", null, new Array<Bool>()]);
-		instance.verify(times(1), [AnyInt, AnyString, null , AnyIterator]);
+		instance.verify(times(1), [anyInt, anyString, null , anyIterator]);
 	}
 
 	// ------------------------------------------------------------------------- Internal

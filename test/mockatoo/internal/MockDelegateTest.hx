@@ -4,7 +4,7 @@ import massive.munit.util.Timer;
 import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
 import mockatoo.internal.MockDelegate;
-import mockatoo.Matches;
+import mockatoo.Matcher;
 import mockatoo.VerificationMode;
 import mockatoo.exception.VerificationException;
 /**
@@ -55,11 +55,11 @@ class MockDelegateTest
 		verification.one(1);
 
 		instance.callMethodAndReturn("two", [1,2], 1);
-		verification.two(1, AnyInt);
+		verification.two(1, anyInt);
 
 
 		instance.callMethodAndReturn("three", [1,2,3], 1);
-		verification.three(1, AnyInt, NotNull);
+		verification.three(1, anyInt, isNotNull);
 	}
 
 	@Test

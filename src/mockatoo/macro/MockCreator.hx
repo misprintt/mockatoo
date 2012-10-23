@@ -19,6 +19,9 @@ using tink.macro.tools.ExprTools;
 using tink.macro.tools.TypeTools;
 using tink.core.types.Outcome;
 
+/**
+Macro class that generates a Mock implementation of a class or interface
+*/
 class MockCreator
 {
 	static public function createMock(e:Expr, ?paramTypes:Expr):Expr

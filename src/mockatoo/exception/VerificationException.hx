@@ -4,7 +4,6 @@ import haxe.PosInfos;
 
 /**
 To be raised when a verification failed.
-
 @see mcore.exception.Exception
 */
 class VerificationException extends massive.munit.AssertionException

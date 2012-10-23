@@ -7,7 +7,7 @@ Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode
 
 
 
-> Disambiguation: The **Mockatoo** belongs to the bird family *Cacatuidae* and look suspiciously like a taxidermied [Cockatoo](http://en.wikipedia.org/wiki/Cockatoo) with fake plumage. They are mostly found nesting within testing habitats and may turn violent if mistaken for a *MockingBird* :)
+> Disambiguation: The **Mockatoo** belongs to the bird family *Cacatuidae* and look suspiciously like a taxidermied [Cockatoo](http://en.wikipedia.org/wiki/Cockatoo) with fake plumage. They are mostly found nesting within testing habitats and like  to repeat what you say (like a parrot). A Mockatoo may turn violent if mistaken for a *MockingBird* :)
 
 
 #### Mockatoo is in very early developement and is subject to change.
@@ -65,7 +65,7 @@ Both these generates the equivalent expressions:
 > Note: These usages are required in order to circumvent limitation of compiler with generics. You cannot compile `Foo.doSomething(Array<String>)`
 
 
-### Verification
+### Basic Verification
 
 Verification refers to validation of of if, and how often a method has been
 called (invoked) with particular argument values.
@@ -77,10 +77,56 @@ To verify that a method *foo* has been invoked:
 	Mockatoo.verify(mock).foo("foo");
 	Mockatoo.verify(mock).foo("foo", true);
 
-To verify the number of times a method was invoked
+Once created, mock will remember all interactions. Then you can selectively verify whatever interaction you are interested in.
+
+### Argument Matchers
+
+Mockatoo verifies argument values in natural syntax: by using an <code>equals()</code> method. Sometimes, when extra flexibility is required then you might use argument matchers:  
+
+To verify fuzzy matching on arguments, import Matchers:
+
+	import mockatoo.Matchers;
+
+Matching against a type:
+
+	Mockatoo.verify(mock).foo(anyString);
+	Mockatoo.verify(mock).foo(anyInt);
+	Mockatoo.verify(mock).foo(anyFloat);
+	Mockatoo.verify(mock).foo(anyBool);
+	Mockatoo.verify(mock).foo(anyObject); 	//anonymous data structures only (not class instances)
+	Mockatoo.verify(mock).foo(anyIterator); // any Iterator or Iterable (e.g. Array, Hash, etc)
+	Mockatoo.verify(mock).foo(anyEnum); 	// any enum value of any enum;
+
+Matching against a specific class or enum:
+
+	Mockatoo.verify(mock).foo(enumOf(Color)); 		 	// any enum value of Enum Colour
+	Mockatoo.verify(mock).foo(instanceOf(SomeClass)); 	// any instance of SomeClass (or it's subclasses)
+
+
+Wildcard matches
+
+	Mockatoo.verify(mock).foo(any);	 		//any value (including null)
+	Mockatoo.verify(mock).foo(isNotNull);	// any non null value
+	Mockatoo.verify(mock).foo(isNull);		// same as verifying 'null')
+
+
+Custom matching function
+
+	var f = function(value:Dynamic):Bool
+	{
+		...
+	}
+
+	Mockatoo.verify(mock).foo(customMatcher(f));
+
+
+### Verifying exact number of invocations
+
+To verify the number of times a method was invoked, import VerificationMode
 
 	import mockatoo.VerificationMode;
-	... 
+
+Verifications use natural language to specify the minimum and maximum times a method was invoked with specific arguments
 
 	Mockatoo.verify(mock, times(2)).foo();
 	Mockatoo.verify(mock, atLeast(2)).foo();
@@ -90,28 +136,6 @@ To verify the number of times a method was invoked
 
 
 > Note: Default mode is times(1);
-
-
-To verify fuzzy matching on arguments:
-
-	import mockatoo.Matches;
-	...
-
-	Mockatoo.verify(mock).foo(AnyString);
-	Mockatoo.verify(mock).foo(AnyInt);
-	Mockatoo.verify(mock).foo(AnyFloat);
-	Mockatoo.verify(mock).foo(AnyBool);
-	Mockatoo.verify(mock).foo(AnyObject); 					//anonymose data structures only (not class instances)
-
-	Mockatoo.verify(mock).foo(AnyIterator); 				// any Iterator or Iterable (e.g. Array, Hash, etc)
-
-	Mockatoo.verify(mock).foo(AnyEnumValue(null)); 			// any enum value of any enum;
-	Mockatoo.verify(mock).foo(AnyEnumValue(Color)); 		// any enum value of Enum Colour
-
-	Mockatoo.verify(mock).foo(AnyInstanceOf(SomeClass)); 	// any instance of SomeClass (or it's subclasses)
-
-	Mockatoo.verify(mock).foo(NotNull);						//any non null value
-	Mockatoo.verify(mock).foo(null);						//a null value
 
 
 ## Limitations
