@@ -633,6 +633,14 @@ class MethodProxyTest
 		instance.verify(times(6), [AnyIterator]);
 	}
 
+	@Test
+	public function should_verify_multiple_matches():Void
+	{
+		instance = createInstance();
+		instance.call([1, "foo", null, new Array<Bool>()]);
+		instance.verify(times(1), [AnyInt, AnyString, null , AnyIterator]);
+	}
+
 	// ------------------------------------------------------------------------- Internal
 
 	function createInstance(?args:Array<String>,?ret):MethodProxy

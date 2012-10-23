@@ -183,8 +183,6 @@ class MethodProxy
 		//Iterable
 		var iterator = Reflect.field(value, "iterator");
 		
-		trace(iterator);
-		
 		if(Reflect.isFunction(iterator)) return true;
 
 		//Iterator

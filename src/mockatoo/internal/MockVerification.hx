@@ -2,7 +2,7 @@ package mockatoo.internal;
 
 import mockatoo.VerificationMode;
 
-class MockVerification implements Dynamic<Bool>
+class MockVerification implements Dynamic<Dynamic>
 {
 	public var mode:VerificationMode;
 

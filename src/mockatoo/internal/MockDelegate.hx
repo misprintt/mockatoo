@@ -21,7 +21,6 @@ class MockDelegate
 
 		var fieldMeta = haxe.rtti.Meta.getFields(targetClass);
 		parseMetadata(fieldMeta);
-
 	}
 
 	/**
@@ -51,50 +50,12 @@ class MockDelegate
 
 		for(proxy in hash.iterator())
 		{
-			Reflect.setField(temp, proxy.fieldName, function(_)
+			var f = Reflect.makeVarArgs(function(a:Array<Dynamic>)
 			{
-				return proxy.verify(mode, [_]);
+				return proxy.verify(mode, a);
 			});
 
-			// switch(proxy.argCount)
-			// {
-			// 	case 0:
-			// 		Reflect.setField(temp, proxy.fieldName,
-			// 			function()
-			// 			{
-			// 				return proxy.verify(mode);
-			// 			}
-			// 		);
-			// 	case 1:
-			// 		Reflect.setField(temp, proxy.fieldName,
-			// 			function(?arg)
-			// 			{
-			// 				return proxy.verify(mode, [arg]);
-			// 			}
-			// 		);
-			// 	case 2:
-			// 		Reflect.setField(temp, proxy.fieldName,
-			// 			function(?arg1,?arg2)
-			// 			{
-			// 				return proxy.verify(mode, [arg1,arg2]);
-			// 			}
-			// 		);
-			// 	case 3:
-			// 		Reflect.setField(temp, proxy.fieldName,
-			// 			function(?arg1,?arg2,?arg3)
-			// 			{
-			// 				return proxy.verify(mode, [arg1,arg2,arg3]);
-			// 			}
-			// 		);
-			// 	case 4:
-			// 		Reflect.setField(temp, proxy.fieldName,
-			// 			function(?arg1,?arg2,?arg3,?arg4)
-			// 			{
-			// 				return proxy.verify(mode, [arg1,arg2,arg3,arg4]);
-			// 			}
-			// 		);
-			// 	default: throw "verify not implemented for functions with this [" + proxy.argCount + "] arguments.";
-			// }
+			Reflect.setField(temp, proxy.fieldName, f);
 		}
 		return temp;
 	}
