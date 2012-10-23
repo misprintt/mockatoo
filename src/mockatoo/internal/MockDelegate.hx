@@ -63,6 +63,53 @@ class MockDelegate
 		return temp;
 	}
 
+	public function stub(method:String, args:Array<Dynamic>):MockStubbing
+	{
+		var stub = new MockStubbing();
+
+		var proxy = hash.get(method);
+
+		var fReturn = Reflect.makeVarArgs(function(values:Array<Dynamic>)
+		{
+			proxy.addReturnFor(args, values);
+			return stub;
+		});
+
+		var fThrow = Reflect.makeVarArgs(function(values:Array<Dynamic>)
+		{
+			proxy.addThrowFor(args, values);
+			return stub;
+		});
+
+		var fCallback = Reflect.makeVarArgs(function(values:Array<Dynamic>)
+		{
+			proxy.addCallbackFor(args, values);
+			return stub;
+		});
+
+
+		
+		Reflect.setField(stub, "thenReturn", fReturn);
+		Reflect.setField(stub, "thenThrow", fThrow);
+		Reflect.setField(stub, "thenAnswer", fCallback);
+
+
+		return stub;
+	}
+
+	/*
+	public function thenReturn(value:T):MockStubbing
+	{
+		
+	}
+
+	public function thenThrow(value:Dynamic):MockStubbing
+	{
+
+	}
+
+	*/
+
 	function parseMetadata(fields:Dynamic<Dynamic<Array<Dynamic>>>)
 	{
 		var fieldNames = Type.getInstanceFields(targetClass);
