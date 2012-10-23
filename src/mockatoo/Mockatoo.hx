@@ -10,13 +10,13 @@ import haxe.macro.Type;
 import sys.io.File;
 import sys.FileSystem;
 
-
 #end
 
+import mockatoo.macro.MockCreator;
 
-
-import mockatoo.internal.MockCreator;
-
+/**
+ Mockatoo library enables mocks creation, verification and stubbing.
+*/
 class Mockatoo
 {	
 	/**
@@ -53,10 +53,12 @@ class Mockatoo
 	 *
 	 * @return mock object itself
 	 */
-	static public function verify(mock:Mock)
+	static public function verify(mock:Mock, ?mode:VerificationMode):Dynamic
 	{
 		Console.assert(mock != null, "Cannot verify [null] mock");
+		return mock.mockDelegate.verify(mode);
 	}
+	//verify(mock).foo("bar");
 
 	#if macro
 
