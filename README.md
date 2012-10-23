@@ -13,6 +13,8 @@ Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode
 
 #### Mockatoo is in developement and is subject to change.
 
+* See [Features](#features) for overview of key features
+* See [Usage](#usage) for more detailed examples and usecases
 * See [milestones](#milestones) for details on the current stable release.
 * See [roadmap](#roadmap) for more details on planned features.
 
@@ -26,6 +28,38 @@ Install the latest directly from github:
 Or point to your local fork:
 
 	haxelib dev mockatoo /ABSOLUTE_PATH_TO_REPO/src
+
+
+## Features
+
+Mock any class or interface (or typedef alias), including types with generics
+
+	var mockedClass = Mockatoo.mock(SomeClass);
+	var mockedInterface = Mockatoo.mock(SomeInterface);
+	var mockedClassWithGenerics = Mockatoo.mock(Foo, [Bar]);
+
+Verify a method has been called with specific paramaters
+
+	Mockatoo.verify(mock).foo();
+	Mockatoo.verify(mock).someMethod("foo", "bar");
+
+Define a stub response when a method is invoked
+
+	Mockatoo.when(mock.foo("bar")).thenReturn("hello");
+	Mockatoo.when(mock.someMethod("foo", "bar").thenThrow(new Exception(""));
+
+Custom argument matchers and wildcards
+
+	Mockatoo.when(mock.foo(anyString)).thenReturn("hello");
+	Mockatoo.when(mock.foo(isNull)).thenReturn("world");
+
+Verifying exact number of invocations
+
+	Mockatoo.verify(mock, times(2)).foo();
+	Mockatoo.verify(mock, atLeast(2)).foo();
+	Mockatoo.verify(mock, atLeastOnce).foo();
+	Mockatoo.verify(mock, never).foo();
+
 
 ## Usage
 
