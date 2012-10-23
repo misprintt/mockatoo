@@ -1,6 +1,8 @@
 package mockatoo.internal;
 import mockatoo.exception.VerificationException;
 import mockatoo.VerificationMode;
+import mockatoo.Matches;
+
 using mockatoo.util.TypeEquality;
 
 class MethodProxy
@@ -84,11 +86,9 @@ class MethodProxy
 				range = {min:value, max:null};
 			case atMost(value):
 				range = {min:null, max:value};
-			case between(value1, value2):
-				range = {min:value1, max:value2};
 		}
 
-		var execptionMessage:String = className + "." + fieldName + " was invoked " + toTimes(matches) + ", expected ";
+		var execptionMessage:String = className + "." + fieldName + "(" + args.join(",") + ") was invoked " + toTimes(matches) + ", expected ";
 
 		if(range.max == null)
 		{
@@ -100,15 +100,10 @@ class MethodProxy
 			 if(matches <= range.max) return true;
 			 else throw new VerificationException(execptionMessage + "less than " + toTimes(range.max));
 		}
-		else if(range.min == range.max)
+		else
 		{
 			if(matches == range.min) return true;
 			else throw new VerificationException(execptionMessage + toTimes(range.min));
-		}
-		else
-		{
-			if(matches >= range.min && matches <= range.max) return true;
-			else throw new VerificationException(execptionMessage + "between " + toTimes(range.min) + " and " + toTimes(range.max));
 		}
 		
 		return false;
@@ -119,11 +114,87 @@ class MethodProxy
 		return value == 1 ? "[1] time" : "[" + value + "] times";
 	}
 
+	/**
+	Compares to values to determine if they match.
+	Supports fuzzy matching using <code>mockatoo.Matches</code>
+	*/
 	function compareArgs(expected:Dynamic, actual:Dynamic):Bool
 	{
+		var type = Type.typeof(expected);
+		switch(type)
+		{
+			case TUnknown:
+			case TObject:
+			case TNull:
+				return actual == null;
+			case TInt:
+			case TFunction:
+			case TFloat:
+			case TEnum(e): //Enum<Dynamic>
+				if(e == Matches)
+				{
+					switch(expected)
+					{
+						case AnyString: return Std.is(actual, String);
+						case AnyInt:  return Std.is(actual, Int);
+						case AnyFloat: return Std.is(actual, Float);
+						case AnyBool: return Std.is(actual, Bool);
+						case AnyEnumValue(en): return isEnumValueOf(actual, en);
+						case AnyObject: return isObject(actual);
+						case AnyInstanceOf(c): return Std.is(actual, c);
+						case AnyIterator: return isIterable(actual);
+						case NotNull: return actual != null;
+					}
+				}
+			case TClass(c): //Class<Dynamic>
+			case TBool:
+		}
 		return expected.equals(actual);
 	}
 
+	function isEnumValueOf(value:Dynamic, ?ofType:Enum<Dynamic>):Bool
+	{
+		switch(Type.typeof(value))
+		{
+			case TEnum(e): //Enum<Dynamic>
+				if(ofType == null)
+					return true;
+				return e == ofType;
+			default: return false;
+		}
+	}
+
+	function isObject(value:Dynamic):Bool
+	{
+		switch(Type.typeof(value))
+		{
+			case TObject: return true;
+			default: return false;
+		}
+	}
+
+
+	function isIterable(value:Dynamic):Bool
+	{
+		if(value == null) return false;
+		
+		if(Std.is(value, Array) || Std.is(value, Hash) || Std.is(value, IntHash)) return true;
+
+		//Iterable
+		var iterator = Reflect.field(value, "iterator");
+		
+		trace(iterator);
+		
+		if(Reflect.isFunction(iterator)) return true;
+
+		//Iterator
+
+		var next = Reflect.field(value, "next");
+		var hasNext = Reflect.field(value, "hasNext");
+
+		return Reflect.isFunction(next) && Reflect.isFunction(hasNext);
+
+	}
 }
 
 private typedef Range =

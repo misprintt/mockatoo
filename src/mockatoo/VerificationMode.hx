@@ -26,5 +26,4 @@ enum VerificationMode
 	atLeast(value:Int);
 	never;
 	atMost(value:Int);
-	between(value1:Int, value2:Int);
 }

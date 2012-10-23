@@ -16,7 +16,11 @@ class MockDelegate
 		targetClass = Type.getClass(target);
 		hash = new Hash();
 
-		parseMetadata();
+		var m = haxe.rtti.Meta.getType(targetClass);
+		targetClassName = cast m.mockatoo[0];
+
+		var fieldMeta = haxe.rtti.Meta.getFields(targetClass);
+		parseMetadata(fieldMeta);
 
 	}
 
@@ -41,65 +45,62 @@ class MockDelegate
 
 	public function verify(?mode:VerificationMode):MockVerification
 	{
-
 		if(mode == null) mode = VerificationMode.times(1);
 		
 		var temp = new MockVerification(mode);
 
 		for(proxy in hash.iterator())
 		{
-			switch(proxy.argCount)
+			Reflect.setField(temp, proxy.fieldName, function(_)
 			{
-				case 0:
-					Reflect.setField(temp, proxy.fieldName,
-						function()
-						{
-							return proxy.verify(mode);
-						}
-					);
-				case 1:
-					Reflect.setField(temp, proxy.fieldName,
-						function(?arg)
-						{
-							return proxy.verify(mode, [arg]);
-						}
-					);
-				case 2:
-					Reflect.setField(temp, proxy.fieldName,
-						function(?arg1,?arg2)
-						{
-							return proxy.verify(mode, [arg1,arg2]);
-						}
-					);
-				case 3:
-					Reflect.setField(temp, proxy.fieldName,
-						function(?arg1,?arg2,?arg3)
-						{
-							return proxy.verify(mode, [arg1,arg2,arg3]);
-						}
-					);
-				case 4:
-					Reflect.setField(temp, proxy.fieldName,
-						function(?arg1,?arg2,?arg3,?arg4)
-						{
-							return proxy.verify(mode, [arg1,arg2,arg3,arg4]);
-						}
-					);
-				default: throw "verify not implemented for functions with this [" + proxy.argCount + "] arguments.";
-			}
-		}
+				return proxy.verify(mode, [_]);
+			});
 
+			// switch(proxy.argCount)
+			// {
+			// 	case 0:
+			// 		Reflect.setField(temp, proxy.fieldName,
+			// 			function()
+			// 			{
+			// 				return proxy.verify(mode);
+			// 			}
+			// 		);
+			// 	case 1:
+			// 		Reflect.setField(temp, proxy.fieldName,
+			// 			function(?arg)
+			// 			{
+			// 				return proxy.verify(mode, [arg]);
+			// 			}
+			// 		);
+			// 	case 2:
+			// 		Reflect.setField(temp, proxy.fieldName,
+			// 			function(?arg1,?arg2)
+			// 			{
+			// 				return proxy.verify(mode, [arg1,arg2]);
+			// 			}
+			// 		);
+			// 	case 3:
+			// 		Reflect.setField(temp, proxy.fieldName,
+			// 			function(?arg1,?arg2,?arg3)
+			// 			{
+			// 				return proxy.verify(mode, [arg1,arg2,arg3]);
+			// 			}
+			// 		);
+			// 	case 4:
+			// 		Reflect.setField(temp, proxy.fieldName,
+			// 			function(?arg1,?arg2,?arg3,?arg4)
+			// 			{
+			// 				return proxy.verify(mode, [arg1,arg2,arg3,arg4]);
+			// 			}
+			// 		);
+			// 	default: throw "verify not implemented for functions with this [" + proxy.argCount + "] arguments.";
+			// }
+		}
 		return temp;
 	}
 
-	function parseMetadata()
+	function parseMetadata(fields:Dynamic<Dynamic<Array<Dynamic>>>)
 	{
-		var m = haxe.rtti.Meta.getType(targetClass);
-		//trace( + " Mock");
-
-		targetClassName = cast m.mockatoo[0];
-
-		var fieldMetas = haxe.rtti.Meta.getFields(targetClass);
 		var fieldNames = Type.getInstanceFields(targetClass);
 
 		for(fieldName in fieldNames)
@@ -116,7 +117,7 @@ class MockDelegate
 				if(Reflect.hasField(target, fieldName)) continue; //only care about methods
 			#end
 			
-			var fieldMeta = Reflect.field(fieldMetas, fieldName);
+			var fieldMeta = Reflect.field(fields, fieldName);
 
 			if(fieldMeta != null && Reflect.hasField(fieldMeta, "mockatoo"))
 			{
