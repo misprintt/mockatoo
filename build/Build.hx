@@ -26,8 +26,8 @@ class Build extends mtask.core.BuildBase
 	@task function sublime()
 	{
 		invoke("build haxelib");
-		invoke("example");
 		invoke("haxelibTest");
+		invoke("example");
 	}
 
 	@task function haxelibTest()

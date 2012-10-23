@@ -7,6 +7,7 @@ import mockatoo.internal.MockDelegate;
 import mockatoo.Matcher;
 import mockatoo.VerificationMode;
 import mockatoo.exception.VerificationException;
+import mockatoo.exception.StubbingException;
 /**
 * Auto generated MassiveUnit Test Class  for mockatoo.internal.MockDelegate 
 */
@@ -97,6 +98,131 @@ class MockDelegateTest
 
 	}
 
+	// ------------------------------------------------------------------------- stubbing
+
+
+	@Test
+	public function should_throw_exception_if_cannot_stub_return_value():Void
+	{
+		var mock = mockatoo.Mockatoo.mock(ClassToMock);
+		instance = new MockDelegate(mock);
+
+		var stub = instance.stub("none", []);
+
+		try
+		{
+			stub.thenReturn("foo");
+			Assert.fail("Expected StubbingException");
+		}
+		catch(e:StubbingException) {}
+	}
+
+	@Test
+	public function should_throw_stubbed_execption():Void
+	{
+		var mock = mockatoo.Mockatoo.mock(ClassToMock);
+		instance = new MockDelegate(mock);
+
+		var stub = instance.stub("none", []);
+
+		stub.thenThrow(new CustomException());
+
+		try
+		{
+			instance.callMethod("none", []);
+			Assert.fail("Expected CustomException");
+		}
+		catch(e:CustomException){}
+
+		Assert.isTrue(true);
+	}
+
+	@Test
+	public function should_return_stubbed_value():Void
+	{
+		var mock = mockatoo.Mockatoo.mock(ClassToMock);
+		instance = new MockDelegate(mock);
+
+		var stub = instance.stub("two", [1,2]);
+
+		stub.thenReturn(4);
+
+		var result = instance.callMethodAndReturn("two", [1,2], 0);
+
+		Assert.areEqual(4, result);
+	}
+
+	@Test
+	public function should_return_default_value_once_stubs_used():Void
+	{
+		var mock = mockatoo.Mockatoo.mock(ClassToMock);
+		instance = new MockDelegate(mock);
+
+		var stub = instance.stub("two", [1,2]);
+
+		stub.thenReturn(4);
+
+		var result = instance.callMethodAndReturn("two", [1,2], 0);
+
+		Assert.areEqual(4, result);
+
+		result = instance.callMethodAndReturn("two", [1,2], 0);
+
+		Assert.areEqual(0, result);
+	}
+
+
+	@Test
+	public function should_chain_stubs():Void
+	{
+		var mock = mockatoo.Mockatoo.mock(ClassToMock);
+		instance = new MockDelegate(mock);
+
+		var stub = instance.stub("two", [1,2]);
+
+		stub.thenReturn(4).thenThrow(new CustomException());
+
+		var result = instance.callMethodAndReturn("two", [1,2], 0);
+
+		Assert.areEqual(4, result);
+
+		try
+		{
+			instance.callMethodAndReturn("two", [1,2], 0);
+			Assert.fail("Expected CustomException");
+		}
+		catch(e:CustomException){}
+	}
+
+	@Test
+	public function should_call_stubbed_callback():Void
+	{
+		var mock = mockatoo.Mockatoo.mock(ClassToMock);
+		instance = new MockDelegate(mock);
+
+		var stub = instance.stub("two", [1,2]);
+
+		var wasCalled:Bool = false;
+
+		var f = function(args:Array<Dynamic>)
+		{
+			wasCalled = true;
+		}
+
+		stub.thenCall(f);
+
+		instance.callMethodAndReturn("two", [1,2], 0);
+
+		Assert.isTrue(wasCalled);
+	}
+}
+
+class CustomException
+{
+	public function new()
+	{
+
+	}
 }
 
 class ClassToMock

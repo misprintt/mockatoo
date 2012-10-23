@@ -5,6 +5,7 @@ import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
 import mockatoo.internal.MethodProxy;
 import mockatoo.exception.VerificationException;
+import mockatoo.exception.StubbingException;
 import mockatoo.Mockatoo;
 import mockatoo.VerificationMode;
 import mockatoo.Matcher;
@@ -39,25 +40,6 @@ class MethodProxyTest
 	@After
 	public function tearDown():Void
 	{
-	}
-	
-	@Test
-	public function should_match_argCount():Void
-	{
-		instance = createInstance();
-		Assert.areEqual(0, instance.argCount);
-	}
-
-	@Test
-	public function should_increment_count():Void
-	{
-		instance = createInstance();
-		
-		instance.call([]);
-		Assert.areEqual(1, instance.count);
-		
-		instance.call([]);
-		Assert.areEqual(2, instance.count);
 	}
 
 	@Test
@@ -692,6 +674,182 @@ class MethodProxyTest
 		instance.call([1, "foo", null, new Array<Bool>()]);
 		instance.verify(times(1), [anyInt, anyString, null , anyIterator]);
 	}
+
+
+	// ------------------------------------------------------------------------- Stubbing
+
+
+	@Test
+	public function should_return_value_for_stub():Void
+	{
+		instance = createInstance(["Int"], "Int");
+
+		instance.addReturnFor([1], [1]);
+
+		var result = instance.callAndReturn([0], 0);
+
+		Assert.areEqual(0, result);
+
+		result = instance.callAndReturn([1], 0);
+
+		Assert.areEqual(1, result);
+	}
+
+	@Test
+	public function should_throw_value_for_stub():Void
+	{
+		instance = createInstance(["Int"], "Int");
+
+		instance.addThrowFor([1], ["exception"]);
+
+		var result = instance.callAndReturn([0], 0);
+
+		Assert.areEqual(0, result);
+
+		try
+		{
+			result = instance.callAndReturn([1], 0);
+		}
+		catch(e:String)
+		{
+			Assert.areEqual("exception", e);
+		}
+	}
+
+	@Test
+	public function should_callback_answer_for_stub():Void
+	{
+		instance = createInstance(["Int"], "Int");
+
+		var wasCalled:Bool = false;
+		var f = function(args:Array<Dynamic>)
+		{
+			wasCalled = true;
+			return 1;
+		}
+
+		instance.addCallbackFor([1], [f]);
+
+		var result = instance.callAndReturn([0], 0);
+
+		Assert.areEqual(0, result);
+
+
+		result = instance.callAndReturn([1], 0);
+
+		Assert.areEqual(1, result);
+		Assert.isTrue(wasCalled);
+	}
+
+	//
+	@Test
+	public function should_stub_method_with_void_return():Void
+	{
+		instance = createInstance();
+
+		try
+		{
+			instance.addReturnFor([], [1]);
+			Assert.fail("Expected StubbingException");
+		}
+		catch(e:StubbingException){}
+		
+
+		instance.addThrowFor([], ["exception"]);
+
+		try
+		{
+			instance.call([]);
+			Assert.fail("Expected exception");
+		}
+		catch(e:String)
+		{
+			Assert.areEqual("exception", e);
+		}
+
+		var wasCalled:Bool = false;
+		var f = function(args:Array<Dynamic>)
+		{
+			wasCalled = true;
+		}
+
+		instance.addCallbackFor([], [f]);
+		instance.call([]);
+		Assert.isTrue(wasCalled);
+
+	}
+
+	@Test
+	public function should_throw_exception_if_callback_is_not_function():Void
+	{
+		instance = createInstance();
+
+		try
+		{
+			instance.addCallbackFor([], ["notAFunction"]);
+			Assert.fail("Expected StubbingException");
+		}
+		catch(e:StubbingException){}
+
+	}
+
+
+
+
+	@Test
+	public function should_add_to_existing_stub():Void
+	{
+		instance = createInstance(["Int"], "Int");
+
+		var wasCalled:Bool = false;
+		var f = function(args:Array<Dynamic>)
+		{
+			wasCalled = true;
+			return 100;
+		}
+
+		instance.addReturnFor([1], [1]);
+		instance.addReturnFor([1], [2]);
+		instance.addThrowFor([1], ["exception"]);
+		instance.addCallbackFor([1], [f]);
+
+		var result = instance.callAndReturn([1], 0);
+
+		Assert.areEqual(1, result);
+
+		result = instance.callAndReturn([1], 0);
+
+		Assert.areEqual(2, result);
+
+		try
+		{
+			instance.call([1]);
+			Assert.fail("Expected exception");
+		}
+		catch(e:String)
+		{
+			Assert.areEqual("exception", e);
+		}
+
+		result = instance.callAndReturn([1], 0);
+
+		Assert.areEqual(100, result);
+		Assert.isTrue(wasCalled);
+	}
+
+	@Test
+	public function should_only_return_matching_stubs():Void
+	{
+		instance = createInstance(["Int"], "Int");
+
+		instance.addReturnFor([1], [1]);
+		instance.addReturnFor([1, 2, 3], [2]);
+
+		var result = instance.callAndReturn([1,2,3], 0);
+
+		Assert.areEqual(2, result);
+	}
+
 
 	// ------------------------------------------------------------------------- Internal
 

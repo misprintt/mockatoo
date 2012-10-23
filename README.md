@@ -10,10 +10,11 @@ Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode
 > Disambiguation: The **Mockatoo** belongs to the bird family *Cacatuidae* and look suspiciously like a taxidermied [Cockatoo](http://en.wikipedia.org/wiki/Cockatoo) with fake plumage. They are mostly found nesting within testing habitats and like  to repeat what you say (like a parrot). A Mockatoo may turn violent if mistaken for a *MockingBird* :)
 
 
-#### Mockatoo is in very early developement and is subject to change.
+#### Mockatoo is in developement and is subject to change.
 
-* See [releases](#releases) for details on the current stable release.
+* See [milestones](#milestones) for details on the current stable release.
 * See [roadmap](#roadmap) for more details on planned features.
+
 
 
 ## Installation
@@ -28,11 +29,20 @@ Or point to your local fork:
 
 ## Usage
 
+* [Create a Mock](#createamock)
+* [Verifying Behaviour](#verifyingbehaviour)
+* [Basic Stubbing](#basicstubbing)
+* [Argument Matchers](#argumentmatchers)
+* [Verifying exact number of invocations / at least once / never](#verifyingexactnumberofinvocations)
+* [Stubbing with consecutive calls or callbacks](#chainedstubbing)
+* [Known limitations](#limitations)
+
+
 Import Mockatoo;
 
 	import mockatoo.Mockatoo;
 
-### Creating a mock instance
+### Create a Mock
 
 Mocks can be generated from any Class, Interface or Typedef alias (not typedef structure)
 
@@ -65,7 +75,7 @@ Both these generates the equivalent expressions:
 > Note: These usages are required in order to circumvent limitation of compiler with generics. You cannot compile `Foo.doSomething(Array<String>)`
 
 
-### Basic Verification
+### Verifying Behaviour
 
 Verification refers to validation of of if, and how often a method has been
 called (invoked) with particular argument values.
@@ -78,6 +88,17 @@ To verify that a method *foo* has been invoked:
 	Mockatoo.verify(mock).foo("foo", true);
 
 Once created, mock will remember all interactions. Then you can selectively verify whatever interaction you are interested in.
+
+### Basic Stubbing
+
+Mockatoo allows the behaviour of methods to be stubbed
+
+	Mockatoo.when(mock.foo("bar")).thenReturn("hello");
+
+You can also specify an execption
+
+	Mockatoo.when(mock.foo("not bar")).thenThrow(new SomeApplicationException("not a bar"));
+
 
 ### Argument Matchers
 
@@ -138,14 +159,39 @@ Verifications use natural language to specify the minimum and maximum times a me
 > Note: Default mode is times(1);
 
 
-## Limitations
+
+
+### Chained stubbing
+
+Stubbing is chainable, so you can specify the behaviour each time a method is called. Values are defined in order. 
+
+	Mockatoo.when(mock.foo("bar")).thenReturn("hello", "goodbye");
+
+Exceptions and returns can be chained together.
+
+	Mockatoo.when(mock.foo("bar")).thenReturn("hello").thenThrow("all gone");
+
+Once all stubs have been used, then the method defaults back to the default value for that return type.
+
+
+You can also set a custom callback when a method is invoked
+
+	var f = function(args:Array<Dynamic>)
+	{
+		if(Std.is(args[0], String) return args[0].charAt(0) == "b";
+	}
+
+	Mockatoo.when(mock.foo("bar")).thenCall(f);
+
+
+### Limitations
 
 * in Haxe 2.10 (and earlier) inlined methods can not be mocked (prints a compiler warning). See <http://code.google.com/p/haxe/issues/detail?id=1231>
 * @:final methods throw runtime errors in flash (AVM2) when mocked
 
 ## Milestones
 
-### Release 0.2 - Completed
+### M2 - Completed
 
 Verification
 
@@ -153,7 +199,14 @@ Verification
 * Added Verification mode (validate number of invocations)
 * Added verification of fuzzy matches (AnyString, AnyBool, NotNull, etc)
 
-### Release 0.1  - Completed
+Stubbing
+
+* Added basic stubbing - `thenReturn`, `thenThrow`
+* Added chaining of stubs - `thenReturn(1).thenThrow("empty")`
+* Added callback stub - `thenCall(function)`
+
+
+### M1  - Completed
 
 Basic class and interface mocking (generates empty stub methods)
 
@@ -169,18 +222,7 @@ Basic class and interface mocking (generates empty stub methods)
 
 This is the active roadmap.
 
-### Release 0.3
-
-**Basic Stubbing**
-
-Define the stub response when calling specific methods/arguments
-
-	//stubbing
-	when(mockedList.get(0)).thenReturn("first");
-	when(mockedList.get(1)).thenThrow(new RuntimeException());
-
-
-### Release 0.4
+### M3
 
 **Spying**
 
