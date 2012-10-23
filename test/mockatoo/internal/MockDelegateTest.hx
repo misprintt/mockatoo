@@ -209,7 +209,7 @@ class MockDelegateTest
 			wasCalled = true;
 		}
 
-		stub.thenAnswer(f);
+		stub.thenCall(f);
 
 		instance.callMethodAndReturn("two", [1,2], 0);
 

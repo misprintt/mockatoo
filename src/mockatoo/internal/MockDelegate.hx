@@ -91,7 +91,7 @@ class MockDelegate
 		
 		Reflect.setField(stub, "thenReturn", fReturn);
 		Reflect.setField(stub, "thenThrow", fThrow);
-		Reflect.setField(stub, "thenAnswer", fCallback);
+		Reflect.setField(stub, "thenCall", fCallback);
 
 
 		return stub;
