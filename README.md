@@ -70,16 +70,16 @@ Both these generates the equivalent expressions:
 Verification refers to validation of of if, and how often a method has been
 called (invoked) with particular argument values.
 
-To verify that a method has been invoked:
+To verify that a method *foo* has been invoked:
 
 	Mockatoo.verify(mock).foo();
 	Mockatoo.verify(mock).foo("bar");
 	Mockatoo.verify(mock).foo("foo");
+	Mockatoo.verify(mock).foo("foo", true);
 
 To verify the number of times a method was invoked
 
 	import mockatoo.VerificationMode;
-
 	... 
 
 	Mockatoo.verify(mock, times(2)).foo();
@@ -88,23 +88,48 @@ To verify the number of times a method was invoked
 	Mockatoo.verify(mock, never).foo();
 	Mockatoo.verify(mock, between(2,3)).foo();
 
+
 > Note: Default mode is times(1);
+
+
+To verify fuzzy matching on arguments:
+
+	import mockatoo.Matches;
+	...
+
+	Mockatoo.verify(mock).foo(AnyString);
+	Mockatoo.verify(mock).foo(AnyInt);
+	Mockatoo.verify(mock).foo(AnyFloat);
+	Mockatoo.verify(mock).foo(AnyBool);
+	Mockatoo.verify(mock).foo(AnyObject); 					//anonymose data structures only (not class instances)
+
+	Mockatoo.verify(mock).foo(AnyIterator); 				// any Iterator or Iterable (e.g. Array, Hash, etc)
+
+	Mockatoo.verify(mock).foo(AnyEnumValue(null)); 			// any enum value of any enum;
+	Mockatoo.verify(mock).foo(AnyEnumValue(Color)); 		// any enum value of Enum Colour
+
+	Mockatoo.verify(mock).foo(AnyInstanceOf(SomeClass)); 	// any instance of SomeClass (or it's subclasses)
+
+	Mockatoo.verify(mock).foo(NotNull);						//any non null value
+	Mockatoo.verify(mock).foo(null);						//a null value
+
 
 ## Limitations
 
-* inlined methods will not be mocked (prints a compiler warning)
-* @:final methods throw runtime errors in flash (AVM2) 
+* in Haxe 2.10 (and earlier) inlined methods can not be mocked (prints a compiler warning). See <http://code.google.com/p/haxe/issues/detail?id=1231>
+* @:final methods throw runtime errors in flash (AVM2) when mocked
 
-## Releases
+## Milestones
 
-### Release 0.2
+### Release 0.2 - Completed
 
 Verification
 
 * Added verification of methods being invoked
 * Added Verification mode (validate number of invocations)
+* Added verification of fuzzy matches (AnyString, AnyBool, NotNull, etc)
 
-### Release 0.1
+### Release 0.1  - Completed
 
 Basic class and interface mocking (generates empty stub methods)
 
@@ -119,17 +144,6 @@ Basic class and interface mocking (generates empty stub methods)
 ## Roadmap
 
 This is the active roadmap.
-
-### Release 0.2
-
-**Basic Verification**
-
-Verify if a method has been executed with the specified arguments:
-
-	//verification
-	verify(mockedList).foo("one");
-	verify(mockedList, atLeast(2)).bar();
-
 
 ### Release 0.3
 
