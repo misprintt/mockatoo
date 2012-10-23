@@ -9,6 +9,7 @@
 -swf-version 9
 -swf bin/test/as3_test.swf
 --no-inline
+-debug
 
 --next
 

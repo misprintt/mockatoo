@@ -23,6 +23,44 @@ class SimpleClass
 	}
 }
 
+class VariableArgumentsClass
+{
+	public function new()
+	{
+
+	}
+
+	public function none()
+	{
+
+	}
+
+	public function one(arg:Int):Int
+	{
+		return arg;
+	}
+
+	public function two(arg1:Int, arg2:Int):Int
+	{
+		return arg1 + arg2;
+	}
+
+	public function three(arg1:Int, arg2:Int, arg3:Int):Int
+	{
+		return arg1 + arg2 + arg3;
+	}
+
+	public function oneOptional(?arg1:Int):Int
+	{
+		return arg1;
+	}
+
+	public function twoOptional(arg1:Int, ?arg2:Int):Int
+	{
+		return arg1;
+	}
+}
+
 interface IntefaceWithFields
 {
 	var bool:Bool;

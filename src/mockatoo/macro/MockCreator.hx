@@ -1,4 +1,4 @@
-package mockatoo.internal;
+package mockatoo.macro;
 
 #if macro
 import haxe.macro.Compiler;
@@ -12,13 +12,16 @@ import tink.macro.tools.TypeTools;
 import tink.macro.tools.FunctionTools;
 import tink.core.types.Outcome;
 import mockatoo.Mock;
-import mockatoo.internal.util.ClassFields;
+import mockatoo.macro.ClassFields;
 
 using tink.macro.tools.Printer;
 using tink.macro.tools.ExprTools;
 using tink.macro.tools.TypeTools;
 using tink.core.types.Outcome;
 
+/**
+Macro class that generates a Mock implementation of a class or interface
+*/
 class MockCreator
 {
 	static public function createMock(e:Expr, ?paramTypes:Expr):Expr
@@ -39,6 +42,9 @@ class MockCreator
 	var params:Array<Type>;
 
 	var isInterface:Bool;
+
+
+	var extendTypePath:TypePath;
 
 	var typeDefinition:TypeDefinition;
 	var typeDefinitionId:String;
@@ -112,6 +118,9 @@ class MockCreator
 		typeDefinition = createTypeDefinition();
 		typeDefinitionId = (typeDefinition.pack.length > 0 ? typeDefinition.pack.join(".")  + "." : "") + typeDefinition.name;
 
+		debugPrintClass();
+		
+
 		Context.defineType(typeDefinition);
 
 		mockedClassHash.set(id, typeDefinitionId);
@@ -166,6 +175,22 @@ class MockCreator
 
 		//trace(paramTypes);
 
+		var a:Array<Type> = [];
+		for(p in classType.params)
+		{
+			a.push(p.t);
+		}
+		var typeParams = untyped TypeTools.paramsToComplex(a);
+
+		trace(typeParams);
+
+		var extendId = classType.module + "." + classType.name;
+
+		extendTypePath = TypeTools.asTypePath(extendId, typeParams);
+
+		trace(extendTypePath);
+
+
 		var kind = createKind();
 
 		var fields = createFields();
@@ -174,9 +199,12 @@ class MockCreator
 			fields.unshift(createEmptyConstructor());
 
 
-		debugFields(fields);
-		
 		var metas = updateMeta(classType.meta.get());
+		metas.push({
+			pos:Context.currentPos(),
+			name:"mockatoo",
+			params:[EConst(CString(id)).at()]
+		});
 
 		return {
 			pos: Context.currentPos(),
@@ -190,15 +218,39 @@ class MockCreator
 		}
 	}
 
-	function debugFields(fields:Array<Field>)
+	function debugPrintClass()
 	{
-		var preview = "class " + id + "Mocked\n{";
+		var metas = typeDefinition.meta;
+		var fields = typeDefinition.fields;
+
+		var preview = "";
+
+		for(meta in metas)
+		{
+			if(meta.name == "mockatoo")
+			{
+				preview += "@" + meta.name;
+
+				if(meta.params.length > 0)
+					preview += Printer.printExprList("",meta.params, ",");
+
+				preview += "\n";
+				break;
+			}
+		}
+
+
+		preview += "class " + id + "Mocked " + (isInterface?"implements":"extends") + " " + id;
+		preview += "\n{";
 
 		for(field in fields)
 		{
 			for(meta in field.meta)
 			{
 				preview += "\n	@" + meta.name;
+
+				if(meta.params.length > 0)
+					preview += Printer.printExprList("",meta.params, ",");
 			}
 
 			preview += "\n	" + Printer.printField("	", field);
@@ -240,20 +292,6 @@ class MockCreator
 	*/
 	function createKind()
 	{
-		var a:Array<Type> = [];
-		for(p in classType.params)
-		{
-			a.push(p.t);
-		}
-		var typeParams = untyped TypeTools.paramsToComplex(a);
-
-		trace(typeParams);
-
-		var extendId = classType.module + "." + classType.name;
-
-		var extendPath = TypeTools.asTypePath(extendId, typeParams);
-
-		trace(extendPath);
 
 		var mockInterface = TypeTools.asTypePath("mockatoo.Mock");
 
@@ -262,11 +300,11 @@ class MockCreator
 
 		if(isInterface)
 		{
-			interfaces = [extendPath, mockInterface];
+			interfaces = [extendTypePath, mockInterface];
 		}
 		else
 		{
-			extension = extendPath;
+			extension = extendTypePath;
 			interfaces = [mockInterface];
 		}
 
@@ -294,102 +332,171 @@ class MockCreator
 		for(field in superFields)
 		{
 			field.meta = updateMeta(field.meta);
+
 			switch(field.kind)
 			{
 				case FFun(f):
 
 					if(field.name == "new")
 					{
-						hasConstructor = true;
-
-						f.ret = null; //remove Void return type from constructor.
-						field.access.remove(APublic);
-						field.access.push(APublic);
-
-						var eReturn = EReturn().at();
-						var e = EConst(CIdent("super")).at();
-
-						if(f.args.length == 0)
-						{
-							e = e.call();
-						}
-						else 
-						{
-							var args:Array<Expr> = [];
-
-							for(arg in f.args)
-							{
-								trace(arg);
-								var argExpr = getDefaultValueForType(arg.type);
-								args.push(argExpr);
-							}
-							e = e.call(args);
-
-							//remove super arg paramaters from constructor
-							f.args = [];
-						}
-
-						//deliberately call return before call to super
-						//to prevent target class constructor being executed
-						f.expr = ExprTools.toBlock([eReturn, e]);
-						
+						overrideConstructor(field, f);
 					}
 					else
 					{
-						if(!isInterface)
-							field.access.unshift(AOverride);
-
-						if(f.ret != null && !StringTools.endsWith(TypeTools.toString(f.ret), "Void"))
-						{
-
-							f.ret = normaliseReturnType(f.ret);
-
-							trace(field.name + ":" + Std.string(f.ret));
-
-							var eref = getDefaultValueForType(f.ret);
-
-							var ereturn = EReturn(eref).at(null);
-							f.expr = createBlock([ereturn]);
-						}
-						else
-						{
-							f.expr = createBlock();
-						}
-
-						field.kind = FFun(f);
+						overrideField(field, f);
 					}
 
 					if(field.access.remove(AInline))
 					{
-						Context.warning("Cannot mock inline method [" + id + "." + field.name + "] even with '--no-inline' compiler flag.", Context.currentPos());
-						
-						//field.access.push(AInline);
-						//Compiler.setFieldType(classType.name, field.name, "MethNormal", false);
-						// if(Context.defined("no_inline"))
-						// {
-						// 	Context.warning("Cannot mock inline method [" + id + "." + field.name + "] even with '--no-inline' compiler flag.", Context.currentPos());
-						// }
-						// else
-						// {
-						// 	Context.error("Cannot mock inline method [" + id + "." + field.name + "]\nDisable inlining using Haxe's '--no-inline' compiler flag.", Context.currentPos());
-						// }
+						Context.warning("Cannot mock inline method [" + id + "." + field.name + "] even with '--no-inline' compiler flag. See http://code.google.com/p/haxe/issues/detail?id=1231", Context.currentPos());
 					}
 					else
 					{
 						fields.push(field);
 					}
 						
-					
-					
-					
 				case FVar(t, e):
 					if(isInterface) fields.push(field);
 				case FProp(get, set, t, e):
 					if(isInterface) fields.push(field);
 			}
 		}
+
+		fields = appendMockInterfaceFields(fields);
+		
 		return fields;
 	}
+
+	/**
+	Appends the fields required by the <code>mockatoo.Mock</code> interface
+	*/
+	function appendMockInterfaceFields(fields:Array<Field>):Array<Field>
+	{
+		var mockInterface = Context.getType("mockatoo.Mock");
+
+		switch(mockInterface)
+		{
+			case TInst(t, typeParams):
+				var mockFields = ClassFields.getClassFields(t.get(), false);
+
+				for(field in mockFields)
+				{
+					fields.push(field);
+				}
+			default:null;
+		}
+
+		return fields;
+	}
+
+	/**
+	Override an existing constructor, ensuring super call occurs after return
+	*/
+	function overrideConstructor(field:Field, f:Function)
+	{
+		hasConstructor = true;
+
+		f.ret = null; //remove Void return type from constructor.
+		field.access.remove(APublic);
+		field.access.remove(APrivate);
+		field.access.push(APublic);
+
+		var eMockConstructorExprs = createMockConstructorExprs();
+		var eReturn = EReturn().at();
+		var e = EConst(CIdent("super")).at();
+
+		if(f.args.length == 0)
+		{
+			e = e.call();
+		}
+		else 
+		{
+			var args:Array<Expr> = [];
+
+			for(arg in f.args)
+			{
+				trace(arg);
+				var argExpr = getDefaultValueForType(arg.type);
+				args.push(argExpr);
+			}
+			e = e.call(args);
+
+			//remove super arg paramaters from constructor
+			f.args = [];
+		}
+
+		//deliberately call return before call to super
+		//to prevent target class constructor being executed
+		f.expr = ExprTools.toBlock([eMockConstructorExprs,eReturn, e]);
+	}
+
+	function createMockConstructorExprs()
+	{
+		//create mockDelegate instance
+		var eThis =  EConst(CIdent("this")).at();
+		var eInstance = "mockatoo.internal.MockDelegate".instantiate([eThis]);
+		return EConst(CIdent("mockDelegate")).at().assign(eInstance);
+	}
+
+	/**
+	Override an existing field, normalising return types and generating default values
+	*/
+	function overrideField(field:Field, f:Function)
+	{
+		if(!isInterface)
+		field.access.unshift(AOverride);
+
+		if(f.ret != null && !StringTools.endsWith(TypeTools.toString(f.ret), "Void"))
+		{
+
+			f.ret = normaliseReturnType(f.ret);
+
+			trace(field.name + ":" + Std.string(f.ret));
+
+
+			
+			var mockCall = createMockFieldExprs(field, f);
+			var ereturn = EReturn(mockCall).at();
+			f.expr = createBlock([ereturn]);
+		}
+		else
+		{
+			var mockCall = createMockFieldExprs(field, f, false);
+
+			f.expr = mockCall;
+		}
+
+		field.kind = FFun(f);
+
+
+		var fieldMeta = createMockFieldMeta(field, f);
+		field.meta.push(fieldMeta);
+	}
+
+	function createMockFieldExprs(field:Field, f:Function, ?includeReturn:Bool=true):Expr
+	{
+
+		var args:Array<Expr> = [];
+
+		for(arg in f.args)
+		{
+			args.push(EConst(CString(arg.name)).at());
+		}
+
+		var eArgs = args.toArray(); //reference to args
+		var eName = EConst(CString(field.name)).at(); //name of current method
+		
+		if(includeReturn)
+		{
+			var eDefaultReturnValue = getDefaultValueForType(f.ret); //default return type (usually 'null')
+			return "mockDelegate.callMethodAndReturn".resolve().call([eName, eArgs, eDefaultReturnValue]);
+		}
+		else
+		{
+			return "mockDelegate.callMethod".resolve().call([eName, eArgs]);
+		}
+	}
+		
 
 	function normaliseReturnType(ret:ComplexType)
 	{
@@ -407,6 +514,49 @@ class MockCreator
 		}
 
 		return ret;
+	}
+
+	/**
+	Creates a @mock metadata value for the field
+	E.g @mock([String, ?foo.Bar], ret)
+	*/
+	function createMockFieldMeta(field:Field, f:Function)
+	{
+		var args:Array<Expr> = [];
+		for(arg in f.args)
+		{
+			trace(arg);
+
+			var value:String = arg.opt ? "?" : "";
+
+			//add the return type including if optional (?)
+			if(arg.type == null)
+			{
+				
+			}
+			else
+			{
+				var ident = normaliseReturnType(arg.type).toString();
+				value += ident;
+			}
+			args.push(EConst(CString(value)).at());
+		}
+
+		var params:Array<Expr> = [args.toArray()];
+
+		if(f.ret != null && !StringTools.endsWith(TypeTools.toString(f.ret), "Void"))
+		{
+			var ident = normaliseReturnType(f.ret).toString();
+			params.push(EConst(CString(ident)).at());
+		}
+
+		return
+		{
+			pos:Context.currentPos(),
+			name:"mockatoo",
+			params:params
+
+		};
 	}
 
 	/**
@@ -488,7 +638,8 @@ class MockCreator
 	*/
 	function createEmptyConstructor():Field
 	{	
-		var exprs = ExprTools.toBlock([]);
+		var constructorExprs = createMockConstructorExprs();
+		var exprs = ExprTools.toBlock([constructorExprs]);
 		var f:Function = FunctionTools.func(exprs, null, null, null, false);
 		return 
 		{
