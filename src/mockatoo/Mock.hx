@@ -1,6 +1,6 @@
 package mockatoo;
 
-import mockatoo.internal.MockDelegate;
+import mockatoo.internal.MockProxy;
 
 
 /**
@@ -8,5 +8,5 @@ Indicates a class is a generated Mock
 */
 interface Mock
 {
-	var mockDelegate:MockDelegate;
+	var mockProxy:MockProxy;
 }

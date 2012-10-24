@@ -43,9 +43,7 @@ class MockatooTest
 	{
 	}
 
-
 	// ------------------------------------------------------------------------- verification
-
 
 	@Test
 	public function should_throw_exception_if_verify_non_mock()

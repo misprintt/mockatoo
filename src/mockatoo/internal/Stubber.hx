@@ -4,9 +4,9 @@ import mockatoo.Mockatoo;
 
 /**
  * Dynamic class that is created for stubbing a method.
- * Each dynamic method calls to a specific MethodProxy.
+ * Each dynamic method calls to a specific MockMethod.
  */
-class MockStubbing implements Dynamic<Dynamic>
+class Stubber implements Dynamic<Dynamic>
 {
 	public function new()
 	{

@@ -3,16 +3,16 @@ package mockatoo.internal;
 import massive.munit.util.Timer;
 import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
-import mockatoo.internal.MockDelegate;
+import mockatoo.internal.MockProxy;
 import mockatoo.Mockatoo;
 import mockatoo.exception.VerificationException;
 import mockatoo.exception.StubbingException;
 /**
-* Auto generated MassiveUnit Test Class  for mockatoo.internal.MockDelegate 
+* Auto generated MassiveUnit Test Class  for mockatoo.internal.MockProxy 
 */
-class MockDelegateTest 
+class MockProxyTest 
 {
-	var instance:MockDelegate; 
+	var instance:MockProxy; 
 	
 	public function new() 
 	{
@@ -44,7 +44,7 @@ class MockDelegateTest
 	public function should_verify():Void
 	{
 		var mock = mockatoo.Mockatoo.mock(ClassToMock);
-		instance = new MockDelegate(mock);
+		instance = new MockProxy(mock);
 
 		var verification = instance.verify();
 
@@ -66,7 +66,7 @@ class MockDelegateTest
 	public function should_return_default_value():Void
 	{
 		var mock = mockatoo.Mockatoo.mock(ClassToMock);
-		instance = new MockDelegate(mock);
+		instance = new MockProxy(mock);
 
 		var verification = instance.verify();
 
@@ -80,7 +80,7 @@ class MockDelegateTest
 	public function should_use_verification_mode():Void
 	{
 		var mock = mockatoo.Mockatoo.mock(ClassToMock);
-		instance = new MockDelegate(mock);
+		instance = new MockProxy(mock);
 
 		var verification = instance.verify(never);
 
@@ -104,7 +104,7 @@ class MockDelegateTest
 	public function should_throw_exception_if_cannot_stub_return_value():Void
 	{
 		var mock = mockatoo.Mockatoo.mock(ClassToMock);
-		instance = new MockDelegate(mock);
+		instance = new MockProxy(mock);
 
 		var stub = instance.stub("none", []);
 
@@ -120,7 +120,7 @@ class MockDelegateTest
 	public function should_throw_stubbed_execption():Void
 	{
 		var mock = mockatoo.Mockatoo.mock(ClassToMock);
-		instance = new MockDelegate(mock);
+		instance = new MockProxy(mock);
 
 		var stub = instance.stub("none", []);
 
@@ -140,7 +140,7 @@ class MockDelegateTest
 	public function should_return_stubbed_value():Void
 	{
 		var mock = mockatoo.Mockatoo.mock(ClassToMock);
-		instance = new MockDelegate(mock);
+		instance = new MockProxy(mock);
 
 		var stub = instance.stub("two", [1,2]);
 
@@ -152,10 +152,10 @@ class MockDelegateTest
 	}
 
 	@Test
-	public function should_return_default_value_once_stubs_used():Void
+	public function should_always_return_last_stub():Void
 	{
 		var mock = mockatoo.Mockatoo.mock(ClassToMock);
-		instance = new MockDelegate(mock);
+		instance = new MockProxy(mock);
 
 		var stub = instance.stub("two", [1,2]);
 
@@ -167,7 +167,7 @@ class MockDelegateTest
 
 		result = instance.callMethodAndReturn("two", [1,2], 0);
 
-		Assert.areEqual(0, result);
+		Assert.areEqual(4, result);
 	}
 
 
@@ -175,7 +175,7 @@ class MockDelegateTest
 	public function should_chain_stubs():Void
 	{
 		var mock = mockatoo.Mockatoo.mock(ClassToMock);
-		instance = new MockDelegate(mock);
+		instance = new MockProxy(mock);
 
 		var stub = instance.stub("two", [1,2]);
 
@@ -197,7 +197,7 @@ class MockDelegateTest
 	public function should_call_stubbed_callback():Void
 	{
 		var mock = mockatoo.Mockatoo.mock(ClassToMock);
-		instance = new MockDelegate(mock);
+		instance = new MockProxy(mock);
 
 		var stub = instance.stub("two", [1,2]);
 

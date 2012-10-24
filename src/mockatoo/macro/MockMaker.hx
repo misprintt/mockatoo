@@ -32,7 +32,7 @@ typedef TypeParamDecl = {
 /**
 Macro class that generates a Mock implementation of a class or interface
 */
-class MockCreator
+class MockMaker
 {
 
 	static var mockedClassHash:Hash<String> = new Hash();
@@ -440,10 +440,10 @@ class MockCreator
 
 	function createMockConstructorExprs()
 	{
-		//create mockDelegate instance
+		//create mockProxy instance
 		var eThis =  EConst(CIdent("this")).at();
-		var eInstance = "mockatoo.internal.MockDelegate".instantiate([eThis]);
-		return EConst(CIdent("mockDelegate")).at().assign(eInstance);
+		var eInstance = "mockatoo.internal.MockProxy".instantiate([eThis]);
+		return EConst(CIdent("mockProxy")).at().assign(eInstance);
 	}
 
 	/**
@@ -500,11 +500,11 @@ class MockCreator
 
 			var eDefaultReturnValue = getDefaultValueForType(f.ret); //default return type (usually 'null')
 			trace("  " + eDefaultReturnValue.print());
-			return "mockDelegate.callMethodAndReturn".resolve().call([eName, eArgs, eDefaultReturnValue]);
+			return "mockProxy.callMethodAndReturn".resolve().call([eName, eArgs, eDefaultReturnValue]);
 		}
 		else
 		{
-			return "mockDelegate.callMethod".resolve().call([eName, eArgs]);
+			return "mockProxy.callMethod".resolve().call([eName, eArgs]);
 		}
 	}
 		

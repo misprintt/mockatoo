@@ -8,9 +8,9 @@ using mockatoo.util.TypeEquality;
 /**
  * Represents a single method in a Mock class, storing all calls, verifications
  * and stubs for that method.
- * Created by <code>MockDelegate</code>
+ * Created by <code>MockProxy</code>
  */
-class MethodProxy
+class MockMethod
 {
 	public var fieldName(default, null):String;
 
@@ -21,7 +21,7 @@ class MethodProxy
 	var className:String;
 
 	var invocations:Array<Array<Dynamic>>;
-	var stubbings:Array<Stub>;
+	var stubbings:Array<Stubbing>;
 
 	public function new(className:String, fieldName:String, arguments:Array<String>, ?returns:String)
 	{
@@ -39,45 +39,47 @@ class MethodProxy
 	{
 		invocations.push(args);
 
-		var stub = getStubForArgs(args);
+		var stub = getStubbingForArgs(args);
 
-		if(stub != null && stub.values.length > 0)
+		if(stub == null) return;
+
+		switch(getActiveStubValue(stub))
 		{
-			switch(stub.values.shift())
-			{
-				case returns(value): //return value;
-				case throws(value): throw value;
-				case calls(value): value(args);
-			}
+			case returns(r): return;//dont return on methods with no return value
+			case throws(e): throw e;
+			case calls(f): f(args);
 		}
-		//specific, any value, null
 	}
+
+	function getActiveStubValue(stub:Stubbing)
+	{
+		if(stub.values.length > 1)
+			return stub.values.shift();//remove if not last one;
+		return stub.values[0];
+	} 
 
 	public function callAndReturn<T>(args:Array<Dynamic>, defaultReturn:T):T
 	{
 		invocations.push(args);
 
-		var stub = getStubForArgs(args);
+		var stub = getStubbingForArgs(args);
 
-		if(stub != null && stub.values.length > 0)
+		if(stub == null) return defaultReturn;
+		
+		switch(getActiveStubValue(stub))
 		{
-			switch(stub.values.shift())
-			{
-				case returns(value): return value;
-				case throws(value): throw value;
-				case calls(value): return value(args);
-			}
-
+			case returns(r): return r;
+			case throws(e): throw e;
+			case calls(f): return f(args);
 		}
-		else
-			return defaultReturn;
+			
 	}
 
 	public function addReturnFor<T>(args:Array<Dynamic>, values:Array<T>)
 	{
 		if(returnType == null) throw new StubbingException("Method [" + fieldName + "] has no return type and cannot stub custom return values.");
 
-		var stub = getStubForArgs(args);
+		var stub = getStubbingForArgs(args);
 
 		if(stub == null)
 		{
@@ -94,7 +96,7 @@ class MethodProxy
 
 	public function addThrowFor(args:Array<Dynamic>, values:Array<Dynamic>)
 	{
-		var stub = getStubForArgs(args);
+		var stub = getStubbingForArgs(args);
 
 		if(stub == null)
 		{
@@ -110,7 +112,7 @@ class MethodProxy
 
 	public function addCallbackFor(args:Array<Dynamic>, values:Array<Dynamic>)
 	{
-		var stub = getStubForArgs(args);
+		var stub = getStubbingForArgs(args);
 
 		if(stub == null)
 		{
@@ -127,7 +129,7 @@ class MethodProxy
 		}
 	}
 
-	function getStubForArgs(args:Array<Dynamic>):Stub
+	function getStubbingForArgs(args:Array<Dynamic>):Stubbing
 	{
 		for(stub in stubbings)
 		{
@@ -307,13 +309,13 @@ class MethodProxy
 }
 
 
-typedef Stub = 
+typedef Stubbing = 
 {
 	args:Array<Dynamic>,
-	values:Array<StubValue>
+	values:Array<StubbingValue>
 }
 
-enum StubValue
+enum StubbingValue
 {
 	returns(value:Dynamic);
 	throws(value:Dynamic);

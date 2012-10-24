@@ -4,14 +4,14 @@ import mockatoo.Mockatoo;
 /**
  * Responsible for run time mocking behaviour
  */
-class MockDelegate
+class MockProxy
 {
 	public var target:Mock;
 
 	var targetClass:Class<Mock>;
 	var targetClassName:String;
 
-	var hash:Hash<MethodProxy>;
+	var hash:Hash<MockMethod>;
 
 	public function new(target:Mock)
 	{
@@ -45,11 +45,11 @@ class MockDelegate
 		//return returnValue;
 	}
 
-	public function verify(?mode:VerificationMode):MockVerification
+	public function verify(?mode:VerificationMode):Verification
 	{
 		if(mode == null) mode = VerificationMode.times(1);
 		
-		var temp = new MockVerification(mode);
+		var temp = new Verification(mode);
 
 		for(proxy in hash.iterator())
 		{
@@ -63,9 +63,9 @@ class MockDelegate
 		return temp;
 	}
 
-	public function stub(method:String, args:Array<Dynamic>):MockStubbing
+	public function stub(method:String, args:Array<Dynamic>):Stubber
 	{
-		var stub = new MockStubbing();
+		var stub = new Stubber();
 
 		var proxy = hash.get(method);
 
@@ -98,12 +98,12 @@ class MockDelegate
 	}
 
 	/*
-	public function thenReturn(value:T):MockStubbing
+	public function thenReturn(value:T):Stubber
 	{
 		
 	}
 
-	public function thenThrow(value:Dynamic):MockStubbing
+	public function thenThrow(value:Dynamic):Stubber
 	{
 
 	}
@@ -137,7 +137,7 @@ class MockDelegate
 
 				var args:Array<String> = cast mockMeta[0];
 				var ret:String = cast(mockMeta.length > 1 ? mockMeta[1] : null);
-				var proxy = new MethodProxy(targetClassName, fieldName, args, ret);
+				var proxy = new MockMethod(targetClassName, fieldName, args, ret);
 
 				hash.set(fieldName, proxy);
 

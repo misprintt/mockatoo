@@ -3,16 +3,16 @@ package mockatoo.internal;
 import massive.munit.util.Timer;
 import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
-import mockatoo.internal.MethodProxy;
+import mockatoo.internal.MockMethod;
 import mockatoo.exception.VerificationException;
 import mockatoo.exception.StubbingException;
 import mockatoo.Mockatoo;
 /**
-* Auto generated MassiveUnit Test Class  for mockatoo.internal.MethodProxy 
+* Auto generated MassiveUnit Test Class  for mockatoo.internal.MockMethod 
 */
-class MethodProxyTest 
+class MockMethodTest 
 {
-	var instance:MethodProxy; 
+	var instance:MockMethod; 
 	
 	public function new() 
 	{
@@ -753,7 +753,15 @@ class MethodProxyTest
 		catch(e:StubbingException){}
 		
 
+		var wasCalled:Bool = false;
+		var f = function(args:Array<Dynamic>)
+		{
+			wasCalled = true;
+			return;
+		}
+
 		instance.addThrowFor([], ["exception"]);
+		instance.addCallbackFor([], [f]);
 
 		try
 		{
@@ -765,16 +773,8 @@ class MethodProxyTest
 			Assert.areEqual("exception", e);
 		}
 
-		var wasCalled:Bool = false;
-		var f = function(args:Array<Dynamic>)
-		{
-			wasCalled = true;
-		}
-
-		instance.addCallbackFor([], [f]);
 		instance.call([]);
 		Assert.isTrue(wasCalled);
-
 	}
 
 	@Test
@@ -851,10 +851,10 @@ class MethodProxyTest
 
 	// ------------------------------------------------------------------------- Internal
 
-	function createInstance(?args:Array<String>,?ret):MethodProxy
+	function createInstance(?args:Array<String>,?ret):MockMethod
 	{
 		if(args == null) args = [];
-		return new MethodProxy("ClassName", "fieldName", args, ret);
+		return new MockMethod("ClassName", "fieldName", args, ret);
 	}
 }
 

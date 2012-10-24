@@ -19,7 +19,7 @@ class WhenMacro
 		trace(expr);
 
 		//converts instance.one(1)
-		//into instance.mockDelegate.when("one", [1])
+		//into instance.mockProxy.when("one", [1])
 
 		switch(expr.expr)
 		{
@@ -32,7 +32,7 @@ class WhenMacro
 
 				var args = params.toArray();
 
-				ident = parts.join(".") + ".mockDelegate.stub";
+				ident = parts.join(".") + ".mockProxy.stub";
 
 				var actualExpr = ident.resolve().call([methodName, args]);
 				trace(actualExpr.toString());

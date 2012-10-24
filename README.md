@@ -15,6 +15,7 @@ Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode
 
 * See [Features](#features) for overview of key features
 * See [Usage](#usage) for more detailed examples and usecases
+* See [Known Limitations](#knownlimitations) for edge cases not supported in Haxe 2.10.
 * See [milestones](#milestones) for details on the current stable release.
 * See [roadmap](#roadmap) for more details on planned features.
 
@@ -68,7 +69,7 @@ Verifying exact number of invocations
 * [Basic Stubbing](#basicstubbing)
 * [Argument Matchers](#argumentmatchers)
 * [Verifying exact number of invocations / at least once / never](#verifyingexactnumberofinvocations)
-* [Stubbing with consecutive calls or callbacks](#chainedstubbing)
+* [Advanced Stubbing with consecutive calls or callbacks](#advancedstubbing)
 * [Known limitations](#limitations)
 
 
@@ -182,18 +183,23 @@ Verifications use natural language to specify the minimum and maximum times a me
 
 > Note: Default mode is times(1);
 
-### Chained stubbing
+### Advanced stubbing
 
-Stubbing is chainable, so you can specify the behaviour each time a method is called. Values are defined in order. 
+Stubbing is chainable, so you can stub with different behavior for consecutive method calls.
 
-	Mockatoo.when(mock.foo("bar")).thenReturn("hello", "goodbye");
+This can be achieved by providing multiple return (or thrown) values:
 
-Exceptions and returns can be chained together.
+	Mockatoo.when(mock.someMethod()).thenReturn("a", "b");
+	Mockatoo.when(mock.someMethod()).theThrow("one", "two");
 
-	Mockatoo.when(mock.foo("bar")).thenReturn("hello").thenThrow("all gone");
+Combinations can also be chained together
 
-Once all stubs have been used, then the method defaults back to the default value for that return type.
+	Mockatoo.when(mock.someMethod()).thenReturn("one", "two").thenThrow("empty");
 
+
+The last stubbing (e.g: thenThrow("empty")) determines the behavior for any further consecutive calls.
+
+**Custom Callback Stub**
 
 You can also set a custom callback when a method is invoked
 
@@ -205,10 +211,39 @@ You can also set a custom callback when a method is invoked
 	Mockatoo.when(mock.foo("bar")).thenCall(f);
 
 
-### Limitations
+## Known Limitations
 
-* in Haxe 2.10 (and earlier) inlined methods can not be mocked (prints a compiler warning). See <http://code.google.com/p/haxe/issues/detail?id=1231>
-* @:final methods throw runtime errors in flash (AVM2) when mocked
+### Mocking inlined methods
+
+In Haxe 2.10 inlined methods cannot be mocked. Mockatoo will print a compiler warning and skip affected fields.
+
+	inline public function someMethod()
+	{
+		..///
+	}
+
+In Haxe 2.11 (svn) this has been resolved (<http://code.google.com/p/haxe/issues/detail?id=1231>) and requires the `--no-inline` compiler flag
+
+### Mocking @:final methods
+
+Mockatoo supports overriding @:final methods, however it throws run time exceptions on the Flash target (AVM2).
+
+See <http://code.google.com/p/haxe/issues/detail?id=1246> for more details.
+
+	@:final public function someMethod()
+	{
+		..///
+	}
+
+### Mocking methods which reference private types
+
+
+Some classes may expect arguments, or return values typed to a private Class, Enum or Typedef. For example, mocking `haxe.Http` will fail to compile on the neko target due to a reference to `private typedef AbstractSocket`
+
+	Mockatoo.mock(haxe.Http);
+
+
+This is due to an edge case in tink_macros (1.2.0) that has now been fixed on tinkerbell master (see <https://github.com/back2dos/tinkerbell/pull/37> for more details)
 
 ## Milestones
 
@@ -243,26 +278,7 @@ This is the active roadmap.
 
 ### M3
 
-### Haxe 2.11 static imports
-
-Update Mockatoo to work with Haxe 2.11's static imports
-
-	import mockito.Mockatoo.*;
-
-Simplified API contract:
-
-	var mockClass = mock(SomeClass);
-	verify(mockClass, times(2)).someFunction();
-	when(mockClass.someFunction()).thenThrow("Foo");
-
-Investigate support for `using` to further naturalise syntax for verification counts
-
-	verify(mockClass, 2.times()).someFunction();
-
-
-### M4
-
-**Spying**
+**Partial Mocks (Spying)**
 
 Partial mock that defers to concrete implementation if not stubbed
 
