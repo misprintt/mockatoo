@@ -205,7 +205,6 @@ class ExtendsTypedExtensionClass extends ExtendsTypedClass<String, String>
 	}	
 }
 
-
 typedef TypedefToSimpleInterface = SimpleInterface;
 typedef TypedefToSimpleClass = SimpleClass;
 typedef TypedefToStringTypedInterface = TypedInterface<String>;
@@ -213,3 +212,25 @@ typedef TypedefToStringTypedClass = TypedClass<String>;
 
 typedef TypedefToImplementsTypedInterface = ImplementsTypedInterface<String, String>;
 typedef TypedefToExtendsTypedClass = ExtendsTypedClass<String, String>;
+
+class ClassWithPrivateReference
+{
+	public function new()
+	{
+
+	}
+
+
+	public function test(arg:PrivateClass):PrivateClass
+	{
+		return arg;
+	}
+}
+
+private class PrivateClass
+{
+	public function new()
+	{
+		
+	}
+}

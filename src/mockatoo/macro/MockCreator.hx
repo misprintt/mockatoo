@@ -19,6 +19,16 @@ using tink.macro.tools.ExprTools;
 using tink.macro.tools.TypeTools;
 using tink.core.types.Outcome;
 
+
+#if !haxe_211
+typedef TypeParamDecl = {
+	var name : String;
+	@:optional var constraints : Array<ComplexType>;
+	//@:optional var params : Array<TypeParamDecl>;
+}
+
+#end
+
 /**
 Macro class that generates a Mock implementation of a class or interface
 */
@@ -133,14 +143,7 @@ class MockCreator
 	{
 		var typeParams = untyped TypeTools.paramsToComplex(params);
 		var expr = ExprTools.instantiate(typeDefinitionId, null, typeParams, pos);
-
-		// var args = typeDefinitionId.resolve();
-		// var expr = "Std.Type".resolve(); 
-		// 				.field("createEmptyInstance")
-		// 				.call([args]);
-
 		trace(Printer.print(expr));
-
 		return expr;
 	}
 
@@ -160,14 +163,15 @@ class MockCreator
 		return true;
 	}
 
+
+
 	/**
 	Returns a new type definition based on the target class or interface that
 	mocks the contents of all function fields
 	*/
 	function createTypeDefinition():TypeDefinition
 	{
-		var paramTypes:Array<{name:String, constraints:Array<ComplexType>}> = [];
-
+		var paramTypes:Array<TypeParamDecl> = [];
 		for(param in classType.params)
 		{
 			paramTypes.push({name:param.name, constraints:[]});
@@ -207,7 +211,7 @@ class MockCreator
 		});
 
 		return {
-			pos: Context.currentPos(),
+			pos: classType.pos,
 			params: paramTypes,
 			pack: classType.pack,
 			name: id + "Mocked",
@@ -292,7 +296,6 @@ class MockCreator
 	*/
 	function createKind()
 	{
-
 		var mockInterface = TypeTools.asTypePath("mockatoo.Mock");
 
 		var extension:TypePath = null;
@@ -304,6 +307,7 @@ class MockCreator
 		}
 		else
 		{
+			trace(extendTypePath);
 			extension = extendTypePath;
 			interfaces = [mockInterface];
 		}
@@ -348,7 +352,16 @@ class MockCreator
 
 					if(field.access.remove(AInline))
 					{
-						Context.warning("Cannot mock inline method [" + id + "." + field.name + "] even with '--no-inline' compiler flag. See http://code.google.com/p/haxe/issues/detail?id=1231", Context.currentPos());
+						#if haxe_211
+							#if no_inline
+								fields.push(field);
+							#else
+								Context.warning("Cannot mock inline method [" + id + "." + field.name + "]. Please set '--no-inline' compiler flag.", Context.currentPos());
+							#end
+						#else
+							Context.warning("Cannot mock inline method [" + id + "." + field.name + "] please upgrade to Haxe 2.11 and set '--no-inline' compiler flag (See http://code.google.com/p/haxe/issues/detail?id=1231)", Context.currentPos());
+						#end
+						
 					}
 					else
 					{
@@ -488,7 +501,10 @@ class MockCreator
 		
 		if(includeReturn)
 		{
+			trace(f.ret.toString());
+
 			var eDefaultReturnValue = getDefaultValueForType(f.ret); //default return type (usually 'null')
+			trace("  " + eDefaultReturnValue.print());
 			return "mockDelegate.callMethodAndReturn".resolve().call([eName, eArgs, eDefaultReturnValue]);
 		}
 		else
@@ -506,13 +522,15 @@ class MockCreator
 			default: null;
 		}
 
-		if(typePath != null && typePath.name == "StdTypes")
+		if(typePath == null) return ret;
+
+
+		if(typePath.name == "StdTypes")
 		{
 			typePath.name = typePath.sub;
 			typePath.sub = null;
 			ret = TPath(typePath);
 		}
-
 		return ret;
 	}
 

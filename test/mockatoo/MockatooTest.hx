@@ -95,11 +95,7 @@ class MockatooTest
 		var instance = Mockatoo.mock(VariableArgumentsClass);
 
 		var stub = Mockatoo.when(instance.one(1));
-
-		trace(stub);
-
 		Assert.isTrue(true);
-		
 	}
 
 	// ------------------------------------------------------------------------- mocking
@@ -149,7 +145,6 @@ class MockatooTest
 
 		var mock = Mockatoo.mock(ClassWithFields);
 		assertMock(mock, ClassWithFields, fields);
-		
 	}
 
 	@Test
@@ -276,7 +271,7 @@ class MockatooTest
 
 	// ------------------------------------------------------------------------- edge cases
 
-	@Test @Ignore("Cannot override inline methods")
+	@Test #if !haxe_211 @Ignore("Cannot override inline methods") #end
 	public function should_mock_class_with_inlined_methods():Void
 	{
 		var fields:Array<Field> = [];
@@ -306,6 +301,43 @@ class MockatooTest
 		assertMock(mock, ClassThatIsFinal, fields);
 	}
 
+	#end
+
+	#if haxe_211
+	@Test
+	public function should_mock_class_with_private_type_references():Void
+	{
+		var fields:Array<Field> = [];
+		addField(fields, "test", [null]);
+
+		var mock = Mockatoo.mock(ClassWithPrivateReference);
+		assertMock(mock, ClassWithPrivateReference, fields);
+	}
+	#else
+	@Test  @Ignore("Requires tink_macros fork https://github.com/back2dos/tinkerbell/pull/37")
+	public function should_mock_class_with_private_type_references():Void
+	{
+		
+	}
+	#end
+
+	#if haxe_211
+	@Test
+	public function should_mock_http():Void
+	{
+		var fields:Array<Field> = [];
+		addField(fields, "request", [false]);
+		var mock = Mockatoo.mock(haxe.Http);
+
+		assertMock(mock, haxe.Http, fields);
+	}
+	#else
+	@Test
+	@Ignore("Requires tink_macros fork https://github.com/back2dos/tinkerbell/pull/37")
+	public function should_mock_http():Void
+	{
+		
+	}
 	#end
 
 	// ------------------------------------------------------------------------- utilities

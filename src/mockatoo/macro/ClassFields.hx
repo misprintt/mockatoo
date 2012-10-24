@@ -16,10 +16,11 @@ typedef ParamDeclaration =
 	name:String,
 	type:Type
 }
+
 class ClassFields
 {
 
-	static inline var PRETTY = true;
+	@:extern static inline var PRETTY = true;
 
 	/**
 	Recursively aggregates fields from class and super classes, ensuring that
@@ -86,7 +87,6 @@ class ClassFields
 	static function getParamDeclarations(paramTypes:Array<{t:Type, name:String}>, paramDecls:Array<Type>):Array<ParamDeclaration>
 	{
 		var results:Array<ParamDeclaration> = [];
-
 
 		for(i in 0...paramTypes.length)
 		{
@@ -221,7 +221,6 @@ class ClassFields
 
 				var param = TPType(t.toComplex(true));
 				return TPath({pack:[], name:"StdTypes", sub:"Dynamic", params:[param]});
-				
 			default:
 				return type.toComplex(PRETTY);
 		}
@@ -277,7 +276,6 @@ class ClassFields
 				opt : arg.opt,
 				name : arg.name
 			}
-
 			converted.push(value);
 		}
 
@@ -293,8 +291,11 @@ class ClassFields
 			case AccNever: "never";
 			case AccCall(m): m;
 			case AccResolve: throw "not implemented for VarAccess [" + access + "]";
+			#if haxe_211
+			case AccRequire(r,msg): throw "not implemented VarAccess [" + access + "]";
+			#else
 			case AccRequire(r): throw "not implemented VarAccess [" + access + "]";
-			
+			#end
 		}		
 	}
 

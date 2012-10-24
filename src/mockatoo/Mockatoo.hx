@@ -142,8 +142,6 @@ class Mockatoo
 
 		initialized = true;
 
-		Compiler.define("--no-inline");
-		Compiler.define("-no-inline");
 		Compiler.define("no-inline");
 		
 		createTempDirectory();
