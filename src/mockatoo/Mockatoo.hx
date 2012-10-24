@@ -1,20 +1,12 @@
 package mockatoo;
 
 #if macro
-
-import haxe.macro.Compiler;
-import haxe.macro.Context;
 import haxe.macro.Expr;
-import haxe.macro.Type;
-
-import sys.io.File;
-import sys.FileSystem;
-
-using tink.macro.tools.Printer;
-using tink.macro.tools.ExprTools;
 #end
 
+import mockatoo.macro.InitMacro;
 import mockatoo.macro.MockCreator;
+import mockatoo.macro.WhenMacro;
 
 /**
  Mockatoo library enables mocks creation, verification and stubbing.
@@ -29,8 +21,9 @@ class Mockatoo
 	 */
 	@:macro static public function mock<T>(classToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
 	{
-		init();
-		return MockCreator.createMock(classToMock, paramTypes);
+		InitMacro.init();
+		var mock = new MockCreator(classToMock, paramTypes);
+		return mock.toExpr();
 	}
 
 	/**
@@ -100,97 +93,7 @@ class Mockatoo
      */
 	@:macro static public function when(expr:ExprOf<Dynamic>):ExprOf<Dynamic>
 	{
-
-		var str = expr.print();
-		trace(str);
-		trace(expr);
-
-		//converts instance.one(1)
-		//into instance.mockDelegate.when("one", [1])
-
-		switch(expr.expr)
-		{
-			case ECall(e, params):
-
-				var ident = e.toString();
-
-				var parts = ident.split(".");
-				var methodName = EConst(CString(parts.pop())).at();
-
-				var args = params.toArray();
-
-				ident = parts.join(".") + ".mockDelegate.stub";
-
-				var actualExpr = ident.resolve().call([methodName, args]);
-				trace(actualExpr.toString());
-				return actualExpr;
-
-			default: throw "Invalid arg [" + expr.print() + "]";
-		}
-		return expr;
+		return WhenMacro.create(expr);
 	}
 
-
-	#if macro
-
-	public static var TEMP_DIR:String = ".temp/mockatoo/";
-	static var initialized = false;
-
-	static function init()
-	{
-		if (initialized) return;
-
-		initialized = true;
-
-		Compiler.define("no-inline");
-		
-		createTempDirectory();
-
-
-		Console.addPrinter(new FilePrinter(TEMP_DIR + "mockatoo.log"));
-
-		Console.start();
-		Console.removePrinter(Console.defaultPrinter);
-	}
-
-	static function createTempDirectory()
-	{
-		var temp = TEMP_DIR.split("/");
-
-		var path = "";
-		
-		while(temp.length > 0)
-		{	
-			var part = temp.shift();
-			if(part == "" && temp.length == 0) break;
-
-			path += part + "/";
-
-			if(!FileSystem.exists(path)) FileSystem.createDirectory(path);
-		}
-	}
-
-	#end
 }
-
-#if macro
-
-class FilePrinter extends mconsole.FilePrinter
-{
-	public function new(path:String)
-	{
-		if(FileSystem.exists(path))
-			FileSystem.deleteFile(path);
-		super(path);
-	}
-
-	/**
-	Fiters out any logs outside of current package.
-	*/
-	override public function print(level: mconsole.LogLevel, params:Array<Dynamic>, indent:Int, pos:haxe.PosInfos):Void
-	{
-		if(StringTools.startsWith(pos.className, "mockatoo"))
-			super.print(level, params, indent, pos);
-	}
-}
-#end

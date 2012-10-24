@@ -34,11 +34,6 @@ Macro class that generates a Mock implementation of a class or interface
 */
 class MockCreator
 {
-	static public function createMock(e:Expr, ?paramTypes:Expr):Expr
-	{
-		var m = new MockCreator(e, paramTypes);
-		return m.toExpr();
-	}
 
 	static var mockedClassHash:Hash<String> = new Hash();
 
