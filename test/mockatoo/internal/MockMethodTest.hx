@@ -778,6 +778,24 @@ class MockMethodTest
 	}
 
 	@Test
+	public function should_throw_exception_if_return_found_for_void_call():Void
+	{
+		instance = createInstance();
+
+		//hack to test missing line of code coverage
+		untyped instance.returnType = "Int";
+		instance.addReturnFor([], [1]);
+		untyped instance.returnType = null;
+
+		try
+		{
+			instance.call([]);
+			Assert.fail("Expected StubbingException");
+		}
+		catch(e:StubbingException){}
+	}
+
+	@Test
 	public function should_throw_exception_if_callback_is_not_function():Void
 	{
 		instance = createInstance();
@@ -846,6 +864,21 @@ class MockMethodTest
 		var result = instance.callAndReturn([1,2,3], 0);
 
 		Assert.areEqual(2, result);
+	}
+
+
+
+	@Test
+	public function should_return_value_for_stub_matcher():Void
+	{
+		instance = createInstance(["Int"], "Int");
+
+		instance.addReturnFor([anyInt], [666]);
+
+		var result = instance.callAndReturn([0], 0);
+
+		Assert.areEqual(666, result);
+
 	}
 
 

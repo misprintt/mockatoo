@@ -40,12 +40,11 @@ class MockMethod
 		invocations.push(args);
 
 		var stub = getStubbingForArgs(args);
-
 		if(stub == null) return;
 
 		switch(getActiveStubValue(stub))
 		{
-			case returns(r): return;//dont return on methods with no return value
+			case returns(r): throw new StubbingException("Method [" + fieldName + "] has no return type and cannot stub custom return values.");
 			case throws(e): throw e;
 			case calls(f): f(args);
 		}
@@ -139,7 +138,7 @@ class MockMethod
 
 			for(i in 0...args.length)
 			{
-				if(compareArgs(args[i], stub.args[i])) 
+				if(compareArgs(stub.args[i],args[i])) 
 					matchingArgs ++;
 			}
 
