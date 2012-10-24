@@ -138,10 +138,6 @@ You can also specify an execption
 
 Mockatoo verifies argument values in natural syntax: by using an <code>equals()</code> method. Sometimes, when extra flexibility is required then you might use argument matchers:  
 
-To verify fuzzy matching on arguments, import Matchers:
-
-	import mockatoo.Matchers;
-
 Matching against a type:
 
 	Mockatoo.verify(mock).foo(anyString);
@@ -177,10 +173,6 @@ Custom matching function
 
 ### Verifying exact number of invocations
 
-To verify the number of times a method was invoked, import VerificationMode
-
-	import mockatoo.VerificationMode;
-
 Verifications use natural language to specify the minimum and maximum times a method was invoked with specific arguments
 
 	Mockatoo.verify(mock, times(2)).foo();
@@ -189,9 +181,6 @@ Verifications use natural language to specify the minimum and maximum times a me
 	Mockatoo.verify(mock, never).foo();
 
 > Note: Default mode is times(1);
-
-
-
 
 ### Chained stubbing
 

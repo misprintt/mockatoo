@@ -8,6 +8,7 @@ import mockatoo.macro.InitMacro;
 import mockatoo.macro.MockCreator;
 import mockatoo.macro.WhenMacro;
 
+
 /**
  Mockatoo library enables mocks creation, verification and stubbing.
 */
@@ -62,7 +63,7 @@ class Mockatoo
      * <p>
      * Examples:
      * 
-     * <pre class="code"><code class="java">
+     * <pre class="code"><code class="haxe">
      * <b>when</b>(mock.someMethod()).<b>thenReturn</b>(10);
      *
      * //you can use flexible argument matchers, e.g:
@@ -96,4 +97,73 @@ class Mockatoo
 		return WhenMacro.create(expr);
 	}
 
+}
+
+/**
+ * Allows flexible verification or stubbing of arguments based on type
+ *
+ * <pre class="code"><code class="haxe">
+ * verify(mock).someMethod(anyString);
+ * verify(mock).someMethod(anyInt);
+ * verify(mock).someMethod(anyFloat);
+ * verify(mock).someMethod(anyBool);
+ * verify(mock).someMethod(anyIterator); //array, hash, iterable, iterator, etc
+ * verify(mock).someMethod(anyObject); //anonymous data structure
+ * verify(mock).someMethod(anyEnum);
+ *
+ * verify(mock).someMethod(enumOf(SomEnum)); //an enum value of a specific enum type
+ * verify(mock).someMethod(instanceOf(SomeClass));
+ *
+ * verify(mock).someMethod(isNull);
+ * verify(mock).someMethod(isNotNull); // any non null value
+ * verify(mock).someMethod(any); // wildcard for any value
+ *
+ * verify(mock).someMethod(customMatch(someFunction)); //custom function to verify value
+
+ */
+enum Matcher
+{
+	anyString;
+	anyInt;
+	anyFloat;
+	anyBool;
+	anyIterator;
+	anyObject;
+	anyEnum;
+	enumOf(e:Enum<Dynamic>);
+	instanceOf(c:Class<Dynamic>);
+	isNotNull;
+    isNull;
+	any;
+	customMatcher(f:Dynamic -> Bool);
+}
+
+
+
+/**
+ * Allows verifying that certain behavior happened at least once / exact number
+ * of times / never. E.g:
+ * 
+ * <pre class="code"><code class="haxe">
+ * verify(mock, times(5)).someMethod(&quot;was called five times&quot;);
+ * 
+ * verify(mock, never()).someMethod(&quot;was never called&quot;);
+ * 
+ * verify(mock, atLeastOnce()).someMethod(&quot;was called at least once&quot;);
+ * 
+ * verify(mock, atLeast(2)).someMethod(&quot;was called at least twice&quot;);
+ * 
+ * verify(mock, atMost(3)).someMethod(&quot;was called at most 3 times&quot;);
+ * 
+ * </code></pre>
+ * 
+ * <b>times(1) is the default</b> and can be omitted
+ */
+enum VerificationMode
+{
+	times(value:Int);
+	atLeastOnce;
+	atLeast(value:Int);
+	never;
+	atMost(value:Int);
 }

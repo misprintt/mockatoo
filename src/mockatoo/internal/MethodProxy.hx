@@ -1,8 +1,7 @@
 package mockatoo.internal;
 import mockatoo.exception.VerificationException;
 import mockatoo.exception.StubbingException;
-import mockatoo.VerificationMode;
-import mockatoo.Matcher;
+import mockatoo.Mockatoo;
 
 using mockatoo.util.TypeEquality;
 

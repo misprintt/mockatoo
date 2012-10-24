@@ -7,8 +7,6 @@ import mockatoo.internal.MethodProxy;
 import mockatoo.exception.VerificationException;
 import mockatoo.exception.StubbingException;
 import mockatoo.Mockatoo;
-import mockatoo.VerificationMode;
-import mockatoo.Matcher;
 /**
 * Auto generated MassiveUnit Test Class  for mockatoo.internal.MethodProxy 
 */

@@ -1,6 +1,6 @@
 package mockatoo.internal;
 
-import mockatoo.VerificationMode;
+import mockatoo.Mockatoo;
 
 /**
  * Dynamic class that is created for verification.

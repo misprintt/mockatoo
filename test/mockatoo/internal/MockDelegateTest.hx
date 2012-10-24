@@ -4,8 +4,7 @@ import massive.munit.util.Timer;
 import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
 import mockatoo.internal.MockDelegate;
-import mockatoo.Matcher;
-import mockatoo.VerificationMode;
+import mockatoo.Mockatoo;
 import mockatoo.exception.VerificationException;
 import mockatoo.exception.StubbingException;
 /**

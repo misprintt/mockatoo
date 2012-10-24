@@ -1,5 +1,5 @@
 package mockatoo.internal;
-import mockatoo.VerificationMode;
+import mockatoo.Mockatoo;
 
 /**
  * Responsible for run time mocking behaviour
