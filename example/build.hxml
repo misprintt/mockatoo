@@ -5,6 +5,5 @@
 -main Main
 -neko bin/main.n
 -cp src
--cp ../src
--lib mpartial
+-lib mockatoo
 -cmd neko bin/main.n

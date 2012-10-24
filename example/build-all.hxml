@@ -6,7 +6,6 @@
 -main Main
 -neko bin/main.n
 -cp src
--cp ../src
 -lib mockatoo
 -cmd neko bin/main.n
 
@@ -17,7 +16,6 @@
 -swf-version 11
 -swf-header 1024:769:60:FFFFFF
 -cp src
--cp ../src
 -lib mockatoo
 
 --next
@@ -25,7 +23,6 @@
 -main Main
 -js bin/main.js
 -cp src
--cp ../src
 -lib mockatoo
 -D web
 
@@ -34,6 +31,5 @@
 -main Main
 -cpp bin/main_cpp
 -cp src
--cp ../src
 -lib mockatoo
 -cmd bin/main_cpp/Main
