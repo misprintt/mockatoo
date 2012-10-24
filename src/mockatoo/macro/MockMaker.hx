@@ -488,7 +488,7 @@ class MockMaker
 
 		for(arg in f.args)
 		{
-			args.push(EConst(CString(arg.name)).at());
+			args.push(EConst(CIdent(arg.name)).at());
 		}
 
 		var eArgs = args.toArray(); //reference to args

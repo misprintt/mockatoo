@@ -9,6 +9,9 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
 
+/**
+Macro for initializing Mockatoo including compiler flags, logging, etc
+*/
 class InitMacro
 {
 	public static var TEMP_DIR:String = ".temp/mockatoo/";

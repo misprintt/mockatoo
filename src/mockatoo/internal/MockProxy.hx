@@ -2,8 +2,8 @@ package mockatoo.internal;
 import mockatoo.Mockatoo;
 
 /**
- * Responsible for run time mocking behaviour
- */
+Responsible for run time mocking behaviour of a Mock instance.
+*/
 class MockProxy
 {
 	public var target:Mock;

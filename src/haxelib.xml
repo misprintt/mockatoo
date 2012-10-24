@@ -1,7 +1,7 @@
 <project name="mockatoo" url="http://github.com/misprintt/mockatoo" license="MIT">
 	<user name="massive"/>
-	<description><![CDATA[Haxe mocking framework]]></description>
-	<version name="0.1.0"><![CDATA[First release. generate mock from class or interface. methods are just empty stubs for now.]]></version>
+	<description><![CDATA[Mockatoo is a Haxe library for mocks creation, verification and stubbing.]]></description>
+	<version name="1.0.0"><![CDATA[First release. See http://github.com/misprintt/mockatoo for features, documentation and examples.]]></version>
 	<depends name="mconsole"/>
 	<depends name="tink_macros"/>
 </project>

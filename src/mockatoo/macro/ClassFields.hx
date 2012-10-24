@@ -17,6 +17,9 @@ typedef ParamDeclaration =
 	type:Type
 }
 
+/**
+Macro for recursively converting ClassFields to Field types
+*/
 class ClassFields
 {
 

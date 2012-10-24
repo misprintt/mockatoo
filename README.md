@@ -10,14 +10,11 @@ Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode
 
 > Disambiguation: The **Mockatoo** belongs to the bird family *Cacatuidae* and look suspiciously like a taxidermied [Cockatoo](http://en.wikipedia.org/wiki/Cockatoo) with fake plumage. They are mostly found nesting within testing habitats and like  to repeat what you say (like a parrot). A Mockatoo may turn violent if mistaken for a *MockingBird* :)
 
-
-#### Mockatoo is in developement and is subject to change.
-
 * See [Features](#features) for overview of key features
 * See [Usage](#usage) for more detailed examples and usecases
 * See [Known Limitations](#knownlimitations) for edge cases not supported in Haxe 2.10.
-* See [milestones](#milestones) for details on the current stable release.
-* See [roadmap](#roadmap) for more details on planned features.
+* See [Roadmap](#roadmap) for more details on planned features.
+* See [Credits](#credits).
 
 
 ## Installation
@@ -245,38 +242,9 @@ Some classes may expect arguments, or return values typed to a private Class, En
 
 This is due to an edge case in tink_macros (1.2.0) that has now been fixed on tinkerbell master (see <https://github.com/back2dos/tinkerbell/pull/37> for more details)
 
-## Milestones
-
-### M2 - Completed
-
-Verification
-
-* Added verification of methods being invoked
-* Added Verification mode (validate number of invocations)
-* Added verification of fuzzy matches (AnyString, AnyBool, NotNull, etc)
-
-Stubbing
-
-* Added basic stubbing - `thenReturn`, `thenThrow`
-* Added chaining of stubs - `thenReturn(1).thenThrow("empty")`
-* Added callback stub - `thenCall(function)`
-
-### M1  - Completed
-
-Basic class and interface mocking (generates empty stub methods)
-
-* Generate a mock class for any Class, Interface or Typedef alias
-* Generates sub class for Class targets
-* Generates implementation for Interface targets (including super classes)
-* Generate a mock class for classes with typed parameters  (and typedef aliases)
-* Generate mocks for classes with super classes (mocks all non-overridden functions from super classes)
-* Return correct 'null' types for methods with return types  (including default Int, Bool and Float types for static platforms) 
-
 ## Roadmap
 
 This is the active roadmap.
-
-### M3
 
 **Partial Mocks (Spying)**
 
@@ -292,3 +260,16 @@ Partial mock that defers to concrete implementation if not stubbed
 	trace(hash.get(0)); // traces 'mocked'
 	trace(hash.get(1)); // traces 'b'
 
+
+**Resetting mock**
+
+Ability to reset a mock and all existing stubbings
+
+	Mockatoo.reset(mock);
+
+
+## Credits
+
+Mockatoo is heavily inspired by **Mockito**'s public API <http://docs.mockito.googlecode.com/hg/latest/org/mockito/Mockito.html>
+
+Mockatoo uses [tink_macros](https://github.com/back2dos/tinkerbell) for a lot of the low level macro manipulations.

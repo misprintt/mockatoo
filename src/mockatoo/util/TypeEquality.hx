@@ -1,7 +1,7 @@
 package mockatoo.util;
 
 /**
-Utilities for checking type equality.
+Utilities for checking type equality. Special rules for enums with paramaters.
 */
 class TypeEquality
 {

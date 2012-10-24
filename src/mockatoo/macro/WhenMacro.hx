@@ -10,6 +10,9 @@ import haxe.macro.Type;
 using tink.macro.tools.Printer;
 using tink.macro.tools.ExprTools;
 
+/**
+Macro for remapping a mock's method invocation when using Mockatoo.when()
+*/
 class WhenMacro
 {
 	public static function create(expr:Expr):Expr

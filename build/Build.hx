@@ -9,9 +9,9 @@ class Build extends mtask.core.BuildBase
 
 	@target function haxelib(t:HaxeLib)
 	{
-		t.description = "Haxe mocking framework";
+		t.description = "Mockatoo is a Haxe library for mocks creation, verification and stubbing.";
 		t.url = "http://github.com/misprintt/mockatoo";
-		t.versionDescription = "First release. generate mock from class or interface. methods are just empty stubs for now.";
+		t.versionDescription = "First release. See http://github.com/misprintt/mockatoo for features, documentation and examples.";
 		
 		t.addDependency("mconsole");
 		t.addDependency("tink_macros");
