@@ -10,11 +10,15 @@ Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode
 
 > Disambiguation: The **Mockatoo** belongs to the bird family *Cacatuidae* and look suspiciously like a taxidermied [Cockatoo](http://en.wikipedia.org/wiki/Cockatoo) with fake plumage. They are mostly found nesting within testing habitats and like  to repeat what you say (like a parrot). A Mockatoo may turn violent if mistaken for a *MockingBird* :)
 
-* See [Features](#features) for overview of key features
-* See [Usage](#usage) for more detailed examples and usecases
-* See [Known Limitations](#knownlimitations) for edge cases not supported in Haxe 2.10.
-* See [Roadmap](#roadmap) for more details on planned features.
-* See [Credits](#credits).
+
+## Table of Contents
+
+* [Installation Guide](#installation)
+* [Overview of Features](#features)
+* [Detailed Usage Guide and Examples](#usageguide) 
+* [Known Limitations](#knownlimitations) and edge cases with Haxe 2.10.
+* [Roadmap](#roadmap)
+* [Credits](#credits)
 
 
 ## Installation
@@ -59,7 +63,7 @@ Verifying exact number of invocations
 	Mockatoo.verify(mock, never).foo();
 
 
-## Usage
+## Usage Guide
 
 * [Create a Mock](#createamock)
 * [Verifying Behaviour](#verifyingbehaviour)

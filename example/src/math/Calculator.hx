@@ -5,8 +5,8 @@ class Calculator
 	public function new():Void
 	{}
 	
-	public function add(x:Int, y:Int):Int
+	public function round(value:Float):Int
 	{
-		return x + y;
+		return Math.round(value);
 	}
 }
