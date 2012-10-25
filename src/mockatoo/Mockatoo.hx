@@ -35,17 +35,16 @@ class Mockatoo
 	  verify(mock, atLeast(2)).someMethod("was called at least two times");
 	
 	  //you can use flexible argument matchers, e.g:
-	  verify(mock, atLeastOnce().someMethod(<b>anyString()</b>);
+	  verify(mock, atLeastOnce).someMethod(<b>anyString</b>);
 	</code></pre>
 	
 	<b>times(1) is the default</b> and can be omitted
 	<p>
-	Arguments passed are compared using <code>equals()</code> method.
-	Read about {@link ArgumentCaptor} or {@link ArgumentMatcher} to find out other ways of matching / asserting arguments passed.
+	Arguments passed are compared using equality (==) with additional checks for enums with paramater values. 
 	<p>
 	
 	@param mock to be verified
-	@param mode times(x), atLeastOnce() or never()
+	@param mode times(x), atLeastOnce or never
 	
 	@return dynamic Verification for current mock's API 
 	 */
@@ -66,15 +65,15 @@ class Mockatoo
     <b>when</b>(mock.someMethod()).<b>thenReturn</b>(10);
 	
     //you can use flexible argument matchers, e.g:
-    when(mock.someMethod(<b>anyString()</b>)).thenReturn(10);
+    when(mock.someMethod(<b>anyString</b>)).thenReturn(10);
 	
     //setting exception to be thrown:
-    when(mock.someMethod("some arg")).thenThrow(new RuntimeException());
+    when(mock.someMethod("some arg")).thenThrow(new SomeException());
 	
     //you can set different behavior for consecutive method calls.
     //Last stubbing (e.g: thenReturn("foo")) determines the behavior of further consecutive calls.
     when(mock.someMethod("some arg"))
-     .thenThrow(new RuntimeException())
+     .thenThrow(new SomeException())
      .thenReturn("foo");
 	
     //Alternative, shorter version for consecutive stubbing:
@@ -87,7 +86,7 @@ class Mockatoo
 	
     //shorter version for consecutive method calls throwing exceptions:
     when(mock.someMethod("some arg"))
-     .thenThrow(new RuntimeException(), new NullPointerException();
+     .thenThrow(new SomeException(), new SomeOtherException();
       
     </code></pre>
 
@@ -148,9 +147,9 @@ enum Matcher
  * <pre class="code"><code class="haxe">
  * verify(mock, times(5)).someMethod(&quot;was called five times&quot;);
  * 
- * verify(mock, never()).someMethod(&quot;was never called&quot;);
+ * verify(mock, never.someMethod(&quot;was never called&quot;);
  * 
- * verify(mock, atLeastOnce()).someMethod(&quot;was called at least once&quot;);
+ * verify(mock, atLeastOnce.someMethod(&quot;was called at least once&quot;);
  * 
  * verify(mock, atLeast(2)).someMethod(&quot;was called at least twice&quot;);
  * 
