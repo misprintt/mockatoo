@@ -20,6 +20,7 @@ class Build extends mtask.core.BuildBase
 		{
 			rm("src/haxelib.xml");
 			cp("src/*", path);
+			cp("README.md", path);
 		}
 	}
 

@@ -1,5 +1,5 @@
 -cmd rm -rf bin
--cmd mkdir -p bin
+-cmd cp -rf resource bin
 
 --next
 

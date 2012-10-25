@@ -1,0 +1,10 @@
+# -cmd rm -rf bin
+-cmd cp -rf resource bin
+
+--next
+
+-main Main
+-cpp bin/main_cpp
+-cp src
+-lib mockatoo
+-cmd bin/main_cpp/Main

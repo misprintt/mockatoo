@@ -23,9 +23,9 @@ class Main
 		var result = mock.round(1.1);
 
 		#if (flash || cpp || java || cs)
-			trace(result == 0); //outputs 0 on static ones (flash, cpp, etc)
+			assertEqual(0, result); //outputs 0 on static ones (flash, cpp, etc)
 		#else
-			trace(result == null); //outputs null on dynamic platforms (js, neko, etc) and 
+			assertEqual(null, result); //outputs null on dynamic platforms (js, neko, etc) and 
 		#end
 
 		//verify 'round' was called with arguments 1.1;
@@ -39,7 +39,9 @@ class Main
 		}
 		catch(e:Dynamic)
 		{
-			trace(Std.is(e, VerificationException)); 
+			var expected = Type.getClassName(VerificationException);
+			var actual = Type.getClassName(Type.getClass(e));
+			assertEqual(expected, actual);
 		}
 	}
 
@@ -55,14 +57,13 @@ class Main
 		Mockatoo.when(mock.round(0)).thenThrow("exception");
 
 		//stub a custom response for any other values
-		Mockatoo.when(mock.round(anyFloat)).thenReturn(-1);
-
+		Mockatoo.when(mock.round(anyFloat)).thenReturn(99);
 
 		var result = mock.round(1.1);
-		trace(result == 11);
+		assertEqual(11, result);
 
 		result = mock.round(2.2);
-		trace(result== -1);
+		assertEqual(99, result);
 		
 		try
 		{
@@ -70,10 +71,9 @@ class Main
 		}
 		catch(e:String)
 		{
-			trace(e == "exception");//custom exception
+			assertEqual("exception", e);
 		}
 	}
-
 
 	static function verifying()
 	{
@@ -90,5 +90,18 @@ class Main
 		Mockatoo.verify(mock, atLeast(2)).round(1.2);// matches second and third call
 		Mockatoo.verify(mock, times(3)).round(anyFloat);// matches all calls
 	}
+
+	////
+
+	/**
+	Prints the result of the assertion and the value 
+	*/
+	static function assertEqual(expected:Dynamic, actual:Dynamic, ?pos:haxe.PosInfos)
+	{
+		var result = (actual == expected);
+
+		trace(result + " : " + Std.string(actual) + ", (line " + pos.lineNumber + ")", pos);
+	}
+
 	
 }

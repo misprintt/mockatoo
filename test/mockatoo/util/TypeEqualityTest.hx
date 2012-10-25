@@ -61,10 +61,11 @@ class TypeEqualityTest
 	public function should_not_equal_different_enum():Void
 	{
 		Assert.isFalse(false.equals(a));
+		Assert.isFalse(a.equals(false));
 	}
 
 	@Test
-	public function should_match_on_wildcar():Void
+	public function should_match_on_wildcard():Void
 	{
 		Assert.isTrue(c(null).equals(c(1)));
 		Assert.isTrue(d(null).equals(d("foo")));

@@ -37,18 +37,18 @@
 -neko bin/test/neko_test.n
 --no-inline
 
-# --next
+--next
 
-# ## CPP
-# -main TestMain
-# -lib munit
-# -lib hamcrest
-# -cp src
-# -lib mconsole
-#-lib tink_macros
-# -cp test
-# #-D HXCPP_M64
-# -cpp bin/test/cpp_test
-#--no-inline
+## CPP
+-main TestMain
+-lib munit
+-lib hamcrest
+-cp src
+-lib mconsole
+-lib tink_macros
+-cp test
+#-D HXCPP_M64
+-cpp bin/test/cpp_test
+--no-inline
 
 

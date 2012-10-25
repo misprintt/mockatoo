@@ -8,18 +8,24 @@ class TypeEquality
 	/**
 	Measures equality, including enumTypeEQ - see below
 	*/
-	public static function equals(a:Dynamic, b:Dynamic):Bool
+	public static function equals(expected:Dynamic, actual:Dynamic):Bool
 	{
-		if(a == b) return true;
-
-		switch(Type.typeof(a))
+		switch(Type.typeof(expected))
 		{
 			case TEnum(e):
 			{
-				return equalsEnum(cast a, cast b);
+				return equalsEnum(cast expected, cast actual);
 			}
 			default:
-				return false;
+
+				#if cpp
+				switch(Type.typeof(actual))
+				{
+					case TEnum(e): return false;
+					default: return expected == actual;
+				}
+				#end
+				return expected == actual;
 		}
 		return false;
 	}

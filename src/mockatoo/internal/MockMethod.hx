@@ -78,7 +78,7 @@ class MockMethod
 	{
 		if(returnType == null) throw new StubbingException("Method [" + fieldName + "] has no return type and cannot stub custom return values.");
 
-		var stub = getStubbingForArgs(args);
+		var stub = getStubbingForArgs(args, true);
 
 		if(stub == null)
 		{
@@ -95,7 +95,7 @@ class MockMethod
 
 	public function addThrowFor(args:Array<Dynamic>, values:Array<Dynamic>)
 	{
-		var stub = getStubbingForArgs(args);
+		var stub = getStubbingForArgs(args, true);
 
 		if(stub == null)
 		{
@@ -111,7 +111,7 @@ class MockMethod
 
 	public function addCallbackFor(args:Array<Dynamic>, values:Array<Dynamic>)
 	{
-		var stub = getStubbingForArgs(args);
+		var stub = getStubbingForArgs(args, true);
 
 		if(stub == null)
 		{
@@ -128,7 +128,7 @@ class MockMethod
 		}
 	}
 
-	function getStubbingForArgs(args:Array<Dynamic>):Stubbing
+	function getStubbingForArgs(args:Array<Dynamic>, ?absoluteMatching:Bool = false):Stubbing
 	{
 		for(stub in stubbings)
 		{
@@ -136,13 +136,23 @@ class MockMethod
 
 			var matchingArgs = 0;
 
+
 			for(i in 0...args.length)
 			{
-				if(compareArgs(stub.args[i],args[i])) 
-					matchingArgs ++;
+				if(absoluteMatching) 
+				{
+					if(stub.args[i] == args[i] && Type.typeof(stub.args[i]) == Type.typeof(args[i]))
+						matchingArgs ++;
+				}
+				else
+				{
+					if(compareArgs(stub.args[i],args[i])) 
+						matchingArgs ++;
+				}
+				
 			}
 
-			if(matchingArgs == args.length)
+			if(matchingArgs == stub.args.length)
 			{
 				return stub;
 			}
@@ -161,15 +171,15 @@ class MockMethod
 		switch(mode)
 		{
 			case times(value):
-				range = {min:value, max:value};
+				range = new Range(value, value);
 			case atLeastOnce:
-				range = {min:1, max:null};
+				range = new Range(1, null);
 			case never:
-				range = {min:0, max:0};
+				range =  new Range(0, 0);
 			case atLeast(value):
-				range = {min:value, max:null};
+				range =  new Range(value, null);
 			case atMost(value):
-				range = {min:null, max:value};
+				range = new Range(null, value);
 		}
 
 		var execptionMessage:String = className + "." + fieldName + "(" + args.join(",") + ") was invoked " + toTimes(matches) + ", expected ";
@@ -191,6 +201,11 @@ class MockMethod
 		}
 		
 		return false;
+	}
+
+	function toTimes(value:Int):String
+	{
+		return value == 1 ? "[1] time" : "[" + value + "] times";
 	}
 
 	function getMatchingArgs(argArrays:Array<Array<Dynamic>>, args:Array<Dynamic>):Array<Array<Dynamic>>
@@ -216,11 +231,6 @@ class MockMethod
 		}
 
 		return matches;
-	}
-
-	function toTimes(value:Int):String
-	{
-		return value == 1 ? "[1] time" : "[" + value + "] times";
 	}
 
 	/**
@@ -321,8 +331,15 @@ enum StubbingValue
 	calls(value:Dynamic);
 }
 
-typedef Range =
+private class Range
 {
-	min:Null<Int>,
-	max:Null<Int>
+
+	public var min:Null<Int>;
+	public var max:Null<Int>;
+
+	public function new(min:Null<Int>, max:Null<Int>)
+	{
+		this.min = min;
+		this.max = max;
+	}
 }
