@@ -23,6 +23,10 @@ Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode
 
 ## Installation
 
+Install current stable release from haxelib
+
+	haxelib install mockatoo
+
 Install the latest directly from github:
 
 	haxelib git mockatoo https://github.com/misprintt/mockatoo.git src

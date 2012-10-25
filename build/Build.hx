@@ -11,7 +11,7 @@ class Build extends mtask.core.BuildBase
 	{
 		t.description = "Mockatoo is a Haxe library for mocks creation, verification and stubbing.";
 		t.url = "http://github.com/misprintt/mockatoo";
-		t.versionDescription = "First release. See http://github.com/misprintt/mockatoo for features, documentation and examples.";
+		t.versionDescription = "Mockatoo is a Haxe library for mocks creation, verification and stubbing. See http://github.com/misprintt/mockatoo for features, documentation and examples.";
 		
 		t.addDependency("mconsole");
 		t.addDependency("tink_macros");
