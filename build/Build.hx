@@ -46,6 +46,7 @@ class Build extends mtask.core.BuildBase
 	@task function test()
 	{
 		cmd("haxelib", ["run", "munit", "test", "-coverage"]);
+		cmd("haxelib", ["run", "munit", "report", "teamcity"]);
 	}
 
 	@task function release()
