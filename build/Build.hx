@@ -57,4 +57,14 @@ class Build extends mtask.core.BuildBase
 
 		invoke("haxelibTest");
 	}
+
+	@task function teamcity()
+	{
+		invoke("clean");
+		invoke("test");
+
+		invoke("build haxelib");
+		invoke("haxelibTest");
+		invoke("example");
+	}
 }
