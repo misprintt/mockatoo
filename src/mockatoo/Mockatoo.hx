@@ -48,9 +48,10 @@ class Mockatoo
 	
 	@return dynamic Verification for current mock's API 
 	 */
-	static public function verify(mock:Mock, ?mode:VerificationMode):mockatoo.internal.Verification
+	static public function verify(mock:Dynamic, ?mode:VerificationMode):mockatoo.internal.Verification
 	{
 		Console.assert(mock != null, "Cannot verify [null] mock");
+		Console.assert(Std.is(mock, Mock), "Object is not an instance of mock");
 		return mock.mockProxy.verify(mode);
 	}
 
