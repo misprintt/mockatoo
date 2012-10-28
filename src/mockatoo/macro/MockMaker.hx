@@ -34,7 +34,6 @@ Macro class that generates a Mock implementation of a class or interface
 */
 class MockMaker
 {
-
 	static var mockedClassHash:Hash<String> = new Hash();
 
 	var expr:Expr;
@@ -48,15 +47,14 @@ class MockMaker
 
 	var isInterface:Bool;
 
-
 	var extendTypePath:TypePath;
 
 	var typeDefinition:TypeDefinition;
 	var typeDefinitionId:String;
 
-
 	var hasConstructor = false;
 
+	var generatedExpr:Expr;
 
 	public function new(e:Expr, ?paramTypes:Expr)
 	{
@@ -68,7 +66,9 @@ class MockMaker
 		type = Context.getType(e.toString());
 		actualType = type.reduce();
 
-		id = actualType.getID().split(".").pop();
+		trace(id);
+		trace(type);
+		trace(actualType);
 
 		params = [];
 
@@ -88,6 +88,76 @@ class MockMaker
 			}
 		}
 
+
+		switch(actualType)
+		{
+			case TAnonymous(a):
+				createMockFromStruct(a.get().fields);
+			case TInst(t, params):
+				id = actualType.getID().split(".").pop();
+				createMockFromClass();
+			default:
+				throw new mockatoo.exception.MockatooException("Unsupported type [" + id + "]. Cannot mock");
+		}
+	}
+
+	/**
+	Returns the generated expr instanciating an instance of the mock
+	*/
+	public function toExpr():Expr
+	{
+		if(generatedExpr == null)
+		{
+			var typeParams = untyped TypeTools.paramsToComplex(params);
+			generatedExpr = ExprTools.instantiate(typeDefinitionId, null, typeParams, pos);
+		}
+
+		trace(Printer.print(generatedExpr));
+		return generatedExpr;	
+		
+	}
+
+	function createMockFromStruct(fields:Array<ClassField>)
+	{
+		var args:Array<{ field : String, expr : Expr }> = [];
+
+		var arg:{ field : String, expr : Expr };
+
+		for(field in fields)
+		{
+			trace(field.name);
+			arg = {field:field.name, expr:null};
+
+			switch(field.type)
+			{
+				case TInst(t, tparams):
+					arg.expr = getDefaultValueForType(field.type.toComplex(true));
+				case TType(t, tparams):
+					arg.expr = getDefaultValueForType(field.type.toComplex(true));
+				case TEnum(t, tparams):
+					arg.expr = getDefaultValueForType(field.type.toComplex(true));
+				case TFun(functionArgs, ret):
+					var e = getDefaultValueForType(field.type.toComplex(true));
+					var fargs:Array<FunctionArg> = [];
+
+					for(a in functionArgs)
+					{
+						fargs.push(FunctionTools.toArg(a.name, a.t.toComplex(true),a.opt));
+					}
+
+					var f = FunctionTools.func(e, fargs, ret.toComplex(true), [], true);
+					arg.expr = EFunction(null, f).at();
+
+				default: throw "Unsupported type [" + field.type + "] for field [" + field.name + "]";
+			}
+
+			args.push(arg);
+		}
+		generatedExpr = EObjectDecl(args).at(pos);
+	}
+
+	function createMockFromClass()
+	{
 		trace("expr: " + expr);
 		trace("id: " + id);
 		trace("type: " + type);
@@ -124,22 +194,11 @@ class MockMaker
 		typeDefinitionId = (typeDefinition.pack.length > 0 ? typeDefinition.pack.join(".")  + "." : "") + typeDefinition.name;
 
 		debugPrintClass();
-		
 
 		Context.defineType(typeDefinition);
 
 		mockedClassHash.set(id, typeDefinitionId);
-	}
 
-	/**
-	Returns the expr instanciating an instance of the mock
-	*/
-	public function toExpr():Expr
-	{
-		var typeParams = untyped TypeTools.paramsToComplex(params);
-		var expr = ExprTools.instantiate(typeDefinitionId, null, typeParams, pos);
-		trace(Printer.print(expr));
-		return expr;
 	}
 
 	function isNotNull(expr:Expr):Bool

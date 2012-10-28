@@ -38,7 +38,7 @@ Or point to your local fork:
 
 ## Features
 
-Mock any class or interface (or typedef alias), including types with generics
+Mock any class or interface, including typedef aliases and types with generics (type paramaters)
 
 	var mockedClass = Mockatoo.mock(SomeClass);
 	var mockedInterface = Mockatoo.mock(SomeInterface);
@@ -94,8 +94,7 @@ A Mock class type will be generated that extends the Class (or Interface), stubb
 	var mockedClass = new SomeClassMocked();
 	var mockedInterface = new SomeInterfaceMocked();
 
-
-If a class requires Type paramaters then you can either use a typedef alias.
+	If a class requires Type paramaters then you can either use a typedef alias.
 
 	typedef FooBar = Foo<Bar>;
 
@@ -113,6 +112,14 @@ Both these generates the equivalent expressions:
 
 
 > Note: These usages are required in order to circumvent limitation of compiler with generics. You cannot compile `Foo.doSomething(Array<String>)`
+
+
+You can also 'mock' a typedef structure, however the
+generated object is not technically a mock, so does not support verification or stubbing.
+
+	typedef SomeTypeDef = {name:String}
+	...
+	var mockedTypDef = Mockatoo.mock(SomeTypeDef);
 
 
 ### Verifying Behaviour

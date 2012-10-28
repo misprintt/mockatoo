@@ -337,6 +337,40 @@ class MockatooTest
 	}
 	#end
 
+	// ------------------------------------------------------------------------- typedef structures
+	
+	@Test
+	public function should_mock_typdef_structure():Void
+	{
+		var fields:Array<Field> = [];
+		addField(fields, "func", []);
+		var mock = Mockatoo.mock(TypedefStructure);
+
+		assertTypedefMockField(mock, "type", null);
+		assertTypedefMockField(mock, "title", null);
+		assertTypedefMockField(mock, "optionalTitle", null);
+		assertTypedefMockField(mock, "func", null, true);
+		assertTypedefMockField(mock, "optionalFunc", null, true);
+	}
+
+	function assertTypedefMockField(mock:Dynamic, fieldName:String, value:Dynamic, ?isFunc:Bool=false)
+	{
+		Assert.isTrue(Reflect.hasField(mock, fieldName));
+
+		var field = Reflect.field(mock, fieldName);
+
+		Assert.areEqual(isFunc, Reflect.isFunction(field));
+
+		if(isFunc)
+		{
+			Assert.areEqual(value, field());
+		}
+		else
+		{
+			Assert.areEqual(value, field);
+		}
+	}
+
 	// ------------------------------------------------------------------------- utilities
 
 	function assertMock(mock:Mock, cls:Class<Dynamic>, ?fields:Array<Field>, ?pos:haxe.PosInfos)

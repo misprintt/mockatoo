@@ -205,14 +205,6 @@ class ExtendsTypedExtensionClass extends ExtendsTypedClass<String, String>
 	}	
 }
 
-typedef TypedefToSimpleInterface = SimpleInterface;
-typedef TypedefToSimpleClass = SimpleClass;
-typedef TypedefToStringTypedInterface = TypedInterface<String>;
-typedef TypedefToStringTypedClass = TypedClass<String>;
-
-typedef TypedefToImplementsTypedInterface = ImplementsTypedInterface<String, String>;
-typedef TypedefToExtendsTypedClass = ExtendsTypedClass<String, String>;
-
 class ClassWithPrivateReference
 {
 	public function new()
@@ -233,4 +225,38 @@ private class PrivateClass
 	{
 		
 	}
+}
+
+
+// ----------------------------------------------------------------------------- Typedef Aliases
+
+
+typedef TypedefToSimpleInterface = SimpleInterface;
+typedef TypedefToSimpleClass = SimpleClass;
+typedef TypedefToStringTypedInterface = TypedInterface<String>;
+typedef TypedefToStringTypedClass = TypedClass<String>;
+
+typedef TypedefToImplementsTypedInterface = ImplementsTypedInterface<String, String>;
+typedef TypedefToExtendsTypedClass = ExtendsTypedClass<String, String>;
+
+
+
+// ----------------------------------------------------------------------------- Typedef Structures
+
+
+typedef TypedefStructure = 
+{
+	var title:String;
+	var func:Void->String;
+	var type:SomeEnumType;
+	
+	@:optional var optionalTitle:String;
+	@:optional var optionalFunc:Void -> String;
+}
+
+
+enum SomeEnumType
+{
+	foo;
+	bar;
 }
