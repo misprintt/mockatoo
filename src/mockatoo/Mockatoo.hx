@@ -17,13 +17,13 @@ class Mockatoo
 	/**
 	Creates mock object of given class or interface.
 	
-	@param classToMock class or interface to mock
+	@param typeToMock class or interface to mock
 	@return new instance of generated Mock class
 	*/
-	@:macro static public function mock<T>(classToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
+	@:macro static public function mock<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
 	{
 		InitMacro.init();
-		var mock = new MockMaker(classToMock, paramTypes);
+		var mock = new MockMaker(typeToMock, paramTypes);
 		return mock.toExpr();
 	}
 
