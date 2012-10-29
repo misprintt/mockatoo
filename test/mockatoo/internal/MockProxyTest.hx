@@ -199,6 +199,7 @@ class MockProxyTest
 		var mock = mockatoo.Mockatoo.mock(ClassToMock);
 		instance = new MockProxy(mock);
 
+
 		var stub = instance.stub("two", [1,2]);
 
 		var wasCalled:Bool = false;
@@ -213,6 +214,44 @@ class MockProxyTest
 		instance.callMethodAndReturn("two", [1,2], 0);
 
 		Assert.isTrue(wasCalled);
+	}
+
+	// ------------------------------------------------------------------------- reset
+
+
+	@Test
+	public function should_reset_stubbing():Void
+	{
+		var mock = mockatoo.Mockatoo.mock(ClassToMock);
+		instance = new MockProxy(mock);
+		
+		instance.stub("two", [1,2]).thenReturn(4);
+
+		var result = instance.callMethodAndReturn("two", [1,2], 0);
+
+		Assert.areEqual(4, result);
+
+		instance.reset();
+
+		result = instance.callMethodAndReturn("two", [1,2], 0);
+		Assert.areEqual(0, result);
+	}
+
+	@Test
+	public function should_reset_verifications():Void
+	{
+		var mock = mockatoo.Mockatoo.mock(ClassToMock);
+		
+		instance = new MockProxy(mock);
+		instance.callMethodAndReturn("two", [1,2], 0);
+		instance.reset();
+
+		try
+		{
+			instance.verify().two(1, 2);
+			Assert.fail("Expected VerificationException");
+		}
+		catch(e:VerificationException) {}
 	}
 }
 
