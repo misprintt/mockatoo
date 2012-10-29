@@ -28,6 +28,20 @@ class Mockatoo
 	}
 
 	/**
+	Creates a partial-mock object of given class that calls through to original
+	method if no stubbing defined. Note: behaves same as mock for Interfaces.
+
+	@param typeToMock class
+	@return new instance of generated Mock class
+	*/
+	@:macro static public function spy<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
+	{
+		InitMacro.init();
+		var mock = new MockMaker(typeToMock, paramTypes, true);
+		return mock.toExpr();
+	}
+
+	/**
 	Verifies certain behavior happened at least once / exact number of times / never. E.g:
 	<pre class="code"><code class="haxe">
 	  verify(mock, times(5)).someMethod("was called five times");

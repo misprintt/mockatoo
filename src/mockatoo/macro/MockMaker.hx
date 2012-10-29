@@ -42,6 +42,8 @@ class MockMaker
 	var type:Type;
 	var actualType:Type;
 
+	var isSpy:Bool;
+
 	var classType:ClassType;
 	var params:Array<Type>;
 
@@ -56,10 +58,12 @@ class MockMaker
 
 	var generatedExpr:Expr;
 
-	public function new(e:Expr, ?paramTypes:Expr)
+	public function new(e:Expr, ?paramTypes:Expr, spy:Bool=false)
 	{
 		expr = e;
 		id = e.toString();
+
+		isSpy = spy;
 
 		pos = e.pos;
 
@@ -117,6 +121,9 @@ class MockMaker
 		
 	}
 
+	/**
+	Generates a dynamic object matching a TypeDef structure
+	*/
 	function createMockFromStruct(fields:Array<ClassField>)
 	{
 		var args:Array<{ field : String, expr : Expr }> = [];
@@ -156,6 +163,9 @@ class MockMaker
 		generatedExpr = EObjectDecl(args).at(pos);
 	}
 
+	/**
+	Creates a class definition for a mocked class or interface 
+	*/
 	function createMockFromClass()
 	{
 		trace("expr: " + expr);
