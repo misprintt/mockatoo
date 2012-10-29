@@ -223,6 +223,13 @@ You can also set a custom callback when a method is invoked
 	Mockatoo.when(mock.foo("bar")).thenCall(f);
 
 
+### Other features
+
+You can reset a mock to remove any custom stubs and/or verifications
+
+	Mockatoo.reset(mock);
+	
+
 ## Known Limitations
 
 ### Mocking inlined methods
@@ -274,13 +281,6 @@ Partial mock that defers to concrete implementation if not stubbed
 
 	trace(hash.get(0)); // traces 'mocked'
 	trace(hash.get(1)); // traces 'b'
-
-
-**Resetting mock**
-
-Ability to reset a mock and all existing stubbings
-
-	Mockatoo.reset(mock);
 
 
 ## Credits

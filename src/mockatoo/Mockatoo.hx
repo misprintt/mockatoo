@@ -98,6 +98,17 @@ class Mockatoo
 	{
 		return WhenMacro.create(expr);
 	}
+
+	/**
+	Resets a mock object. This removes any existing stubbings or verifications on
+	the methods of the instance
+	*/
+	static public function reset(mock:Dynamic)
+	{
+		Console.assert(mock != null, "Cannot verify [null] mock");
+		Console.assert(Std.is(mock, Mock), "Object is not an instance of mock");
+		return mock.mockProxy.reset();
+	}
 }
 
 /**

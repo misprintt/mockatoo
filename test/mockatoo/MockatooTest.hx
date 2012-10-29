@@ -371,6 +371,32 @@ class MockatooTest
 		}
 	}
 
+	// ------------------------------------------------------------------------- reset
+
+	@Test
+	public function should_reset_verifications()
+	{
+		var instance = Mockatoo.mock(SimpleClass);
+
+		instance.test();
+		Mockatoo.reset(instance);
+
+		Mockatoo.verify(instance, never).test();
+	}
+
+	@Test
+	public function should_reset_stubs()
+	{
+		var instance = Mockatoo.mock(SimpleClass);
+
+		Mockatoo.when(instance.test()).thenThrow("exception");
+		Mockatoo.reset(instance);
+
+		instance.test();
+		Assert.isTrue(true);//otherwise an expception would have been thrown
+	}
+
+
 	// ------------------------------------------------------------------------- utilities
 
 	function assertMock(mock:Mock, cls:Class<Dynamic>, ?fields:Array<Field>, ?pos:haxe.PosInfos)

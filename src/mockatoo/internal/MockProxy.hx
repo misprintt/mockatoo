@@ -17,13 +17,7 @@ class MockProxy
 	{
 		this.target = target;
 		targetClass = Type.getClass(target);
-		hash = new Hash();
-
-		var m = haxe.rtti.Meta.getType(targetClass);
-		targetClassName = cast m.mockatoo[0];
-
-		var fieldMeta = haxe.rtti.Meta.getFields(targetClass);
-		parseMetadata(fieldMeta);
+		reset();
 	}
 
 	/**
@@ -97,18 +91,19 @@ class MockProxy
 		return stub;
 	}
 
-	/*
-	public function thenReturn(value:T):Stubber
-	{
-		
-	}
-
-	public function thenThrow(value:Dynamic):Stubber
-	{
-
-	}
-
+	/**
+	Resets all stubs/verifications for the mock class
 	*/
+	public function reset()
+	{
+		hash = new Hash();
+
+		var m = haxe.rtti.Meta.getType(targetClass);
+		targetClassName = cast m.mockatoo[0];
+
+		var fieldMeta = haxe.rtti.Meta.getFields(targetClass);
+		parseMetadata(fieldMeta);
+	}
 
 	function parseMetadata(fields:Dynamic<Dynamic<Array<Dynamic>>>)
 	{
