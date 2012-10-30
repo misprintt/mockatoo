@@ -9,9 +9,10 @@ import haxe.macro.Type;
 import haxe.PosInfos;
 using tink.macro.tools.MacroTools;
 using tink.macro.tools.ExprTools;
+import tink.macro.tools.Printer;
 
 
-typedef ParamDeclaration = 
+typedef TypeDeclaration = 
 {
 	name:String,
 	type:Type
@@ -34,9 +35,9 @@ class ClassFields
 		if(paramTypes == null) paramTypes = [];
 		if(fieldHash == null) fieldHash = new Hash();
 
-		// trace(c.name + ":" + paramTypes);
+		trace(c.name + ":" + paramTypes);
 
-		var paramMap = getParamDeclarations(c.params, paramTypes);
+		var paramMap = getClassTypeDeclarationMap(c, paramTypes);
 		
 		// recurse through super classes (or interfaces if an interface)
 		var superTypes:Array<{ t : Ref<ClassType>, params : Array<Type> }> = [];
@@ -48,9 +49,9 @@ class ClassFields
 
 		for(type in superTypes)
 		{
-			var superParams = replaceParamTypeArray( type.params, paramMap);
+			var superParams = mapTypes( type.params, paramMap);
 
-			//trace("     superParams: " + superParams);
+			trace("     superParams: " + superParams);
 			var superFields = getClassFields(type.t.get(), includeStatics, superParams, fieldHash);
 
 			for(field in superFields)
@@ -84,16 +85,16 @@ class ClassFields
 	}
 
 
-		/**
+	/**
 	Replaces abstract types (T, TData, etc) with concrete ones
 	*/
-	static function getParamDeclarations(paramTypes:Array<{t:Type, name:String}>, paramDecls:Array<Type>):Array<ParamDeclaration>
+	static function getClassTypeDeclarationMap(classType:ClassType, paramDecls:Array<Type>):Array<TypeDeclaration>
 	{
-		var results:Array<ParamDeclaration> = [];
+		var results:Array<TypeDeclaration> = [];
 
-		for(i in 0...paramTypes.length)
+		for(i in 0...classType.params.length)
 		{
-			var param = paramTypes[i];
+			var param = classType.params[i];
 
 			var decl =
 			{
@@ -101,59 +102,60 @@ class ClassFields
 				type:paramDecls[i]
 			}
 			results.push(decl);
-
 		}
 		return results;
-
 	}
 
 	/**
-	Replaces abstract types with concrete declarations
+	Replaces abstract types <T> with concrete Types
 	*/
-	static function replaceParamTypeArray(superParams:Array<Type>, paramMap:Array<ParamDeclaration>):Array<Type>
+	static function mapTypes(types:Array<Type>, map:Array<TypeDeclaration>):Array<Type>
 	{
 		var results:Array<Type> = [];
 
-		for(param in superParams)
+		for(type in types)
 		{
-			var paramType:Type = replaceParamType(param, paramMap);
-			results.push(paramType);
+			type = mapType(type, map);
+			results.push(type);
 		}
 
 		return results;
 	}
 
-	static function replaceParamType(param:Type, paramMap:Array<ParamDeclaration>):Type
+	/**
+	Recursively Rreplaces references to an abstract type <T> with a concrete Types
+	defined in a map (recursively updates param types as well)
+	(e.g. T, Array<T>, Interator<Null<T>>)
+	*/
+	static public function mapType(type:Type, map:Array<TypeDeclaration>):Type
 	{
+		var id = type.getID();
 
-		var paramId = param.getID();
-		var paramName = paramId != null ? paramId.split(".").pop() : "";
-		var paramType:Type = null;
-		for(p in paramMap)
+		if(id != null)
 		{
-			if(p.name == paramName)
-				paramType = p.type;
+			id = id.split(".").pop();
+			for(m in map)
+			{
+				if(m.name == id && m.type != null)
+					return m.type;
+			}
 		}
 
-		if(paramType == null) paramType = param;
-
-
-		return paramType;
-	}
-
-	static function isParamType(param:Type, paramMap:Array<ParamDeclaration>):Bool
-	{
-		var paramId = param.getID();
-		var paramName = paramId != null ? paramId.split(".").pop() : "";
-		for(p in paramMap)
+		switch(type)
 		{
-			if(p.name == paramName) return true;
+			case TInst(t, params):
+				return TInst(t, mapTypes(params,map));
+			case TEnum(t, params):
+				return TEnum(t, mapTypes(params,map));
+			case TType(t, params):
+				return TType(t, mapTypes(params,map));
+			default:
+				return type;
+			
 		}
-		return false;
 	}
 
-
-	public static function getClassField(field:ClassField, paramMap:Array<ParamDeclaration>, ?isStatic:Bool=false):Field
+	public static function getClassField(field:ClassField, paramMap:Array<TypeDeclaration>, ?isStatic:Bool=false):Field
 	{
 
 		var kind = getFieldType(field,paramMap);
@@ -195,7 +197,7 @@ class ClassFields
 		return access;
 	}
 
-	static function getConstructorField(c:ClassType, paramMap:Array<ParamDeclaration>):Field
+	static function getConstructorField(c:ClassType, paramMap:Array<TypeDeclaration>):Field
 	{
 		var classField = c.constructor.get();
 
@@ -209,13 +211,9 @@ class ClassFields
 	/**
 	Converts a Type to ComplexType and subsitutes Param types (e.g. <T>) with concrete ones
 	*/
-	static function convertType(type:Type, paramMap:Array<ParamDeclaration>):ComplexType
+	static function convertType(type:Type, paramMap:Array<TypeDeclaration>):ComplexType
 	{
-		if(isParamType(type, paramMap))
-		{
-			type = replaceParamType(type, paramMap);
-		}
-
+		var type:Type = mapType(type, paramMap);
 		switch(type)
 		{
 			case TDynamic(t):
@@ -229,7 +227,7 @@ class ClassFields
 		}
 	}
 
-	public static function getFieldType(field:ClassField, paramMap:Array<ParamDeclaration>):FieldType
+	public static function getFieldType(field:ClassField, paramMap:Array<TypeDeclaration>):FieldType
 	{
 		var expr = getFieldExpr(field);
 
@@ -266,7 +264,7 @@ class ClassFields
 		return null;
 	}
 
-	static function convertTFunArgsToFunctionArgs(args : Array<{ t : Type, opt : Bool, name : String }>, paramMap:Array<ParamDeclaration>):Array<FunctionArg>
+	static function convertTFunArgsToFunctionArgs(args : Array<{ t : Type, opt : Bool, name : String }>, paramMap:Array<TypeDeclaration>):Array<FunctionArg>
 	{
 		var converted:Array<FunctionArg> = [];
 

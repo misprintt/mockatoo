@@ -205,6 +205,30 @@ class ExtendsTypedExtensionClass extends ExtendsTypedClass<String, String>
 	}	
 }
 
+class TypedIterableClass<T>
+{
+	var source:Array<T>;
+	public function new()
+	{
+		source = [];
+	}
+
+	public function iterator():Iterator<Null<T>>
+	{
+		return source.iterator();
+	}
+}
+
+class IntIterableClass extends TypedIterableClass<Int>
+{
+	public function new()
+	{
+		super();
+	}
+}
+
+// ---------------------- others
+
 class ClassWithPrivateReference
 {
 	public function new()
