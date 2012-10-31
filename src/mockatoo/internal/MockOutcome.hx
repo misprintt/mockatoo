@@ -2,6 +2,8 @@ package mockatoo.internal;
 
 enum MockOutcome
 {
-	stubbed(value:Dynamic);
-	none(value:Dynamic);
+	returns(value:Dynamic);
+	throws(value:Dynamic);
+	calls(value:Dynamic);
+	none;
 }

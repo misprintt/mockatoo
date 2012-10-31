@@ -1,5 +1,6 @@
 package mockatoo.internal;
 import mockatoo.Mockatoo;
+import mockatoo.exception.StubbingException;
 
 /**
 Responsible for run time mocking behaviour of a Mock instance.
@@ -26,7 +27,15 @@ class MockProxy
 	public function callMethod(method:String, args:Array<Dynamic>)
 	{
 		var proxy = hash.get(method);
-		proxy.call(args);
+		var outcome = proxy.getOutcomeFor(args);
+
+		switch(outcome)
+		{
+			case returns(v): throw new StubbingException("Method [" + method + "] has no return type and cannot stub custom return values.");
+			case throws(v): throw v;
+			case calls(v): v(args);
+			case none: return;
+		}
 	}
 
 	/**
@@ -35,8 +44,15 @@ class MockProxy
 	public function callMethodAndReturn<T>(method:String, args:Array<Dynamic>, returnValue:T):T
 	{
 		var proxy = hash.get(method);
-		return proxy.callAndReturn(args, returnValue);
-		//return returnValue;
+		var outcome = proxy.getOutcomeFor(args);
+
+		switch(outcome)
+		{
+			case returns(v): return v;
+			case throws(v): throw v;
+			case calls(v): return v(args);
+			case none: return returnValue;
+		}
 	}
 
 	public function verify(?mode:VerificationMode):Verification

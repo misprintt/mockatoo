@@ -3,10 +3,12 @@ package mockatoo.internal;
 import massive.munit.util.Timer;
 import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
+import mockatoo.internal.MockOutcome;
 import mockatoo.internal.MockMethod;
 import mockatoo.exception.VerificationException;
 import mockatoo.exception.StubbingException;
 import mockatoo.Mockatoo;
+import util.Asserts;
 /**
 * Auto generated MassiveUnit Test Class  for mockatoo.internal.MockMethod 
 */
@@ -44,9 +46,8 @@ class MockMethodTest
 	public function should_call_and_return():Void
 	{
 		instance = createInstance();
-		var result = instance.callAndReturn([], false);
-
-		Assert.areEqual(false, result);
+		var result = instance.getOutcomeFor([]);
+		Asserts.assertEnumTypeEq(none, result);
 	}
 
 	@Test
@@ -62,7 +63,7 @@ class MockMethodTest
 		}
 		catch(e:VerificationException) {}
 
-		instance.call(args);
+		instance.getOutcomeFor(args);
 		instance.verify(times(1), args);
 	}
 
@@ -79,7 +80,7 @@ class MockMethodTest
 		}
 		catch(e:VerificationException) {}
 
-		instance.call(args);
+		instance.getOutcomeFor(args);
 		instance.verify(times(1), args);
 	}
 
@@ -98,13 +99,13 @@ class MockMethodTest
 
 		try
 		{
-			instance.call(args);
+			instance.getOutcomeFor(args);
 			instance.verify(times(2), args);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
-		instance.call(args);
+		instance.getOutcomeFor(args);
 		instance.verify(times(2), args);
 	}
 
@@ -118,7 +119,7 @@ class MockMethodTest
 
 		try
 		{
-			instance.call(args);
+			instance.getOutcomeFor(args);
 			instance.verify(times(0), args);
 			Assert.fail("Expected VerificationException");
 		}
@@ -136,7 +137,7 @@ class MockMethodTest
 
 		try
 		{
-			instance.call(args);
+			instance.getOutcomeFor(args);
 			instance.verify(never, args);
 			Assert.fail("Expected VerificationException");
 		}
@@ -157,10 +158,10 @@ class MockMethodTest
 		}
 		catch(e:VerificationException) {}
 
-		instance.call(args);
+		instance.getOutcomeFor(args);
 		instance.verify(atLeastOnce, args);
 
-		instance.call(args);
+		instance.getOutcomeFor(args);
 		instance.verify(atLeastOnce, args);
 	}
 
@@ -177,10 +178,10 @@ class MockMethodTest
 		}
 		catch(e:VerificationException) {}
 
-		instance.call(args);
+		instance.getOutcomeFor(args);
 		instance.verify(atLeast(1), args);
 
-		instance.call(args);
+		instance.getOutcomeFor(args);
 		instance.verify(atLeast(1), args);
 	}
 
@@ -199,13 +200,13 @@ class MockMethodTest
 
 		try
 		{
-			instance.call(args);
+			instance.getOutcomeFor(args);
 			instance.verify(atLeast(2), args);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
-		instance.call(args);
+		instance.getOutcomeFor(args);
 		instance.verify(atLeast(2), args);
 	}
 
@@ -217,12 +218,12 @@ class MockMethodTest
 
 		instance.verify(atMost(1), args);
 
-		instance.call(args);
+		instance.getOutcomeFor(args);
 		instance.verify(atMost(1), args);
 
 		try
 		{
-			instance.call(args);
+			instance.getOutcomeFor(args);
 			instance.verify(atMost(1), args);
 			Assert.fail("Expected VerificationException");
 		}
@@ -237,7 +238,7 @@ class MockMethodTest
 		instance = createInstance();
 
 
-		instance.call(["foo"]);
+		instance.getOutcomeFor(["foo"]);
 
 		try
 		{
@@ -254,7 +255,7 @@ class MockMethodTest
 		instance = createInstance();
 
 
-		instance.call(["foo"]);
+		instance.getOutcomeFor(["foo"]);
 
 		try
 		{
@@ -263,7 +264,7 @@ class MockMethodTest
 		}
 		catch(e:VerificationException) {}
 
-		instance.call(["bar"]);
+		instance.getOutcomeFor(["bar"]);
 		instance.verify(times(1), ["bar"]);
 		
 
@@ -277,13 +278,13 @@ class MockMethodTest
 
 		try
 		{
-			instance.call(["1"]);
+			instance.getOutcomeFor(["1"]);
 			instance.verify(times(1), [null]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
-		instance.call([null]);
+		instance.getOutcomeFor([null]);
 		instance.verify(times(1), [null]);
 	}
 
@@ -292,7 +293,7 @@ class MockMethodTest
 	{
 		instance = createInstance();
 
-		instance.call([SomeEnum.foo]);
+		instance.getOutcomeFor([SomeEnum.foo]);
 
 		try
 		{
@@ -320,7 +321,7 @@ class MockMethodTest
 
 		try
 		{
-			instance.call([false]);
+			instance.getOutcomeFor([false]);
 			instance.verify(times(1), [anyString]);
 			Assert.fail("Expected VerificationException");
 		}
@@ -328,13 +329,13 @@ class MockMethodTest
 
 		try
 		{
-			instance.call([null]);
+			instance.getOutcomeFor([null]);
 			instance.verify(times(1), [anyString]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
-		instance.call(["foo"]);
+		instance.getOutcomeFor(["foo"]);
 		instance.verify(times(1), [anyString]);
 	}
 
@@ -345,7 +346,7 @@ class MockMethodTest
 
 		try
 		{
-			instance.call([1.1]);
+			instance.getOutcomeFor([1.1]);
 			instance.verify(times(1), [anyInt]);
 			Assert.fail("Expected VerificationException");
 		}
@@ -353,13 +354,13 @@ class MockMethodTest
 
 		try
 		{
-			instance.call([null]);
+			instance.getOutcomeFor([null]);
 			instance.verify(times(1), [anyInt]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
-		instance.call([1]);
+		instance.getOutcomeFor([1]);
 		instance.verify(times(1), [anyInt]);
 	}
 
@@ -370,17 +371,17 @@ class MockMethodTest
 
 		try
 		{
-			instance.call([null]);
+			instance.getOutcomeFor([null]);
 			instance.verify(times(1), [anyFloat]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
 
-		instance.call([1.1]);
+		instance.getOutcomeFor([1.1]);
 		instance.verify(times(1), [anyFloat]);
 
-		instance.call([1]);
+		instance.getOutcomeFor([1]);
 		instance.verify(times(2), [anyFloat]); //int is valid flaot
 	}
 
@@ -391,7 +392,7 @@ class MockMethodTest
 
 		try
 		{
-			instance.call([1]);
+			instance.getOutcomeFor([1]);
 			instance.verify(times(1), [anyBool]);
 			Assert.fail("Expected VerificationException");
 		}
@@ -399,16 +400,16 @@ class MockMethodTest
 
 		try
 		{
-			instance.call([null]);
+			instance.getOutcomeFor([null]);
 			instance.verify(times(1), [anyBool]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
-		instance.call([true]);
+		instance.getOutcomeFor([true]);
 		instance.verify(times(1), [anyBool]);
 
-		instance.call([false]);
+		instance.getOutcomeFor([false]);
 		instance.verify(times(2), [anyBool]);
 	}
 
@@ -419,7 +420,7 @@ class MockMethodTest
 
 		try
 		{
-			instance.call([1]);
+			instance.getOutcomeFor([1]);
 			instance.verify(times(1), [anyObject]);
 			Assert.fail("Expected VerificationException");
 		}
@@ -427,7 +428,7 @@ class MockMethodTest
 
 		try
 		{
-			instance.call([null]);
+			instance.getOutcomeFor([null]);
 			instance.verify(times(1), [anyObject]);
 			Assert.fail("Expected VerificationException");
 		}
@@ -435,16 +436,16 @@ class MockMethodTest
 
 		try
 		{
-			instance.call(["foo"]);
+			instance.getOutcomeFor(["foo"]);
 			instance.verify(times(1), [anyObject]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
-		instance.call([{foo:true}]);
+		instance.getOutcomeFor([{foo:true}]);
 		instance.verify(times(1), [anyObject]);
 
-		instance.call([new Hash<String>()]);
+		instance.getOutcomeFor([new Hash<String>()]);
 		instance.verify(times(1), [anyObject]); //doesnt count instances - only annonomous objects
 	}
 
@@ -455,7 +456,7 @@ class MockMethodTest
 
 		try
 		{
-			instance.call([1]);
+			instance.getOutcomeFor([1]);
 			instance.verify(times(1), [anyEnum]);
 			Assert.fail("Expected VerificationException");
 		}
@@ -463,17 +464,17 @@ class MockMethodTest
 
 		try
 		{
-			instance.call([null]);
+			instance.getOutcomeFor([null]);
 			instance.verify(times(1), [anyEnum]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
 
-		instance.call([SomeEnum.foo]);
+		instance.getOutcomeFor([SomeEnum.foo]);
 		instance.verify(times(1), [anyEnum]);
 
-		instance.call([SomeOtherEnum.bar]);
+		instance.getOutcomeFor([SomeOtherEnum.bar]);
 		instance.verify(times(2), [anyEnum]); 
 	}
 
@@ -484,17 +485,17 @@ class MockMethodTest
 
 		try
 		{
-			instance.call([SomeOtherEnum.foo]);
+			instance.getOutcomeFor([SomeOtherEnum.foo]);
 			instance.verify(times(1), [enumOf(SomeEnum)]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
 
-		instance.call([SomeEnum.foo]);
+		instance.getOutcomeFor([SomeEnum.foo]);
 		instance.verify(times(1), [enumOf(SomeEnum)]);
 
-		instance.call([SomeEnum.bar]);
+		instance.getOutcomeFor([SomeEnum.bar]);
 		instance.verify(times(2), [enumOf(SomeEnum)]); 
 	}
 
@@ -506,7 +507,7 @@ class MockMethodTest
 
 		try
 		{
-			instance.call([1]);
+			instance.getOutcomeFor([1]);
 			instance.verify(times(1), [instanceOf(SomeClass)]);
 			Assert.fail("Expected VerificationException");
 		}
@@ -514,7 +515,7 @@ class MockMethodTest
 
 		try
 		{
-			instance.call([null]);
+			instance.getOutcomeFor([null]);
 			instance.verify(times(1), [instanceOf(SomeClass)]);
 			Assert.fail("Expected VerificationException");
 		}
@@ -522,16 +523,16 @@ class MockMethodTest
 
 		try
 		{
-			instance.call([new Hash<String>()]);
+			instance.getOutcomeFor([new Hash<String>()]);
 			instance.verify(times(1), [instanceOf(SomeClass)]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
-		instance.call([new SomeClass()]);
+		instance.getOutcomeFor([new SomeClass()]);
 		instance.verify(times(1), [instanceOf(SomeClass)]);
 
-		instance.call([new SomeSubClass()]);
+		instance.getOutcomeFor([new SomeSubClass()]);
 		instance.verify(times(2), [instanceOf(SomeClass)]); 
 
 		instance.verify(times(1), [instanceOf(SomeSubClass)]); 
@@ -546,22 +547,22 @@ class MockMethodTest
 
 		try
 		{
-			instance.call([null]);
+			instance.getOutcomeFor([null]);
 			instance.verify(times(1), [isNotNull]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
-		instance.call([1]);
+		instance.getOutcomeFor([1]);
 		instance.verify(times(1), [isNotNull]);
 
-		instance.call(["foo"]);
+		instance.getOutcomeFor(["foo"]);
 		instance.verify(times(2), [isNotNull]);
 
-		instance.call([new SomeClass()]);
+		instance.getOutcomeFor([new SomeClass()]);
 		instance.verify(times(3), [isNotNull]);
 
-		instance.call([SomeEnum.foo]);
+		instance.getOutcomeFor([SomeEnum.foo]);
 		instance.verify(times(4), [isNotNull]);
 	}
 
@@ -572,13 +573,13 @@ class MockMethodTest
 
 		try
 		{
-			instance.call([1]);
+			instance.getOutcomeFor([1]);
 			instance.verify(times(1), [isNull]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
-		instance.call([null]);
+		instance.getOutcomeFor([null]);
 		instance.verify(times(1), [isNull]);
 
 	}
@@ -588,10 +589,10 @@ class MockMethodTest
 	{
 		instance = createInstance();
 
-		instance.call([1]);
+		instance.getOutcomeFor([1]);
 		instance.verify(times(1), [any]);
 
-		instance.call([null]);
+		instance.getOutcomeFor([null]);
 		instance.verify(times(2), [any]);
 	}
 
@@ -607,14 +608,14 @@ class MockMethodTest
 
 		try
 		{
-			instance.call(["bar"]);
+			instance.getOutcomeFor(["bar"]);
 			instance.verify(times(1), [customMatcher(f)]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 
 
-		instance.call(["foo"]);
+		instance.getOutcomeFor(["foo"]);
 		instance.verify(times(1), [customMatcher(f)]);
 	}
 
@@ -626,7 +627,7 @@ class MockMethodTest
 
 		try
 		{
-			instance.call([1]);
+			instance.getOutcomeFor([1]);
 			instance.verify(times(1), [anyIterator]);
 			Assert.fail("Expected VerificationException");
 		}
@@ -634,34 +635,34 @@ class MockMethodTest
 
 		try
 		{
-			instance.call([null]);
+			instance.getOutcomeFor([null]);
 			instance.verify(times(1), [anyIterator]);
 			Assert.fail("Expected VerificationException");
 		}
 		catch(e:VerificationException) {}
 		
 		var hash = new Hash<String>();
-		instance.call([hash]);
+		instance.getOutcomeFor([hash]);
 		instance.verify(times(1), [anyIterator]);
 
 		var array = new Array<Int>();
-		instance.call([array]);
+		instance.getOutcomeFor([array]);
 		instance.verify(times(2), [anyIterator]);
 
 		var intHash = new IntHash<Int>();
-		instance.call([intHash]);
+		instance.getOutcomeFor([intHash]);
 		instance.verify(times(3), [anyIterator]);
 
 		var list = new List<String>();
-		instance.call([list]);
+		instance.getOutcomeFor([list]);
 		instance.verify(times(4), [anyIterator]);
 
 		var someIterable = new SomeIterable("foo");
-		instance.call([someIterable]);
+		instance.getOutcomeFor([someIterable]);
 		instance.verify(times(5), [anyIterator]);
 
 		var someIterator = new SomeIterator("foo");
-		instance.call([someIterator]);
+		instance.getOutcomeFor([someIterator]);
 		instance.verify(times(6), [anyIterator]);
 	}
 
@@ -669,7 +670,7 @@ class MockMethodTest
 	public function should_verify_multiple_matches():Void
 	{
 		instance = createInstance();
-		instance.call([1, "foo", null, new Array<Bool>()]);
+		instance.getOutcomeFor([1, "foo", null, new Array<Bool>()]);
 		instance.verify(times(1), [anyInt, anyString, null , anyIterator]);
 	}
 
@@ -684,13 +685,13 @@ class MockMethodTest
 
 		instance.addReturnFor([1], [1]);
 
-		var result = instance.callAndReturn([0], 0);
+		var result = instance.getOutcomeFor([0]);
 
-		Assert.areEqual(0, result);
+		Asserts.assertEnumTypeEq(none, result);
 
-		result = instance.callAndReturn([1], 0);
+		result = instance.getOutcomeFor([1]);
 
-		Assert.areEqual(1, result);
+		Asserts.assertEnumTypeEq(returns(1), result);
 	}
 
 	@Test
@@ -700,18 +701,12 @@ class MockMethodTest
 
 		instance.addThrowFor([1], ["exception"]);
 
-		var result = instance.callAndReturn([0], 0);
+		var result = instance.getOutcomeFor([0]);
 
-		Assert.areEqual(0, result);
+		Asserts.assertEnumTypeEq(none, result);
 
-		try
-		{
-			result = instance.callAndReturn([1], 0);
-		}
-		catch(e:String)
-		{
-			Assert.areEqual("exception", e);
-		}
+		result = instance.getOutcomeFor([1]);
+		Asserts.assertEnumTypeEq(throws("exception"), result);
 	}
 
 	@Test
@@ -719,24 +714,15 @@ class MockMethodTest
 	{
 		instance = createInstance(["Int"], "Int");
 
-		var wasCalled:Bool = false;
-		var f = function(args:Array<Dynamic>)
-		{
-			wasCalled = true;
-			return 1;
-		}
+		var f = function(args:Array<Dynamic>){return 0;}
 
 		instance.addCallbackFor([1], [f]);
 
-		var result = instance.callAndReturn([0], 0);
+		var result = instance.getOutcomeFor([0]);
+		Asserts.assertEnumTypeEq(none, result);
 
-		Assert.areEqual(0, result);
-
-
-		result = instance.callAndReturn([1], 0);
-
-		Assert.areEqual(1, result);
-		Assert.isTrue(wasCalled);
+		result = instance.getOutcomeFor([1]);
+		Asserts.assertEnumTypeEq(calls(f), result);
 	}
 
 	//
@@ -753,46 +739,19 @@ class MockMethodTest
 		catch(e:StubbingException){}
 		
 
-		var wasCalled:Bool = false;
 		var f = function(args:Array<Dynamic>)
 		{
-			wasCalled = true;
 			return;
 		}
 
 		instance.addThrowFor([], ["exception"]);
 		instance.addCallbackFor([], [f]);
 
-		try
-		{
-			instance.call([]);
-			Assert.fail("Expected exception");
-		}
-		catch(e:String)
-		{
-			Assert.areEqual("exception", e);
-		}
+		var result = instance.getOutcomeFor([]);
+		Asserts.assertEnumTypeEq(throws("exception"), result);
 
-		instance.call([]);
-		Assert.isTrue(wasCalled);
-	}
-
-	@Test
-	public function should_throw_exception_if_return_found_for_void_call():Void
-	{
-		instance = createInstance();
-
-		//hack to test missing line of code coverage
-		untyped instance.returnType = "Int";
-		instance.addReturnFor([], [1]);
-		untyped instance.returnType = null;
-
-		try
-		{
-			instance.call([]);
-			Assert.fail("Expected StubbingException");
-		}
-		catch(e:StubbingException){}
+		result = instance.getOutcomeFor([]);
+		Asserts.assertEnumTypeEq(calls(f), result);
 	}
 
 	@Test
@@ -809,18 +768,13 @@ class MockMethodTest
 
 	}
 
-
-
-
 	@Test
 	public function should_add_to_existing_stub():Void
 	{
 		instance = createInstance(["Int"], "Int");
 
-		var wasCalled:Bool = false;
 		var f = function(args:Array<Dynamic>)
 		{
-			wasCalled = true;
 			return 100;
 		}
 
@@ -829,28 +783,19 @@ class MockMethodTest
 		instance.addThrowFor([1], ["exception"]);
 		instance.addCallbackFor([1], [f]);
 
-		var result = instance.callAndReturn([1], 0);
+		var result = instance.getOutcomeFor([1]);
+		Asserts.assertEnumTypeEq(returns(1), result);
 
-		Assert.areEqual(1, result);
 
-		result = instance.callAndReturn([1], 0);
+		result = instance.getOutcomeFor([1]);
 
-		Assert.areEqual(2, result);
+		Asserts.assertEnumTypeEq(returns(2), result);
 
-		try
-		{
-			instance.call([1]);
-			Assert.fail("Expected exception");
-		}
-		catch(e:String)
-		{
-			Assert.areEqual("exception", e);
-		}
+		result = instance.getOutcomeFor([1]);
+		Asserts.assertEnumTypeEq(throws("exception"), result);
 
-		result = instance.callAndReturn([1], 0);
-
-		Assert.areEqual(100, result);
-		Assert.isTrue(wasCalled);
+		result = instance.getOutcomeFor([1]);
+		Asserts.assertEnumTypeEq(calls(f), result);
 	}
 
 	@Test
@@ -861,9 +806,9 @@ class MockMethodTest
 		instance.addReturnFor([1], [1]);
 		instance.addReturnFor([1, 2, 3], [2]);
 
-		var result = instance.callAndReturn([1,2,3], 0);
+		var result = instance.getOutcomeFor([1,2,3]);
 
-		Assert.areEqual(2, result);
+		Asserts.assertEnumTypeEq(returns(2), result);
 	}
 
 
@@ -875,10 +820,9 @@ class MockMethodTest
 
 		instance.addReturnFor([anyInt], [666]);
 
-		var result = instance.callAndReturn([0], 0);
+		var result = instance.getOutcomeFor([0]);
 
-		Assert.areEqual(666, result);
-
+		Asserts.assertEnumTypeEq(returns(666), result);
 	}
 
 

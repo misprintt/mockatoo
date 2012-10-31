@@ -35,6 +35,7 @@ Macro class that generates a Mock implementation of a class or interface
 class MockMaker
 {
 	static var mockedClassHash:Hash<String> = new Hash();
+	static var eNull:Expr = EConst(CIdent("null")).at();
 
 	var expr:Expr;
 	var pos:Position;
@@ -479,7 +480,7 @@ class MockMaker
 		field.access.push(APublic);
 
 		var eMockConstructorExprs = createMockConstructorExprs();
-		var eReturn = EReturn().at();
+		var eReturn = isSpy ? eNull : EReturn().at();
 		var e = EConst(CIdent("super")).at();
 
 		if(f.args.length == 0)
@@ -525,12 +526,9 @@ class MockMaker
 
 		if(f.ret != null && !StringTools.endsWith(TypeTools.toString(f.ret), "Void"))
 		{
-
 			f.ret = normaliseReturnType(f.ret);
 
 			trace(field.name + ":" + Std.string(f.ret));
-
-
 			
 			var mockCall = createMockFieldExprs(field, f);
 			var ereturn = EReturn(mockCall).at();
@@ -562,7 +560,6 @@ class MockMaker
 
 		var eArgs = args.toArray(); //reference to args
 		var eName = EConst(CString(field.name)).at(); //name of current method
-		
 		if(includeReturn)
 		{
 			trace(f.ret.toString());

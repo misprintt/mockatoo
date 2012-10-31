@@ -2,6 +2,7 @@ package mockatoo.internal;
 import mockatoo.exception.VerificationException;
 import mockatoo.exception.StubbingException;
 import mockatoo.Mockatoo;
+import mockatoo.internal.MockOutcome;
 
 using mockatoo.util.TypeEquality;
 
@@ -35,44 +36,23 @@ class MockMethod
 		stubbings = [];
 	}
 	
-	public function call(args:Array<Dynamic>)
+
+	public function getOutcomeFor(args:Array<Dynamic>):MockOutcome
 	{
 		invocations.push(args);
-
 		var stub = getStubbingForArgs(args);
-		if(stub == null) return;
-
-		switch(getActiveStubValue(stub))
-		{
-			case returns(r): throw new StubbingException("Method [" + fieldName + "] has no return type and cannot stub custom return values.");
-			case throws(e): throw e;
-			case calls(f): f(args);
-		}
+		return getActiveStubValue(stub);
 	}
 
-	function getActiveStubValue(stub:Stubbing)
+
+	function getActiveStubValue(stub:Stubbing):MockOutcome
 	{
+		if(stub == null) return none;
 		if(stub.values.length > 1)
 			return stub.values.shift();//remove if not last one;
 		return stub.values[0];
 	} 
 
-	public function callAndReturn<T>(args:Array<Dynamic>, defaultReturn:T):T
-	{
-		invocations.push(args);
-
-		var stub = getStubbingForArgs(args);
-
-		if(stub == null) return defaultReturn;
-		
-		switch(getActiveStubValue(stub))
-		{
-			case returns(r): return r;
-			case throws(e): throw e;
-			case calls(f): return f(args);
-		}
-			
-	}
 
 	public function addReturnFor<T>(args:Array<Dynamic>, values:Array<T>)
 	{
@@ -124,7 +104,7 @@ class MockMethod
 			if(!Reflect.isFunction(value))
 				 throw new StubbingException("Value [" + value + "] is not a function.");
 
-			stub.values.push( calls(value) );
+			stub.values.push(calls(value) );
 		}
 	}
 
@@ -321,15 +301,9 @@ class MockMethod
 typedef Stubbing = 
 {
 	args:Array<Dynamic>,
-	values:Array<StubbingValue>
+	values:Array<MockOutcome>
 }
 
-enum StubbingValue
-{
-	returns(value:Dynamic);
-	throws(value:Dynamic);
-	calls(value:Dynamic);
-}
 
 private class Range
 {
