@@ -337,6 +337,14 @@ class MockatooTest
 	}
 	#end
 
+
+	@Test
+	public function should_mock_classes_with_nested_typeParams()
+	{
+		var mock = Mockatoo.mock(IntIterableClass);
+		Assert.isNull(mock.iterator());
+	}
+
 	// ------------------------------------------------------------------------- typedef structures
 	
 	@Test
