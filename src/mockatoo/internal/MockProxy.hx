@@ -8,53 +8,31 @@ Responsible for run time mocking behaviour of a Mock instance.
 class MockProxy
 {
 	public var target:Mock;
-
+	public var spy:Bool;
 	var targetClass:Class<Mock>;
 	var targetClassName:String;
-
 	var hash:Hash<MockMethod>;
 
-	public function new(target:Mock)
+	public function new(target:Mock, ?spy:Bool=false)
 	{
 		this.target = target;
+		this.spy = spy;
 		targetClass = Type.getClass(target);
 		reset();
 	}
 
 	/**
-	Called by mocked clases when methods are executed. Do not call directly
+	Called by mocked clases when methods are executed. 
 	*/
-	public function callMethod(method:String, args:Array<Dynamic>)
+	public function getOutcomeFor(method:String, args:Array<Dynamic>):MockOutcome
 	{
 		var proxy = hash.get(method);
-		var outcome = proxy.getOutcomeFor(args);
-
-		switch(outcome)
-		{
-			case returns(v): throw new StubbingException("Method [" + method + "] has no return type and cannot stub custom return values.");
-			case throws(v): throw v;
-			case calls(v): v(args);
-			case none: return;
-		}
+		return proxy.getOutcomeFor(args);
 	}
 
 	/**
-	Called by mocked clases when methods are executed. Do not call directly
+	Called by Mockatoo.verify to access verifications for a mock class.
 	*/
-	public function callMethodAndReturn<T>(method:String, args:Array<Dynamic>, returnValue:T):T
-	{
-		var proxy = hash.get(method);
-		var outcome = proxy.getOutcomeFor(args);
-
-		switch(outcome)
-		{
-			case returns(v): return v;
-			case throws(v): throw v;
-			case calls(v): return v(args);
-			case none: return returnValue;
-		}
-	}
-
 	public function verify(?mode:VerificationMode):Verification
 	{
 		if(mode == null) mode = VerificationMode.times(1);

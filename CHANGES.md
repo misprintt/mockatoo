@@ -1,5 +1,5 @@
-v1.0.x
-
+v1.1.0
+- added spying (partial mocking)
 
 v1.0.1
 - added mocking for typedef structures (no verify/stubbing though)

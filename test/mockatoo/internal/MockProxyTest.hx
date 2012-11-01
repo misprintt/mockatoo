@@ -4,9 +4,11 @@ import massive.munit.util.Timer;
 import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
 import mockatoo.internal.MockProxy;
+import mockatoo.internal.MockOutcome;
 import mockatoo.Mockatoo;
 import mockatoo.exception.VerificationException;
 import mockatoo.exception.StubbingException;
+import util.Asserts;
 /**
 * Auto generated MassiveUnit Test Class  for mockatoo.internal.MockProxy 
 */
@@ -48,31 +50,31 @@ class MockProxyTest
 
 		var verification = instance.verify();
 
-		instance.callMethod("none", []);
+		instance.getOutcomeFor("none", []);
 		verification.none();
 
-		instance.callMethod("one", [1]);
+		instance.getOutcomeFor("one", [1]);
 		verification.one(1);
 
-		instance.callMethodAndReturn("two", [1,2], 1);
+		instance.getOutcomeFor("two", [1,2]);
 		verification.two(1, anyInt);
 
 
-		instance.callMethodAndReturn("three", [1,2,3], 1);
+		instance.getOutcomeFor("three", [1,2,3]);
 		verification.three(1, anyInt, isNotNull);
 	}
 
 	@Test
-	public function should_return_default_value():Void
+	public function should_return_none():Void
 	{
 		var mock = mockatoo.Mockatoo.mock(ClassToMock);
 		instance = new MockProxy(mock);
 
 		var verification = instance.verify();
 
-		var result = instance.callMethodAndReturn("two", [1,2], 1);
+		var result = instance.getOutcomeFor("two", [1,2]);
 
-		Assert.areEqual(1, result);
+		Asserts.assertEnumTypeEq(none, result);
 	}
 
 
@@ -84,7 +86,7 @@ class MockProxyTest
 
 		var verification = instance.verify(never);
 
-		instance.callMethod("none", []);
+		instance.getOutcomeFor("none", []);
 
 		try
 		{
@@ -117,26 +119,6 @@ class MockProxyTest
 	}
 
 	@Test
-	public function should_throw_stubbed_execption():Void
-	{
-		var mock = mockatoo.Mockatoo.mock(ClassToMock);
-		instance = new MockProxy(mock);
-
-		var stub = instance.stub("none", []);
-
-		stub.thenThrow(new CustomException());
-
-		try
-		{
-			instance.callMethod("none", []);
-			Assert.fail("Expected CustomException");
-		}
-		catch(e:CustomException){}
-
-		Assert.isTrue(true);
-	}
-
-	@Test
 	public function should_return_stubbed_value():Void
 	{
 		var mock = mockatoo.Mockatoo.mock(ClassToMock);
@@ -146,9 +128,8 @@ class MockProxyTest
 
 		stub.thenReturn(4);
 
-		var result = instance.callMethodAndReturn("two", [1,2], 0);
-
-		Assert.areEqual(4, result);
+		var result = instance.getOutcomeFor("two", [1,2]);
+		Asserts.assertEnumTypeEq(returns(4), result);
 	}
 
 	@Test
@@ -161,13 +142,13 @@ class MockProxyTest
 
 		stub.thenReturn(4);
 
-		var result = instance.callMethodAndReturn("two", [1,2], 0);
+		var result = instance.getOutcomeFor("two", [1,2]);
 
-		Assert.areEqual(4, result);
+		Asserts.assertEnumTypeEq(returns(4), result);
 
-		result = instance.callMethodAndReturn("two", [1,2], 0);
+		result = instance.getOutcomeFor("two", [1,2]);
 
-		Assert.areEqual(4, result);
+		Asserts.assertEnumTypeEq(returns(4), result);
 	}
 
 
@@ -179,18 +160,17 @@ class MockProxyTest
 
 		var stub = instance.stub("two", [1,2]);
 
-		stub.thenReturn(4).thenThrow(new CustomException());
+		var exception = new CustomException(); 
 
-		var result = instance.callMethodAndReturn("two", [1,2], 0);
+		stub.thenReturn(4).thenThrow(exception);
 
-		Assert.areEqual(4, result);
+		var result = instance.getOutcomeFor("two", [1,2]);
 
-		try
-		{
-			instance.callMethodAndReturn("two", [1,2], 0);
-			Assert.fail("Expected CustomException");
-		}
-		catch(e:CustomException){}
+		Asserts.assertEnumTypeEq(returns(4), result);
+
+		result = instance.getOutcomeFor("two", [1,2]);
+
+		Asserts.assertEnumTypeEq(throws(exception), result);
 	}
 
 	@Test
@@ -200,20 +180,13 @@ class MockProxyTest
 		instance = new MockProxy(mock);
 
 
-		var stub = instance.stub("two", [1,2]);
+		var f = function(args:Array<Dynamic>) {}
 
-		var wasCalled:Bool = false;
+		instance.stub("two", [1,2]).thenCall(f);
 
-		var f = function(args:Array<Dynamic>)
-		{
-			wasCalled = true;
-		}
+		var result = instance.getOutcomeFor("two", [1,2]);
 
-		stub.thenCall(f);
-
-		instance.callMethodAndReturn("two", [1,2], 0);
-
-		Assert.isTrue(wasCalled);
+		Asserts.assertEnumTypeEq(calls(f), result);
 	}
 
 	// ------------------------------------------------------------------------- reset
@@ -227,14 +200,15 @@ class MockProxyTest
 		
 		instance.stub("two", [1,2]).thenReturn(4);
 
-		var result = instance.callMethodAndReturn("two", [1,2], 0);
+		var result = instance.getOutcomeFor("two", [1,2]);
 
-		Assert.areEqual(4, result);
+		Asserts.assertEnumTypeEq(returns(4), result);
 
 		instance.reset();
 
-		result = instance.callMethodAndReturn("two", [1,2], 0);
-		Assert.areEqual(0, result);
+		result = instance.getOutcomeFor("two", [1,2]);
+
+		Asserts.assertEnumTypeEq(none, result);
 	}
 
 	@Test
@@ -243,7 +217,7 @@ class MockProxyTest
 		var mock = mockatoo.Mockatoo.mock(ClassToMock);
 		
 		instance = new MockProxy(mock);
-		instance.callMethodAndReturn("two", [1,2], 0);
+		instance.getOutcomeFor("two", [1,2]);
 		instance.reset();
 
 		try

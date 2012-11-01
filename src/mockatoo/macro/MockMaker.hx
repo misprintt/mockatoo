@@ -59,12 +59,12 @@ class MockMaker
 
 	var generatedExpr:Expr;
 
-	public function new(e:Expr, ?paramTypes:Expr, spy:Bool=false)
+	public function new(e:Expr, ?paramTypes:Expr, isSpy:Bool=false)
 	{
 		expr = e;
 		id = e.toString();
 
-		isSpy = spy;
+		this.isSpy = isSpy;
 
 		pos = e.pos;
 
@@ -114,7 +114,8 @@ class MockMaker
 		if(generatedExpr == null)
 		{
 			var typeParams = untyped TypeTools.paramsToComplex(params);
-			generatedExpr = ExprTools.instantiate(typeDefinitionId, null, typeParams, pos);
+			var eIsSpy = EConst(CIdent(Std.string(isSpy))).at();
+			generatedExpr = ExprTools.instantiate(typeDefinitionId, [eIsSpy], typeParams, pos);
 		}
 
 		trace(Printer.print(generatedExpr));
@@ -194,7 +195,10 @@ class MockMaker
 
 		isInterface = classType.isInterface;
 
+		if(isInterface) isSpy = false;
+
 		trace("params: " + params);
+		trace("isSpy " +  isSpy);
 		trace("class " +  classType.name);
 		trace("   interface: " + isInterface);
 		trace("   params: " + classType.params);
@@ -308,7 +312,6 @@ class MockMaker
 			}
 		}
 
-
 		preview += "class " + id + "Mocked " + (isInterface?"implements":"extends") + " " + id;
 		preview += "\n{";
 
@@ -328,7 +331,6 @@ class MockMaker
 		preview += "\n}";
 
 		trace(preview);
-
 	}
 
 	function updateMeta(source:Metadata):Metadata
@@ -503,6 +505,15 @@ class MockMaker
 			f.args = [];
 		}
 
+		var spyArg = {
+			value: EConst(CIdent("false")).at(),
+			type: TPath({sub:null,params:[],pack:[],name:"Bool"}),
+			opt:true,
+			name:"spy"
+		}
+
+		f.args.push(spyArg);
+
 		//deliberately call return before call to super
 		//to prevent target class constructor being executed
 		f.expr = ExprTools.toBlock([eMockConstructorExprs,eReturn, e]);
@@ -512,7 +523,8 @@ class MockMaker
 	{
 		//create mockProxy instance
 		var eThis =  EConst(CIdent("this")).at();
-		var eInstance = "mockatoo.internal.MockProxy".instantiate([eThis]);
+		var eSpy = EConst(CIdent("spy")).at();
+		var eInstance = "mockatoo.internal.MockProxy".instantiate([eThis,eSpy]);
 		return EConst(CIdent("mockProxy")).at().assign(eInstance);
 	}
 
@@ -524,33 +536,70 @@ class MockMaker
 		if(!isInterface)
 		field.access.unshift(AOverride);
 
+
+		var args = getFunctionArgIdents(f);
+
+		var eMockOutcome = createMockFieldExprs(field, args);
+		var eCaseReturns = macro MockOutcome.returns(v);
+		var eCaseThrows = macro MockOutcome.throws(v);
+		var eCaseCalls = macro MockOutcome.calls(v);
+		var eCaseNone = macro MockOutcome.none;
+
+		var eIsSpy = "mockProxy.spy".resolve();
+
+		var eSwitch:Expr = null;
+
 		if(f.ret != null && !StringTools.endsWith(TypeTools.toString(f.ret), "Void"))
 		{
 			f.ret = normaliseReturnType(f.ret);
 
 			trace(field.name + ":" + Std.string(f.ret));
-			
-			var mockCall = createMockFieldExprs(field, f);
-			var ereturn = EReturn(mockCall).at();
-			f.expr = createBlock([ereturn]);
+		
+			var eDefaultReturnValue = getDefaultValueForType(f.ret); //default return type (usually 'null')
+
+			var eSuper =  ("super." + field.name).resolve().call(args);
+
+			if(isInterface)
+				eSuper = eDefaultReturnValue;
+
+
+			var eIf:Expr = macro $eIsSpy ? $eSuper : $eDefaultReturnValue;
+
+			eSwitch = macro switch($eMockOutcome)
+			{
+				case $eCaseReturns: return v;
+				case $eCaseThrows: throw v;
+				case $eCaseCalls: return v();
+				case $eCaseNone: return $eIf;
+			}
 		}
 		else
 		{
-			var mockCall = createMockFieldExprs(field, f, false);
+			var eSuper =  ("super." + field.name).resolve().call(args);
 
-			f.expr = mockCall;
+			if(isInterface)
+				eSuper = eNull;
+
+			var eIf:Expr = macro $eIsSpy ? $eSuper : $eNull;
+
+			eSwitch= macro switch($eMockOutcome)
+			{
+				case $eCaseThrows: throw v;
+				case $eCaseCalls: v();
+				default: $eIf;
+			}
 		}
 
-		field.kind = FFun(f);
+		f.expr = createBlock([eSwitch]);
 
+		field.kind = FFun(f);
 
 		var fieldMeta = createMockFieldMeta(field, f);
 		field.meta.push(fieldMeta);
 	}
 
-	function createMockFieldExprs(field:Field, f:Function, ?includeReturn:Bool=true):Expr
+	function getFunctionArgIdents(f:Function)
 	{
-
 		var args:Array<Expr> = [];
 
 		for(arg in f.args)
@@ -558,20 +607,15 @@ class MockMaker
 			args.push(EConst(CIdent(arg.name)).at());
 		}
 
+		return args;
+	}
+
+	function createMockFieldExprs(field:Field, args:Array<Expr>):Expr
+	{
 		var eArgs = args.toArray(); //reference to args
 		var eName = EConst(CString(field.name)).at(); //name of current method
-		if(includeReturn)
-		{
-			trace(f.ret.toString());
 
-			var eDefaultReturnValue = getDefaultValueForType(f.ret); //default return type (usually 'null')
-			trace("  " + eDefaultReturnValue.print());
-			return "mockProxy.callMethodAndReturn".resolve().call([eName, eArgs, eDefaultReturnValue]);
-		}
-		else
-		{
-			return "mockProxy.callMethod".resolve().call([eName, eArgs]);
-		}
+		return "mockProxy.getOutcomeFor".resolve().call([eName, eArgs]);
 	}
 		
 
@@ -719,7 +763,16 @@ class MockMaker
 	{	
 		var constructorExprs = createMockConstructorExprs();
 		var exprs = ExprTools.toBlock([constructorExprs]);
-		var f:Function = FunctionTools.func(exprs, null, null, null, false);
+
+
+		var arg = {
+			value: EConst(CIdent("false")).at(),
+			type: TPath({sub:null,params:[],pack:[],name:"Bool"}),
+			opt:true,
+			name:"spy"
+		}
+
+		var f:Function = FunctionTools.func(exprs, [arg], null, null, false);
 		return 
 		{
 			pos:Context.currentPos(),

@@ -179,6 +179,32 @@ class MockatooTest
 		assertMock(mock, ClassWithConstructorAgs, fields);
 	}
 
+
+	// ------------------------------------------------------------------------- spying
+
+	@Test
+	public function should_call_super_for_spy()
+	{
+		var mock = Mockatoo.spy(VariableArgumentsClass);
+
+		var result = mock.one(10);
+
+		Assert.areEqual(10, result);
+
+		Mockatoo.when(mock.one(10)).thenReturn(2);
+
+		result = mock.one(10);
+
+		Assert.areEqual(2, result);
+
+		Mockatoo.reset(mock);
+
+		result = mock.one(10);
+
+		Assert.areEqual(10, result);
+	}
+
+
 	// ------------------------------------------------------------------------- generics & typdefs
 
 	@Test

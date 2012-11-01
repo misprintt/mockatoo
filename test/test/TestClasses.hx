@@ -14,7 +14,7 @@ class SimpleClass
 {
 	public function new()
 	{
-		throw "not mocked";
+		
 	}
 
 	public function test()

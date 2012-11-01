@@ -37,6 +37,7 @@ class Mockatoo
 	@:macro static public function spy<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
 	{
 		InitMacro.init();
+		trace("!");
 		var mock = new MockMaker(typeToMock, paramTypes, true);
 		return mock.toExpr();
 	}
