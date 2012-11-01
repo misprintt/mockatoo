@@ -628,7 +628,7 @@ class MockMaker
 			eSwitch= macro switch($eMockOutcome)
 			{
 				case $eCaseThrows: throw v;
-				case $eCaseCalls: v();
+				case $eCaseCalls: v($eArgs);
 				default: $eIf;
 			}
 		}
