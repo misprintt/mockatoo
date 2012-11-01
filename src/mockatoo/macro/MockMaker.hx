@@ -586,6 +586,8 @@ class MockMaker
 		var eCaseCalls = macro MockOutcome.calls(v);
 		var eCaseNone = macro MockOutcome.none;
 
+		var eArgs = args.toArray(); //reference to args
+
 		var eIsSpy = "mockProxy.spy".resolve();
 
 		var eSwitch:Expr = null;
@@ -610,7 +612,7 @@ class MockMaker
 			{
 				case $eCaseReturns: return v;
 				case $eCaseThrows: throw v;
-				case $eCaseCalls: return v();
+				case $eCaseCalls: return v($eArgs);
 				case $eCaseNone: return $eIf;
 			}
 		}
