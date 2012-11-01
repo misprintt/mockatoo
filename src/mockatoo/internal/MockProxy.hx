@@ -152,6 +152,19 @@ class MockProxy
 			return stub;
 		});
 
+
+		if(spy)
+		{
+			var fStub = function()
+			{
+				proxy.addDefaultStubFor(args);
+				return stub;
+			};
+
+			Reflect.setField(stub, "thenMock", fStub);
+
+		}
+
 		Reflect.setField(stub, "thenReturn", fReturn);
 		Reflect.setField(stub, "thenThrow", fThrow);
 		Reflect.setField(stub, "thenCall", fCallback);

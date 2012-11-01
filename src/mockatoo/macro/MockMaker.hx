@@ -635,6 +635,7 @@ class MockMaker
 		var eCaseReturns = macro MockOutcome.returns(v);
 		var eCaseThrows = macro MockOutcome.throws(v);
 		var eCaseCalls = macro MockOutcome.calls(v);
+		var eCaseMocks = macro MockOutcome.mocks;
 		var eCaseNone = macro MockOutcome.none;
 
 		var eArgs = args.toArray(); //reference to args
@@ -664,6 +665,7 @@ class MockMaker
 				case $eCaseReturns: return v;
 				case $eCaseThrows: throw v;
 				case $eCaseCalls: return v($eArgs);
+				case $eCaseMocks: return $eDefaultReturnValue;
 				case $eCaseNone: return $eIf;
 			}
 		}
@@ -680,6 +682,7 @@ class MockMaker
 			{
 				case $eCaseThrows: throw v;
 				case $eCaseCalls: v($eArgs);
+				case $eCaseMocks: $eNull;
 				default: $eIf;
 			}
 		}

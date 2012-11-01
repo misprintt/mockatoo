@@ -236,6 +236,28 @@ class MockatooTest
 		Mockatoo.verify(mock, times(1)).one(10);
 	}
 
+	@Test
+	public function should_return_default_mock_value_for_spy_when_thenMock()
+	{
+		var mock = Mockatoo.spy(VariableArgumentsClass);
+
+		var result = mock.one(10);
+
+		Assert.areEqual(10, result);
+		Mockatoo.verify(mock, times(1)).one(10);
+
+		Mockatoo.when(mock.one(10)).thenMock();
+		result = mock.one(10);
+
+		#if (flash||cpp||java||cs)
+		Assert.areEqual(0, result);
+		#else
+		Assert.areEqual(null, result);
+		#end
+
+		Mockatoo.verify(mock, times(2)).one(10);
+	}
+
 	// ------------------------------------------------------------------------- generics & typdefs
 
 	@Test
