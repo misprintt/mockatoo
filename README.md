@@ -15,8 +15,8 @@ Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode
 
 * [Installation Guide](#installation)
 * [Overview of Features](#features)
-* [Detailed Usage Guide and Examples](#usageguide) 
-* [Known Limitations](#knownlimitations) and edge cases with Haxe 2.10.
+* [Detailed Usage Guide and Examples](#usage-guide) 
+* [Known Limitations](#known-limitations) and edge cases with Haxe 2.10.
 * [Credits](#credits)
 
 
@@ -74,13 +74,13 @@ Spying on real objects (partial mocking)
 
 ## Usage Guide
 
-* [Create a Mock](#createamock)
-* [Verifying Behaviour](#verifyingbehaviour)
-* [Basic Stubbing](#basicstubbing)
-* [Argument Matchers](#argumentmatchers)
-* [Verifying exact number of invocations / at least once / never](#verifyingexactnumberofinvocations)
-* [Spying on real objects](#spyingonrealobjects)
-* [Advanced Stubbing with consecutive calls or callbacks](#advancedstubbing)
+* [Create a Mock](#create-a-mock)
+* [Verifying Behaviour](#verifying-behaviour)
+* [Basic Stubbing](#basic-stubbing)
+* [Argument Matchers](#argument-matchers)
+* [Verifying exact number of invocations / at least once / never](#verifying-exact-number-of-invocations)
+* [Spying on real objects](#spying-on-real-objects)
+* [Advanced Stubbing with consecutive calls or callbacks](#advanced-stubbing)
 * [Known limitations](#limitations)
 
 
