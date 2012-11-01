@@ -1,7 +1,7 @@
 <project name="mockatoo" url="http://github.com/misprintt/mockatoo" license="MIT">
 	<user name="massive"/>
 	<description><![CDATA[Mockatoo is a Haxe library for mocks creation, verification and stubbing.]]></description>
-	<version name="1.1.1"><![CDATA[Minor bug fixes. See CHANGES for for list.]]></version>
+	<version name="1.2.0"><![CDATA[Added stubbing for read-only or write-only properties, and properties with getter/setter functions]]></version>
 	<depends name="mconsole"/>
 	<depends name="tink_macros"/>
 </project>
