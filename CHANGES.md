@@ -1,3 +1,7 @@
+v1.1.1
+- fixed bug where a custom stub call ('thenCall(f)') did not recieve arguments
+- fixed bug caused by when() not casting instance to mock;
+
 v1.1.0
 - added spying (partial mocking)
 - added compiler error if mocking final class on flash target

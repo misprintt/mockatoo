@@ -67,7 +67,7 @@ class Mockatoo
 	{
 		Console.assert(mock != null, "Cannot verify [null] mock");
 		Console.assert(Std.is(mock, Mock), "Object is not an instance of mock");
-		return mock.mockProxy.verify(mode);
+		return cast(mock, Mock).mockProxy.verify(mode);
 	}
 
 	/**

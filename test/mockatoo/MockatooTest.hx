@@ -85,14 +85,43 @@ class MockatooTest
 
 	// ------------------------------------------------------------------------- stubbing
 
-
 	@Test
 	public function should_when()
 	{
 		var instance = Mockatoo.mock(VariableArgumentsClass);
 
+		var f = function(args:Array<Dynamic>)
+		{
+			return args[0];
+		}
+		var stub = Mockatoo.when(instance.one(1)).thenReturn(10).thenCall(f).thenThrow("exception");
+
+		var result = instance.one(1);
+		Assert.areEqual(10, result);
+
+		result = instance.one(1);
+		Assert.areEqual(1, result);
+
+		try
+		{
+			instance.one(1);
+			Assert.fail("Expected custom exception");
+		}
+		catch(e:String)
+		{
+			Assert.areEqual("exception", e);
+		}
+	}
+
+
+	@Test
+	public function should_cast_to_mock_when()
+	{
+		var instance:VariableArgumentsClass = Mockatoo.mock(VariableArgumentsClass);
+
 		var stub = Mockatoo.when(instance.one(1));
-		Assert.isTrue(true);
+
+		Assert.isNotNull(stub);
 	}
 
 	// ------------------------------------------------------------------------- mocking
