@@ -190,20 +190,21 @@ class MockatooTest
 		var result = mock.one(10);
 
 		Assert.areEqual(10, result);
+		Mockatoo.verify(mock, times(1)).one(10);
 
 		Mockatoo.when(mock.one(10)).thenReturn(2);
-
 		result = mock.one(10);
 
 		Assert.areEqual(2, result);
+		Mockatoo.verify(mock, times(2)).one(10);
 
 		Mockatoo.reset(mock);
 
 		result = mock.one(10);
 
 		Assert.areEqual(10, result);
+		Mockatoo.verify(mock, times(1)).one(10);
 	}
-
 
 	// ------------------------------------------------------------------------- generics & typdefs
 
