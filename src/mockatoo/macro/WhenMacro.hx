@@ -9,6 +9,7 @@ import haxe.macro.Type;
 
 using tink.macro.tools.Printer;
 using tink.macro.tools.ExprTools;
+using tink.macro.tools.TypeTools;
 
 /**
 Macro for remapping a mock's method invocation when using Mockatoo.when()
@@ -35,9 +36,13 @@ class WhenMacro
 
 				var args = params.toArray();
 
-				ident = parts.join(".") + ".mockProxy.stub";
+				ident = parts.join(".");
 
-				var actualExpr = ident.resolve().call([methodName, args]);
+				var eCast = ECast(ident.resolve(), "mockatoo.Mock".asComplexType()).at();
+
+				var eMethod = eCast.field("mockProxy").field("stub");
+
+				var actualExpr = eMethod.call([methodName, args]);
 				trace(actualExpr.toString());
 				return actualExpr;
 
