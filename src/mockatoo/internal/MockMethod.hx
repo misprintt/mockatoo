@@ -108,6 +108,21 @@ class MockMethod
 		}
 	}
 
+	public function addDefaultStubFor(args:Array<Dynamic>)
+	{
+		var stub = getStubbingForArgs(args, true);
+
+		if(stub == null)
+		{
+			stub = {args:args, values:[]};
+			stubbings.push(stub);
+		}
+
+		stub.values.push( mocks );
+	}
+
+	
+
 	function getStubbingForArgs(args:Array<Dynamic>, ?absoluteMatching:Bool = false):Stubbing
 	{
 		for(stub in stubbings)

@@ -11,7 +11,8 @@ class MockProxy
 	public var spy:Bool;
 	var targetClass:Class<Mock>;
 	var targetClassName:String;
-	var hash:Hash<MockMethod>;
+	var methods:Hash<MockMethod>;
+	var properties:Hash<MockProperty>;
 
 	public function new(target:Mock, ?spy:Bool=false)
 	{
@@ -26,7 +27,7 @@ class MockProxy
 	*/
 	public function getOutcomeFor(method:String, args:Array<Dynamic>):MockOutcome
 	{
-		var proxy = hash.get(method);
+		var proxy = methods.get(method);
 		return proxy.getOutcomeFor(args);
 	}
 
@@ -39,7 +40,7 @@ class MockProxy
 		
 		var temp = new Verification(mode);
 
-		for(proxy in hash.iterator())
+		for(proxy in methods.iterator())
 		{
 			var f = Reflect.makeVarArgs(function(a:Array<Dynamic>)
 			{
@@ -51,11 +52,87 @@ class MockProxy
 		return temp;
 	}
 
+	/**
+	Determines how to stub a property based on it's read/write signature
+	thenReturns maps to the getter (if available), otherwise Reflect.setField 
+	thenThrow and thenCall maps to the setter (if available)
+	*/
+	public function stubProperty(property:String):Stubber
+	{
+		var stub = new Stubber();
+
+		var prop:MockProperty = properties.exists(property) ? properties.get(property) : {name:property, get:"", set:""};
+		var getMethod = prop.get != "" ? methods.get(prop.get) : null;
+		var setMethod = prop.set != "" ? methods.get(prop.set) : null;
+		
+		var fReturn =  function(value:Dynamic)
+		{
+			Reflect.setField(target, property, value);
+		};	
+
+		var fThrow = function(value:Dynamic)
+		{
+			throw new StubbingException("Cannot use thenThrow on property field without getter or setter [" + property + "]");
+		};
+
+		var fCallback = function(value:Dynamic)
+		{
+			throw new StubbingException("Cannot use thenCall on property field without getter [" + property + "]");
+		};
+
+		if(getMethod != null)
+		{
+			fReturn = Reflect.makeVarArgs(function(values:Array<Dynamic>)
+			{
+				getMethod.addReturnFor([], values);
+				return stub;
+			});
+
+			fCallback = Reflect.makeVarArgs(function(values:Array<Dynamic>)
+			{
+				getMethod.addCallbackFor([], values);
+				return stub;
+			});
+		}
+
+		if(setMethod != null && getMethod != null)
+		{
+			fThrow = Reflect.makeVarArgs(function(values:Array<Dynamic>)
+			{
+				setMethod.addThrowFor([Matcher.any], values);
+				getMethod.addThrowFor([], values);
+				return stub;
+			});
+		}
+		else if(getMethod != null)
+		{
+			fThrow = Reflect.makeVarArgs(function(values:Array<Dynamic>)
+			{
+				getMethod.addThrowFor([], values);
+				return stub;
+			});
+		}
+		else if(setMethod != null)
+		{
+			fThrow = Reflect.makeVarArgs(function(values:Array<Dynamic>)
+			{
+				setMethod.addThrowFor([Matcher.any], values);
+				return stub;
+			});
+		}
+
+		Reflect.setField(stub, "thenReturn", fReturn);
+		Reflect.setField(stub, "thenThrow", fThrow);
+		Reflect.setField(stub, "thenCall", fCallback);
+
+		return stub;
+	}
+
 	public function stub(method:String, args:Array<Dynamic>):Stubber
 	{
 		var stub = new Stubber();
 
-		var proxy = hash.get(method);
+		var proxy = methods.get(method);
 
 		var fReturn = Reflect.makeVarArgs(function(values:Array<Dynamic>)
 		{
@@ -76,11 +153,21 @@ class MockProxy
 		});
 
 
-		
+		if(spy)
+		{
+			var fStub = function()
+			{
+				proxy.addDefaultStubFor(args);
+				return stub;
+			};
+
+			Reflect.setField(stub, "thenMock", fStub);
+
+		}
+
 		Reflect.setField(stub, "thenReturn", fReturn);
 		Reflect.setField(stub, "thenThrow", fThrow);
 		Reflect.setField(stub, "thenCall", fCallback);
-
 
 		return stub;
 	}
@@ -90,16 +177,32 @@ class MockProxy
 	*/
 	public function reset()
 	{
-		hash = new Hash();
+		methods = new Hash();
+		properties = new Hash();
 
 		var m = haxe.rtti.Meta.getType(targetClass);
 		targetClassName = cast m.mockatoo[0];
 
+
+		parsePropertyMetadata(m.mockatooProperties);
+
 		var fieldMeta = haxe.rtti.Meta.getFields(targetClass);
-		parseMetadata(fieldMeta);
+		parseMethodMetadata(fieldMeta);
 	}
 
-	function parseMetadata(fields:Dynamic<Dynamic<Array<Dynamic>>>)
+	function parsePropertyMetadata(props:Array<MockProperty>)
+	{
+		if(props == null) return;
+
+		//trace(props);
+
+		for(prop in props)
+		{
+			properties.set(prop.name, prop);
+		}
+	}
+
+	function parseMethodMetadata(fields:Dynamic<Dynamic<Array<Dynamic>>>)
 	{
 		var fieldNames = Type.getInstanceFields(targetClass);
 
@@ -128,10 +231,17 @@ class MockProxy
 				var ret:String = cast(mockMeta.length > 1 ? mockMeta[1] : null);
 				var proxy = new MockMethod(targetClassName, fieldName, args, ret);
 
-				hash.set(fieldName, proxy);
+				methods.set(fieldName, proxy);
 
 				//Reflect.setField(this, fieldName, proxy.verify);
 			}
 		}
 	}
+}
+
+typedef MockProperty =
+{
+	var name:String;
+	var get:String;
+	var set:String;
 }
