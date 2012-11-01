@@ -29,6 +29,13 @@ typedef TypeParamDecl = {
 
 #end
 
+typedef PropertyMeta = 
+{
+	var get:String;
+	var set:String;
+	var name:String;
+}
+
 /**
 Macro class that generates a Mock implementation of a class or interface
 */
@@ -58,6 +65,9 @@ class MockMaker
 	var hasConstructor = false;
 
 	var generatedExpr:Expr;
+
+
+	var propertyMetas:Array<PropertyMeta>;
 
 	public function new(e:Expr, ?paramTypes:Expr, isSpy:Bool=false)
 	{
@@ -240,6 +250,8 @@ class MockMaker
 	*/
 	function createTypeDefinition():TypeDefinition
 	{
+		propertyMetas = [];
+
 		var paramTypes:Array<TypeParamDecl> = [];
 		for(param in classType.params)
 		{
@@ -273,11 +285,6 @@ class MockMaker
 
 
 		var metas = updateMeta(classType.meta.get());
-		metas.push({
-			pos:Context.currentPos(),
-			name:"mockatoo",
-			params:[EConst(CString(id)).at()]
-		});
 
 		if(Context.defined("flash"))
 		{
@@ -296,8 +303,34 @@ class MockMaker
 				Context.error("Cannot mock final class [" + id + "] on flash target.", Context.currentPos());
 				return null;
 			}
-				
 		}
+
+	
+
+		var eProps:Array<Expr> = [];
+
+		for(prop in propertyMetas)
+		{
+			var args = [];
+			for (field in Reflect.fields(prop))
+				args.push( { field:field, expr: EConst(CString(Reflect.field(prop, field))).at() } );
+			var eObject = EObjectDecl(args).at();
+			eProps.push(eObject);
+		}
+
+		metas.push(
+		{
+			pos:Context.currentPos(),
+			name:"mockatooProperties",
+			params: eProps
+		});
+
+
+		metas.push({
+			pos:Context.currentPos(),
+			name:"mockatoo",
+			params:[EConst(CString(id)).at()]
+		});
 
 		return {
 			pos: classType.pos,
@@ -371,7 +404,6 @@ class MockMaker
 					metadata.push(meta);
 			}
 		}
-
 		
 		//metadata.push({pos:Context.currentPos(), name:":extern", params:[]});
 
@@ -480,6 +512,13 @@ class MockMaker
 					if(isInterface) fields.push(field);
 				case FProp(get, set, t, e):
 					if(isInterface) fields.push(field);
+
+					var getMethod = toGetterSetter(get);
+					var setMethod = toGetterSetter(set);
+
+					if(getMethod != "" || setMethod != "")
+						propertyMetas.push({name:field.name, set:setMethod, get:getMethod});
+
 			}
 		}
 
@@ -487,6 +526,18 @@ class MockMaker
 		
 		return fields;
 	}
+
+	function toGetterSetter(value:String):String
+	{
+		switch(value)
+		{
+			case "default", "null", "never": return "";
+			case "dynamic": throw "Not implemented";
+			default: return value;
+		}
+		return "";
+	}
+
 
 	/**
 	Appends the fields required by the <code>mockatoo.Mock</code> interface

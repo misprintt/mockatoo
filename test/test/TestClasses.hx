@@ -12,6 +12,7 @@ interface SimpleInterface
 
 class SimpleClass
 {
+	
 	public function new()
 	{
 		
@@ -252,6 +253,45 @@ private class PrivateClass
 }
 
 
+// ----------------------------------------------------------------------------- Properties
+
+class ClassWithProperties
+{
+	public var property:String;
+
+	public var readOnly(default, null):String;
+	
+	public var setter(default, set_setter):String;
+	
+	public var never(never, never):String;
+
+	public var func:Void->String;
+
+	function set_setter(value:String)
+	{
+		setter = value;
+		return value;
+	}
+
+	public var getterSetter(get_getterSetter, set_getterSetter):String;
+	
+	function get_getterSetter():String
+	{
+		return getterSetter;
+	}
+
+	function set_getterSetter(value:String)
+	{
+		getterSetter = value;
+		return value;
+	}
+
+	public function new()
+	{
+		
+	}
+
+}
 // ----------------------------------------------------------------------------- Typedef Aliases
 
 
