@@ -46,6 +46,21 @@ class WhenMacro
 				trace(actualExpr.toString());
 				return actualExpr;
 
+			case EField(e, field):
+
+				var ident = e.toString();
+
+				var eCast = ECast(ident.resolve(), "mockatoo.Mock".asComplexType()).at();
+
+				var eMethod = eCast.field("mockProxy").field("stubProperty");
+
+				var eFieldName = EConst(CString(field)).at();
+
+				var actualExpr = eMethod.call([eFieldName]);
+
+				trace(actualExpr.toString());
+				return actualExpr;
+
 			default: throw "Invalid arg [" + expr.print() + "]";
 		}
 		return expr;

@@ -3,6 +3,7 @@ package mockatoo;
 import massive.munit.util.Timer;
 import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
+import mockatoo.exception.StubbingException;
 import mockatoo.Mockatoo;
 import mockatoo.Mock;
 import test.TestClasses;
@@ -235,6 +236,28 @@ class MockatooTest
 		Mockatoo.verify(mock, times(1)).one(10);
 	}
 
+	@Test
+	public function should_return_default_mock_value_for_spy_when_thenMock()
+	{
+		var mock = Mockatoo.spy(VariableArgumentsClass);
+
+		var result = mock.one(10);
+
+		Assert.areEqual(10, result);
+		Mockatoo.verify(mock, times(1)).one(10);
+
+		Mockatoo.when(mock.one(10)).thenMock();
+		result = mock.one(10);
+
+		#if (flash||cpp||java||cs)
+		Assert.areEqual(0, result);
+		#else
+		Assert.areEqual(null, result);
+		#end
+
+		Mockatoo.verify(mock, times(2)).one(10);
+	}
+
 	// ------------------------------------------------------------------------- generics & typdefs
 
 	@Test
@@ -460,6 +483,180 @@ class MockatooTest
 		Assert.isTrue(true);//otherwise an expception would have been thrown
 	}
 
+
+
+	// ------------------------------------------------------------------------- stub properties
+
+
+	@Test
+	public function should_stub_property()
+	{
+		var instance = Mockatoo.mock(ClassWithProperties);
+
+		Mockatoo.when(instance.property).thenReturn("foo");
+
+		Assert.areEqual("foo", instance.property);
+	}
+
+	@Test
+	public function should_not_stub_property_with_throw()
+	{
+		var instance = Mockatoo.mock(ClassWithProperties);
+
+		try
+		{
+			Mockatoo.when(instance.property).thenThrow("foo");
+			Assert.fail("Expected StubbingException");
+		}
+		catch(e:StubbingException){}
+		
+	}
+
+
+	@Test
+	public function should_not_stub_property_with_callback()
+	{
+		var instance = Mockatoo.mock(ClassWithProperties);
+
+		var f = function(args:Array<Dynamic>)
+		{
+			return "foo";
+		};
+
+		try
+		{
+			Mockatoo.when(instance.property).thenCall(f);
+			Assert.fail("Expected StubbingException");
+		}
+		catch(e:StubbingException){}
+		
+	}
+
+	@Test
+	public function should_stub_readOnly_property()
+	{
+		var instance = Mockatoo.mock(ClassWithProperties);
+
+		Mockatoo.when(instance.readOnly).thenReturn("foo");
+
+		Assert.areEqual("foo", instance.readOnly);
+	}
+
+	@Test
+	public function should_stub_setter_property()
+	{
+		var instance = Mockatoo.mock(ClassWithProperties);
+
+		Mockatoo.when(instance.setter).thenReturn("foo");
+
+		Assert.areEqual("foo", instance.setter);
+	}
+
+	@Test
+	public function should_stub_getterSetter_property()
+	{
+		var instance = Mockatoo.mock(ClassWithProperties);
+
+		Mockatoo.when(instance.getterSetter).thenReturn("foo");
+
+		Assert.areEqual("foo", instance.getterSetter);
+	}
+
+	@Test
+	public function should_stub_setter_property_with_throw()
+	{
+		var instance = Mockatoo.mock(ClassWithProperties);
+
+		Mockatoo.when(instance.setter).thenThrow("foo");
+
+		try
+		{
+			instance.setter = "a";
+			Assert.fail("Expected exception");
+		}
+		catch(e:String){
+			Assert.areEqual("foo", e);
+		}
+	}
+
+	@Test
+	public function should_not_stub_setter_property_with_callback()
+	{
+		var instance = Mockatoo.mock(ClassWithProperties);
+
+		var f = function(args:Array<Dynamic>)
+		{
+			return "foo";
+		};
+
+		try
+		{
+			Mockatoo.when(instance.property).thenCall(f);
+			Assert.fail("Expected StubbingException");
+		}
+		catch(e:StubbingException){}
+	}
+
+
+	@Test
+	public function should_stub_getter_property_with_throw()
+	{
+		var instance = Mockatoo.mock(ClassWithProperties);
+
+		Mockatoo.when(instance.getterSetter).thenThrow("foo");
+
+		try
+		{
+			var result = instance.getterSetter;
+			Assert.fail("Expected exception");
+		}
+		catch(e:String){
+			Assert.areEqual("foo", e);
+		}
+	}
+
+	@Test
+	public function should_stub_getter_property_with_callback()
+	{
+		var instance = Mockatoo.mock(ClassWithProperties);
+
+		var f = function(args:Array<Dynamic>)
+		{
+			return "foo";
+		};
+
+		Mockatoo.when(instance.getterSetter).thenCall(f);
+
+		var result = instance.getterSetter;
+
+		Assert.areEqual("foo", instance.getterSetter);
+
+	}
+
+	@Test
+	public function should_stub_hidden_property()
+	{
+		var instance = Mockatoo.mock(ClassWithProperties);
+
+		Mockatoo.when(instance.never).thenReturn("foo");
+
+		Assert.areEqual("foo", untyped instance.never);
+	}
+
+	@Test
+	public function should_stub_varFunction_property()
+	{
+		var instance = Mockatoo.mock(ClassWithProperties);
+
+		var f = function()
+		{
+			return "foo";
+		};
+
+		Mockatoo.when(instance.func).thenReturn(f);
+
+		Assert.areEqual("foo", instance.func());
+	}
 
 	// ------------------------------------------------------------------------- utilities
 

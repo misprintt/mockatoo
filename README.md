@@ -58,19 +58,27 @@ Custom argument matchers and wildcards
 	Mockatoo.when(mock.foo(anyString)).thenReturn("hello");
 	Mockatoo.when(mock.foo(isNull)).thenReturn("world");
 
-Verifying exact number of invocations
+Verify exact number of invocations
 
 	Mockatoo.verify(mock, times(2)).foo();
 	Mockatoo.verify(mock, atLeast(2)).foo();
 	Mockatoo.verify(mock, atLeastOnce).foo();
 	Mockatoo.verify(mock, never).foo();
 
-Spying on real objects (partial mocking)
+Spy on real objects and partial mocking (Since 1.1.0)
 
 	var spy = Mockatoo.spy(SomeClass);
 	spy.foo(); // calls real method;
 	Mockatoo.when(spy.foo()).thenReturn("hello");
 	spy.foo(); //calls stub;
+
+
+Mock properties that are read or write only (Since 1.2.0)
+
+	Mockatoo.when(mock.someProperty).thenReturn("hello");
+	Mockatoo.when(mock.someSetter).thenThrow("exception");
+	Mockatoo.when(mock.someGetter).thenThrow("exception");
+	Mockatoo.when(mock.someGetter).thenCall(function(){return "foo"});
 
 ## Usage Guide
 
@@ -81,6 +89,7 @@ Spying on real objects (partial mocking)
 * [Verifying exact number of invocations / at least once / never](#verifying-exact-number-of-invocations)
 * [Spying on real objects](#spying-on-real-objects)
 * [Advanced Stubbing with consecutive calls or callbacks](#advanced-stubbing)
+* [Mocking Properties that are Read or Write only](#mocking-properties-that-are-read-or-write-only)
 * [Known limitations](#limitations)
 
 
@@ -214,7 +223,6 @@ Combinations can also be chained together
 
 	Mockatoo.when(mock.someMethod()).thenReturn("one", "two").thenThrow("empty");
 
-
 The last stubbing (e.g: thenThrow("empty")) determines the behavior for any further consecutive calls.
 
 
@@ -227,13 +235,19 @@ This is referred to as 'partial mocking'.
 
 Real spies should be used carefully and occasionally, for example when dealing with legacy code.
 
-    var mock = Mockatoo.spy(SomeClass);
-    mock.someMethod();//calls real method
+	var mock = Mockatoo.spy(SomeClass);
+	mock.someMethod();//calls real method
 
-    Mockatoo.when(mock.someMethod()).thenReturn("one");
-    mock.someMethod();//returns stub value;
+	Mockatoo.when(mock.someMethod()).thenReturn("one");
+	mock.someMethod();//returns stub value;
 
 	Mockatoo.verify(mock, times(2)).someMethod(); //both calls recorded
+
+
+If you just want to stub a single method using the default mock values then
+
+	Mockatoo.when(mock.someMethod()).thenMock();
+	mock.someMethod();//returns default mock value (usually null)
 
 
 There are several limitations to spying:
@@ -258,7 +272,44 @@ You can also set a custom callback when a method is invoked
 	Mockatoo.when(mock.foo("bar")).thenCall(f);
 
 
-### Other features
+### Mocking Properties that are read or write only
+
+A property that is read/write only, or calls out to getter/setter functions
+can be stubbed to a specific return value:
+
+	Mockatoo.when(mock.someReadOnlyProperty).thenReturn("foo");
+
+
+If a property has a getter function, stubbing a return value will automatically
+stub the underlying getter method - the equivalent of:
+
+	Mockatoo.when(mock.get_someReadOnlyProperty()).thenReturn("foo"); 
+
+Getters can also be stubbed to a custom callback:
+
+	Mockatoo.when(mock.someGetter).thenCall(f); 
+
+Both Getters and Setters can also be stubbed with an exception:
+
+	Mockatoo.when(mock.someGetter).thenThrow("foo");
+	Mockatoo.when(mock.someSetter).thenThrow("foo");
+
+	var result = mock.someGetter;//throws exception
+	mock.someSetter = "a";//throws exception
+
+
+>Note: If a property has both a getter and setter, both getting and setting the
+property with trigger the exception
+
+
+There are some limitations to property stubbing:
+
+* stubbed properties cannot be chained (thenReturn("foo", "bar", "etc"))
+* only getters support stubbed callbacks (`thenCall(f)`)
+* only getter and setters support stubbed exceptions (`thenThrow(xxx)`)
+
+
+### Resetting a mock
 
 You can reset a mock to remove any custom stubs and/or verifications
 

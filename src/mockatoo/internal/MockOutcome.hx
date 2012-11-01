@@ -5,5 +5,6 @@ enum MockOutcome
 	returns(value:Dynamic);
 	throws(value:Dynamic);
 	calls(value:Dynamic);
+	mocks;
 	none;
 }
