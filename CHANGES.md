@@ -1,5 +1,6 @@
 v1.1.0
 - added spying (partial mocking)
+- added compiler error if mocking final class on flash target
 
 v1.0.1
 - added mocking for typedef structures (no verify/stubbing though)

@@ -279,6 +279,26 @@ class MockMaker
 			params:[EConst(CString(id)).at()]
 		});
 
+		if(Context.defined("flash"))
+		{
+			var skip = false;
+			for(m in metas)
+			{
+				if(m.name == ":hack")
+				{
+					skip = true;
+					break;
+				}
+			}
+
+			if(skip)
+			{
+				Context.error("Cannot mock final class [" + id + "] on flash target.", Context.currentPos());
+				return null;
+			}
+				
+		}
+
 		return {
 			pos: classType.pos,
 			params: paramTypes,
@@ -402,6 +422,7 @@ class MockMaker
 
 		for(field in superFields)
 		{
+
 			field.meta = updateMeta(field.meta);
 
 			switch(field.kind)
@@ -428,7 +449,27 @@ class MockMaker
 						#else
 							Context.warning("Cannot mock inline method [" + id + "." + field.name + "] please upgrade to Haxe 2.11 and set '--no-inline' compiler flag (See http://code.google.com/p/haxe/issues/detail?id=1231)", Context.currentPos());
 						#end
+
+						continue;
 						
+					}
+
+					if(Context.defined("flash"))
+					{
+						var skip = false;
+						for(m in field.meta)
+						{
+							if(m.name == ":hack")
+							{
+								skip = true;
+								break;
+							}
+						}
+
+						if(skip)
+							Context.warning("Cannot mock final method [" + id + "." + field.name + "] on flash target.", Context.currentPos());
+						else
+							fields.push(field);
 					}
 					else
 					{

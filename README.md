@@ -17,7 +17,6 @@ Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode
 * [Overview of Features](#features)
 * [Detailed Usage Guide and Examples](#usageguide) 
 * [Known Limitations](#knownlimitations) and edge cases with Haxe 2.10.
-* [Roadmap](#roadmap)
 * [Credits](#credits)
 
 
@@ -66,6 +65,12 @@ Verifying exact number of invocations
 	Mockatoo.verify(mock, atLeastOnce).foo();
 	Mockatoo.verify(mock, never).foo();
 
+Spying on real objects (partial mocking)
+
+	var spy = Mockatoo.spy(SomeClass);
+	spy.foo(); // calls real method;
+	Mockatoo.when(spy.foo()).thenReturn("hello");
+	spy.foo(); //calls stub;
 
 ## Usage Guide
 
@@ -74,6 +79,7 @@ Verifying exact number of invocations
 * [Basic Stubbing](#basicstubbing)
 * [Argument Matchers](#argumentmatchers)
 * [Verifying exact number of invocations / at least once / never](#verifyingexactnumberofinvocations)
+* [Spying on real objects](#spyingonrealobjects)
 * [Advanced Stubbing with consecutive calls or callbacks](#advancedstubbing)
 * [Known limitations](#limitations)
 
@@ -211,6 +217,35 @@ Combinations can also be chained together
 
 The last stubbing (e.g: thenThrow("empty")) determines the behavior for any further consecutive calls.
 
+
+### Spying on real objects
+
+You can create spies of real objects. When you use the spy then the real methods
+are called (unless a method was stubbed).
+
+This is referred to as 'partial mocking'.
+
+Real spies should be used carefully and occasionally, for example when dealing with legacy code.
+
+    var mock = Mockatoo.spy(SomeClass);
+    mock.someMethod();//calls real method
+
+    Mockatoo.when(mock.someMethod()).thenReturn("one");
+    mock.someMethod();//returns stub value;
+
+	Mockatoo.verify(mock, times(2)).someMethod(); //both calls recorded
+
+
+There are several limitations to spying:
+
+* The real constructor cannot be accessed directly, and will always be called with
+the default values for each argument type - e.g:
+
+			super(null,null,null);
+
+* Interfaces cannot be spied (Mockatoo will ignore these and used normal mocking instead)
+
+
 **Custom Callback Stub**
 
 You can also set a custom callback when a method is invoked
@@ -243,16 +278,22 @@ In Haxe 2.10 inlined methods cannot be mocked. Mockatoo will print a compiler wa
 
 In Haxe 2.11 (svn) this has been resolved (<http://code.google.com/p/haxe/issues/detail?id=1231>) and requires the `--no-inline` compiler flag
 
-### Mocking @:final methods
+### Mocking @:final classes and methods
 
-Mockatoo supports overriding @:final methods, however it throws run time exceptions on the Flash target (AVM2).
-
-See <http://code.google.com/p/haxe/issues/detail?id=1246> for more details.
+Mockatoo supports overriding @:final classes and methods in targets other than flash.
 
 	@:final public function someMethod()
 	{
 		..///
 	}
+
+Mocking a @:final class in flash will throw a compiler error.
+
+Mocking a @:final method in flash will generate a compiler warning and leave the
+real method untouched.
+
+See <http://code.google.com/p/haxe/issues/detail?id=1246> for more details.
+
 
 ### Mocking methods which reference private types
 
@@ -261,27 +302,7 @@ Some classes may expect arguments, or return values typed to a private Class, En
 
 	Mockatoo.mock(haxe.Http);
 
-
-This is due to an edge case in tink_macros (1.2.0) that has now been fixed on tinkerbell master (see <https://github.com/back2dos/tinkerbell/pull/37> for more details)
-
-## Roadmap
-
-This is the active roadmap.
-
-**Partial Mocks (Spying)**
-
-Partial mock that defers to concrete implementation if not stubbed
-
-	var hash:IntHash<String> = Mockatoo.spy(IntHash, [String]);
-
-	when(hash.get(0)).thenReturn("mocked");
-
-	hash.set(0, "a");
-	hash.set(1, "b");
-
-	trace(hash.get(0)); // traces 'mocked'
-	trace(hash.get(1)); // traces 'b'
-
+This is due to an edge case with tink_macros that is fixed in tink_macros 1.2.1;
 
 ## Credits
 

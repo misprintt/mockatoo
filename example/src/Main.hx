@@ -12,6 +12,7 @@ class Main
 		basicMocking();
 		stubbing();
 		verifying();
+		spying();
 	}
 	
 	static function basicMocking()
@@ -89,6 +90,29 @@ class Main
 		Mockatoo.verify(mock, times(1)).round(1.0);// matches first call
 		Mockatoo.verify(mock, atLeast(2)).round(1.2);// matches second and third call
 		Mockatoo.verify(mock, times(3)).round(anyFloat);// matches all calls
+	}
+
+
+
+	static function spying()
+	{
+		//crate a spy mock;
+		var mock = Mockatoo.spy(math.Calculator);
+
+		//invoke the real method
+		var result = mock.round(1.1);
+		assertEqual(1, result);
+
+		//stub some responses
+		Mockatoo.when(mock.round(1.1)).thenReturn(11);
+
+		//invoke again to return stub value
+		result = mock.round(1.1);
+		assertEqual(11, result);
+
+
+		//verify method was called twice
+		Mockatoo.verify(mock, times(2)).round(1.1);
 	}
 
 	////

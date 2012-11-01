@@ -1,7 +1,7 @@
 <project name="mockatoo" url="http://github.com/misprintt/mockatoo" license="MIT">
 	<user name="massive"/>
 	<description><![CDATA[Mockatoo is a Haxe library for mocks creation, verification and stubbing.]]></description>
-	<version name="1.0.1"><![CDATA[Couple of bug fixes, added partial support for mocking typedef structures. See CHANGES for all changes.]]></version>
+	<version name="1.1.0"><![CDATA[Added Mockatoo.spy(SomeClass) for spying on real methods and/or partially mocking them). See CHANGES for details.]]></version>
 	<depends name="mconsole"/>
 	<depends name="tink_macros"/>
 </project>
