@@ -1,6 +1,7 @@
 v1.2.0
 - added support for mocking property fields (with autowiring of getter/setters where applicable)
-- added when().thenMock() for stubbing spy objects using default mock values
+- added when().thenStub() for stubbing spy objects using default mock values
+- added when().thenCallRealMethod() for suppressing mocks on specific methods
 
 v1.1.1
 - fixed bug where a custom stub call ('thenCall(f)') did not recieve arguments
