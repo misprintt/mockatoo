@@ -52,83 +52,7 @@ class MockProxy
 		return temp;
 	}
 
-	/**
-	Determines how to stub a property based on it's read/write signature
-	thenReturns maps to the getter (if available), otherwise Reflect.setField 
-	thenThrow and thenCall maps to the setter (if available)
-	*/
-	public function stubProperty(property:String):Stubber
-	{
-		var stub = new Stubber();
-
-		var prop:MockProperty = properties.exists(property) ? properties.get(property) : {name:property, get:"", set:""};
-		var getMethod = prop.get != "" ? methods.get(prop.get) : null;
-		var setMethod = prop.set != "" ? methods.get(prop.set) : null;
-		
-		var fReturn =  function(value:Dynamic)
-		{
-			Reflect.setField(target, property, value);
-		};	
-
-		var fThrow = function(value:Dynamic)
-		{
-			throw new StubbingException("Cannot use thenThrow on property field without getter or setter [" + property + "]");
-		};
-
-		var fCallback = function(value:Dynamic)
-		{
-			throw new StubbingException("Cannot use thenCall on property field without getter [" + property + "]");
-		};
-
-		if(getMethod != null)
-		{
-			fReturn = Reflect.makeVarArgs(function(values:Array<Dynamic>)
-			{
-				getMethod.addReturnFor([], values);
-				return stub;
-			});
-
-			fCallback = Reflect.makeVarArgs(function(values:Array<Dynamic>)
-			{
-				getMethod.addCallbackFor([], values);
-				return stub;
-			});
-		}
-
-		if(setMethod != null && getMethod != null)
-		{
-			fThrow = Reflect.makeVarArgs(function(values:Array<Dynamic>)
-			{
-				setMethod.addThrowFor([Matcher.any], values);
-				getMethod.addThrowFor([], values);
-				return stub;
-			});
-		}
-		else if(getMethod != null)
-		{
-			fThrow = Reflect.makeVarArgs(function(values:Array<Dynamic>)
-			{
-				getMethod.addThrowFor([], values);
-				return stub;
-			});
-		}
-		else if(setMethod != null)
-		{
-			fThrow = Reflect.makeVarArgs(function(values:Array<Dynamic>)
-			{
-				setMethod.addThrowFor([Matcher.any], values);
-				return stub;
-			});
-		}
-
-		Reflect.setField(stub, "thenReturn", fReturn);
-		Reflect.setField(stub, "thenThrow", fThrow);
-		Reflect.setField(stub, "thenCall", fCallback);
-
-		return stub;
-	}
-
-	public function stub(method:String, args:Array<Dynamic>):Stubber
+	public function stubMethod(method:String, args:Array<Dynamic>):Stubber
 	{
 		var stub = new Stubber();
 
@@ -152,22 +76,159 @@ class MockProxy
 			return stub;
 		});
 
-
-		if(spy)
+		var fCallReal = function()
 		{
-			var fStub = function()
+			proxy.addCallRealMethodFor(args);
+			return stub;
+		};
+
+		var fStub = function()
 			{
 				proxy.addDefaultStubFor(args);
 				return stub;
 			};
 
-			Reflect.setField(stub, "thenMock", fStub);
 
+		
+		Reflect.setField(stub, "thenReturn", fReturn);
+		Reflect.setField(stub, "thenThrow", fThrow);
+		Reflect.setField(stub, "thenCall", fCallback);
+		Reflect.setField(stub, "thenCallRealMethod", fCallReal);
+		Reflect.setField(stub, "thenStub", fStub);
+
+		return stub;
+	}
+
+
+	/**
+	Determines how to stub a property based on it's read/write signature
+	thenReturns maps to the getter (if available), otherwise Reflect.setField 
+	thenThrow and thenCall maps to the setter (if available)
+	*/
+	public function stubProperty(property:String):Stubber
+	{
+		var stub = new Stubber();
+
+		var prop:MockProperty = properties.exists(property) ? properties.get(property) : {name:property, get:"", set:""};
+		var getMethod = prop.get != "" ? methods.get(prop.get) : null;
+		var setMethod = prop.set != "" ? methods.get(prop.set) : null;
+		
+		var fReturn =  function(value:Dynamic)
+		{
+			Reflect.setField(target, property, value);
+			return stub;
+		};	
+
+		var fThrow = function(value:Dynamic)
+		{
+			throw new StubbingException("Cannot use thenThrow on property field without getter or setter [" + property + "]");
+			return stub;
+		};
+
+		var fCallback = function(value:Dynamic)
+		{
+			throw new StubbingException("Cannot use thenCall on property field without getter [" + property + "]");
+			return stub;
+		};
+
+		var fCallReal = function()
+		{
+			throw new StubbingException("Cannot use thenCallRealMethod on property field without getter or setter [" + property + "]");
+			return stub;
+		};
+
+		var fStub = function()
+		{
+			throw new StubbingException("Cannot use thenStub on property field without getter or setter [" + property + "]");
+			return stub;
+		};
+
+
+		if(getMethod != null)
+		{
+			fReturn = function(value:Dynamic)
+			{
+				Reflect.setField(target, property, value);
+				getMethod.addReturnFor([], [value]);
+				return stub;
+			};
+
+			fCallback = function(value:Dynamic)
+			{
+				getMethod.addCallbackFor([], [value]);
+				return stub;
+			};
+		}
+
+		if(setMethod != null && getMethod != null)
+		{
+			fThrow =function(value:Dynamic)
+			{
+				setMethod.addThrowFor([Matcher.any], [value]);
+				getMethod.addThrowFor([], [value]);
+				return stub;
+			};
+
+			fCallReal = function():Stubber
+			{
+				getMethod.addCallRealMethodFor([]);
+				setMethod.addCallRealMethodFor([Matcher.any]);
+				return stub;
+			};
+
+			fStub = function()
+			{
+				getMethod.addDefaultStubFor([]);
+				setMethod.addDefaultStubFor([Matcher.any]);
+				return stub;
+			};
+		}
+		else if(getMethod != null)
+		{
+			fThrow =function(value:Dynamic)
+			{
+				getMethod.addThrowFor([], [value]);
+				return stub;
+			};
+
+			fCallReal = function()
+			{
+				getMethod.addCallRealMethodFor([]);
+				return stub;
+			};
+
+			fStub = function()
+			{
+				getMethod.addDefaultStubFor([]);
+				return stub;
+			};
+		}
+		else if(setMethod != null)
+		{
+			fThrow = function(value:Dynamic)
+			{
+				setMethod.addThrowFor([Matcher.any], [value]);
+				return stub;
+			};
+
+			fCallReal = function()
+			{
+				setMethod.addCallRealMethodFor([Matcher.any]);
+				return stub;
+			};
+
+			fStub = function()
+			{
+				setMethod.addDefaultStubFor([Matcher.any]);
+				return stub;
+			};
 		}
 
 		Reflect.setField(stub, "thenReturn", fReturn);
 		Reflect.setField(stub, "thenThrow", fThrow);
 		Reflect.setField(stub, "thenCall", fCallback);
+		Reflect.setField(stub, "thenCallRealMethod", fCallReal);
+		Reflect.setField(stub, "thenStub", fStub);
 
 		return stub;
 	}

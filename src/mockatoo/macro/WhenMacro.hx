@@ -40,7 +40,7 @@ class WhenMacro
 
 				var eCast = ECast(ident.resolve(), "mockatoo.Mock".asComplexType()).at();
 
-				var eMethod = eCast.field("mockProxy").field("stub");
+				var eMethod = eCast.field("mockProxy").field("stubMethod");
 
 				var actualExpr = eMethod.call([methodName, args]);
 				trace(actualExpr.toString());

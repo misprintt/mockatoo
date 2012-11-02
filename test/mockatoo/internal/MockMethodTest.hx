@@ -782,6 +782,8 @@ class MockMethodTest
 		instance.addReturnFor([1], [2]);
 		instance.addThrowFor([1], ["exception"]);
 		instance.addCallbackFor([1], [f]);
+		instance.addDefaultStubFor([1]);
+		instance.addCallRealMethodFor([1]);
 
 		var result = instance.getOutcomeFor([1]);
 		Asserts.assertEnumTypeEq(returns(1), result);
@@ -796,6 +798,12 @@ class MockMethodTest
 
 		result = instance.getOutcomeFor([1]);
 		Asserts.assertEnumTypeEq(calls(f), result);
+
+		result = instance.getOutcomeFor([1]);
+		Asserts.assertEnumTypeEq(stubs, result);
+
+		result = instance.getOutcomeFor([1]);
+		Asserts.assertEnumTypeEq(callsRealMethod, result);
 	}
 
 	@Test
@@ -823,6 +831,49 @@ class MockMethodTest
 		var result = instance.getOutcomeFor([0]);
 
 		Asserts.assertEnumTypeEq(returns(666), result);
+	}
+
+
+	@Test
+	public function should_addCallRealMethodFor():Void
+	{
+		instance = createInstance(["Int"], "Int");
+
+		instance.addCallRealMethodFor([1]);
+
+		var result = instance.getOutcomeFor([0]);
+
+		Asserts.assertEnumTypeEq(none, result);
+
+		result = instance.getOutcomeFor([1]);
+
+		Asserts.assertEnumTypeEq(callsRealMethod, result);
+	}
+
+	@Test
+	public function should_addDefaultStubFor():Void
+	{
+		instance = createInstance(["Int"], "Int");
+
+		instance.addDefaultStubFor([1]);
+
+		var result = instance.getOutcomeFor([0]);
+
+		Asserts.assertEnumTypeEq(none, result);
+
+		result = instance.getOutcomeFor([1]);
+
+		Asserts.assertEnumTypeEq(stubs, result);
+	}
+
+
+	@Test
+	public function shouldResultIn100PercentCoverage()
+	{
+		instance = createInstance(["Int"], "Int");
+
+		instance.addDefaultStubFor([1]);
+		Assert.isNull(untyped instance.getStubbingForArgs([2], true));
 	}
 
 

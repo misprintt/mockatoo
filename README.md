@@ -56,12 +56,21 @@ Verify exact number of invocations
 	Mockatoo.verify(mock, atLeastOnce).foo();
 	Mockatoo.verify(mock, never).foo();
 
-Spy on real objects and partial mocking (Since 1.1.0)
+Spying on real objects (Since 1.1.0)
 
-	var spy = Mockatoo.spy(SomeClass);
+	var spy = Mockatoo.spy(SomeClass);//creates instance where all methods are real (not stubbed)
 	spy.foo(); // calls real method;
+	Mockatoo.when(spy.foo()).thenStub();
+	spy.foo(); //calls default stub;
 	Mockatoo.when(spy.foo()).thenReturn("hello");
-	spy.foo(); //calls stub;
+	spy.foo(); //calls custom stub;
+
+
+Partial Mocking (Since 1.2.0)
+
+	 var mock = Mockatoo.mock(SomeClass);
+	 Mockatoo.when(mock.foo()).thenCallRealMethod();
+	 mock.foo();//calls out to real method
 
 
 Mock properties that are read or write only (Since 1.2.0)

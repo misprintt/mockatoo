@@ -237,7 +237,7 @@ class MockatooTest
 	}
 
 	@Test
-	public function should_return_default_mock_value_for_spy_when_thenMock()
+	public function should_return_default_mock_value_for_spy_when_thenStub()
 	{
 		var mock = Mockatoo.spy(VariableArgumentsClass);
 
@@ -246,7 +246,7 @@ class MockatooTest
 		Assert.areEqual(10, result);
 		Mockatoo.verify(mock, times(1)).one(10);
 
-		Mockatoo.when(mock.one(10)).thenMock();
+		Mockatoo.when(mock.one(10)).thenStub();
 		result = mock.one(10);
 
 		#if (flash||cpp||java||cs)

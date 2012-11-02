@@ -35,7 +35,7 @@ class MockMethod
 		invocations = [];
 		stubbings = [];
 	}
-	
+
 
 	public function getOutcomeFor(args:Array<Dynamic>):MockOutcome
 	{
@@ -104,7 +104,7 @@ class MockMethod
 			if(!Reflect.isFunction(value))
 				 throw new StubbingException("Value [" + value + "] is not a function.");
 
-			stub.values.push(calls(value) );
+			stub.values.push(calls(value));
 		}
 	}
 
@@ -117,11 +117,20 @@ class MockMethod
 			stub = {args:args, values:[]};
 			stubbings.push(stub);
 		}
-
-		stub.values.push( mocks );
+		stub.values.push(stubs);
 	}
 
-	
+	public function addCallRealMethodFor(args:Array<Dynamic>)
+	{
+		var stub = getStubbingForArgs(args, true);
+
+		if(stub == null)
+		{
+			stub = {args:args, values:[]};
+			stubbings.push(stub);
+		}
+		stub.values.push(callsRealMethod);
+	}
 
 	function getStubbingForArgs(args:Array<Dynamic>, ?absoluteMatching:Bool = false):Stubbing
 	{
@@ -129,8 +138,9 @@ class MockMethod
 		{
 			if(stub.args.length != args.length) continue;
 
-			var matchingArgs = 0;
+			if(stub.args.length == 0) return stub;
 
+			var matchingArgs = 0;
 
 			for(i in 0...args.length)
 			{
@@ -209,6 +219,7 @@ class MockMethod
 
 		for(targetArgs in argArrays)
 		{
+
 			if(targetArgs.length != args.length) 
 			{
 				continue;

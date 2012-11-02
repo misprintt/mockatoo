@@ -5,6 +5,7 @@ enum MockOutcome
 	returns(value:Dynamic);
 	throws(value:Dynamic);
 	calls(value:Dynamic);
-	mocks;
+	stubs;//default stub value
+	callsRealMethod;
 	none;
 }

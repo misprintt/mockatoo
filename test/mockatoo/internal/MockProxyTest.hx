@@ -99,7 +99,7 @@ class MockProxyTest
 
 	}
 
-	// ------------------------------------------------------------------------- stubbing
+	// ------------------------------------------------------------------------- stubbing methods
 
 
 	@Test
@@ -108,7 +108,7 @@ class MockProxyTest
 		var mock = mockatoo.Mockatoo.mock(ClassToMock);
 		instance = new MockProxy(mock);
 
-		var stub = instance.stub("none", []);
+		var stub = instance.stubMethod("none", []);
 
 		try
 		{
@@ -119,12 +119,12 @@ class MockProxyTest
 	}
 
 	@Test
-	public function should_return_stubbed_value():Void
+	public function should_return_returns_outcome():Void
 	{
 		var mock = mockatoo.Mockatoo.mock(ClassToMock);
 		instance = new MockProxy(mock);
 
-		var stub = instance.stub("two", [1,2]);
+		var stub = instance.stubMethod("two", [1,2]);
 
 		stub.thenReturn(4);
 
@@ -133,12 +133,12 @@ class MockProxyTest
 	}
 
 	@Test
-	public function should_always_return_last_stub():Void
+	public function should_always_return_last_stubMethod():Void
 	{
 		var mock = mockatoo.Mockatoo.mock(ClassToMock);
 		instance = new MockProxy(mock);
 
-		var stub = instance.stub("two", [1,2]);
+		var stub = instance.stubMethod("two", [1,2]);
 
 		stub.thenReturn(4);
 
@@ -158,7 +158,7 @@ class MockProxyTest
 		var mock = mockatoo.Mockatoo.mock(ClassToMock);
 		instance = new MockProxy(mock);
 
-		var stub = instance.stub("two", [1,2]);
+		var stub = instance.stubMethod("two", [1,2]);
 
 		var exception = new CustomException(); 
 
@@ -174,7 +174,7 @@ class MockProxyTest
 	}
 
 	@Test
-	public function should_call_stubbed_callback():Void
+	public function should_return_calls_outcome():Void
 	{
 		var mock = mockatoo.Mockatoo.mock(ClassToMock);
 		instance = new MockProxy(mock);
@@ -182,11 +182,39 @@ class MockProxyTest
 
 		var f = function(args:Array<Dynamic>) {}
 
-		instance.stub("two", [1,2]).thenCall(f);
+		instance.stubMethod("two", [1,2]).thenCall(f);
 
 		var result = instance.getOutcomeFor("two", [1,2]);
 
 		Asserts.assertEnumTypeEq(calls(f), result);
+	}
+
+	@Test
+	public function should_return_stubs_outcome():Void
+	{
+		var mock = mockatoo.Mockatoo.mock(ClassToMock);
+		instance = new MockProxy(mock);
+
+
+
+		instance.stubMethod("two", [1,2]).thenStub();
+
+		var result = instance.getOutcomeFor("two", [1,2]);
+
+			Asserts.assertEnumTypeEq(stubs, result);
+	}
+
+	@Test
+	public function should_return_callsRealMethod_outcome():Void
+	{
+		var mock = mockatoo.Mockatoo.mock(ClassToMock);
+		instance = new MockProxy(mock);
+
+		instance.stubMethod("two", [1,2]).thenCallRealMethod();
+
+		var result = instance.getOutcomeFor("two", [1,2]);
+
+		Asserts.assertEnumTypeEq(callsRealMethod, result);
 	}
 
 	// ------------------------------------------------------------------------- reset
@@ -198,7 +226,7 @@ class MockProxyTest
 		var mock = mockatoo.Mockatoo.mock(ClassToMock);
 		instance = new MockProxy(mock);
 		
-		instance.stub("two", [1,2]).thenReturn(4);
+		instance.stubMethod("two", [1,2]).thenReturn(4);
 
 		var result = instance.getOutcomeFor("two", [1,2]);
 
@@ -227,6 +255,178 @@ class MockProxyTest
 		}
 		catch(e:VerificationException) {}
 	}
+
+
+	// ------------------------------------------------------------------------- stubbing properties
+
+
+	@Test
+	public function should_stub_property():Void
+	{
+		var mock:ClassWithPropertiesToMock = mockatoo.Mockatoo.mock(ClassWithPropertiesToMock);
+		instance = new MockProxy(cast mock);
+		untyped mock.mockProxy = instance; 
+
+		instance.stubProperty("prop").thenReturn("foo");
+		Assert.areEqual("foo", mock.prop);
+
+		instance.stubProperty("propDefault").thenReturn("foo");
+		Assert.areEqual("foo", mock.propDefault);
+
+		instance.stubProperty("propNull").thenReturn("foo");
+		Assert.areEqual("foo", mock.propNull);
+
+		instance.stubProperty("propSet").thenReturn("foo");
+		Assert.areEqual("foo", mock.propSet);
+
+		instance.stubProperty("propGet").thenReturn("foo");
+		Assert.areEqual("foo",mock.propGet);
+
+		instance.stubProperty("propGetSet").thenReturn("foo");
+		Assert.areEqual("foo", mock.propGetSet);
+	}
+
+	@Test
+	public function should_stub_property_with_throw():Void
+	{
+		var mock:ClassWithPropertiesToMock = mockatoo.Mockatoo.mock(ClassWithPropertiesToMock);
+		instance = new MockProxy(cast mock);
+		untyped mock.mockProxy = instance; 
+
+
+		try
+		{
+			instance.stubProperty("prop").thenThrow("foo");
+			Assert.fail("Expected StubbingException");
+		}
+		catch(e:StubbingException) {}
+
+		
+		instance.stubProperty("propSet").thenThrow("foo");
+
+		try
+		{
+			mock.propSet = "1";
+			Assert.fail("Expected exception");
+		}
+		catch(e:String) {}
+
+		Assert.isNull(mock.propSet);
+
+		instance.stubProperty("propGet").thenThrow("foo");
+
+		try
+		{
+			var result = mock.propGet;
+			Assert.fail("Expected exception");
+		}
+		catch(e:String) {}
+
+
+		instance.stubProperty("propGetSet").thenThrow("foo");
+
+		try
+		{
+			mock.propGetSet = "1";
+			Assert.fail("Expected exception");
+		}
+		catch(e:String) {}
+
+		try
+		{
+			var result = mock.propGetSet;
+			Assert.fail("Expected exception");
+		}
+		catch(e:String) {}
+
+	}
+
+	@Test
+	public function should_stub_property_with_callback():Void
+	{
+		var mock:ClassWithPropertiesToMock = mockatoo.Mockatoo.mock(ClassWithPropertiesToMock);
+		instance = new MockProxy(cast mock);
+		untyped mock.mockProxy = instance; 
+
+		var f = function(value:String)
+		{
+			return "foo";
+		}
+
+		try
+		{
+			instance.stubProperty("prop").thenCall(f);
+			Assert.fail("Expected StubbingException");
+		}
+		catch(e:StubbingException) {}
+
+		try
+		{
+			instance.stubProperty("propSet").thenCall(f);
+			Assert.fail("Expected StubbingException");
+		}
+		catch(e:StubbingException) {}
+		
+		instance.stubProperty("propGet").thenCall(f);
+		Assert.areEqual("foo",  mock.propGet);
+
+		instance.stubProperty("propGetSet").thenCall(f);
+		Assert.areEqual("foo", mock.propGetSet);
+	}
+
+
+	@Test
+	public function should_stub_property_with_realMethod():Void
+	{
+		var mock:ClassWithPropertiesToMock = mockatoo.Mockatoo.mock(ClassWithPropertiesToMock);
+		instance = new MockProxy(cast mock);
+		untyped mock.mockProxy = instance; 
+
+		try
+		{
+			instance.stubProperty("prop").thenCallRealMethod();
+			Assert.fail("Expected StubbingException");
+		}
+		catch(e:StubbingException) {}
+
+		instance.stubProperty("propSet").thenCallRealMethod();
+		mock.propSet = "foo";
+		Assert.areEqual("foo", mock.propSet);
+		
+		instance.stubProperty("propGet").thenCallRealMethod();
+		Assert.areEqual(null,  mock.propGet);
+
+		instance.stubProperty("propGetSet").thenCallRealMethod();
+		mock.propGetSet = "foo";
+		Assert.areEqual("foo", mock.propGetSet);
+	}
+
+	@Test
+	public function should_stub_property_with_stub():Void
+	{
+		var mock:ClassWithPropertiesToMock = mockatoo.Mockatoo.mock(ClassWithPropertiesToMock);
+		instance = new MockProxy(cast mock);
+		untyped mock.mockProxy = instance; 
+
+		try
+		{
+			instance.stubProperty("prop").thenStub();
+			Assert.fail("Expected StubbingException");
+		}
+		catch(e:StubbingException) {}
+
+		instance.stubProperty("propSet").thenStub();
+		mock.propSet = "foo";
+		Assert.areEqual(null, mock.propSet);
+		
+		instance.stubProperty("propGet").thenStub();
+		Assert.areEqual(null,  mock.propGet);
+
+		instance.stubProperty("propGetSet").thenStub();
+		mock.propGetSet = "foo";
+		Assert.areEqual(null, mock.propGetSet);
+	}
+
 }
 
 class CustomException
@@ -237,8 +437,37 @@ class CustomException
 	}
 }
 
+class ClassWithPropertiesToMock
+{
+	public var prop:String;
+
+	public var propDefault(default, default):String;
+	public var propNull(default, null):String;
+
+	public var propSet(default, set_propSet):String;
+	function set_propSet(value:String):String{propSet = value; return value;}
+
+	public var propGet(get_propGet, null):String;
+	function get_propGet():String{return propGet;}
+
+	public var propGetSet(get_propGetSet, set_propGetSet):String;
+	function get_propGetSet():String{return propGetSet;}
+	function set_propGetSet(value:String):String{propGetSet = value; return value;}
+
+	public function new()
+	{
+		prop = "";
+		propDefault = "";
+		propNull = "";
+		propSet = "";
+		propGet = "";
+		propGetSet = "";
+	}
+}
+
 class ClassToMock
 {
+
 	public function new()
 	{
 

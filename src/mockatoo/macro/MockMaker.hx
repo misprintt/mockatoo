@@ -635,7 +635,8 @@ class MockMaker
 		var eCaseReturns = macro MockOutcome.returns(v);
 		var eCaseThrows = macro MockOutcome.throws(v);
 		var eCaseCalls = macro MockOutcome.calls(v);
-		var eCaseMocks = macro MockOutcome.mocks;
+		var eCaseStubs = macro MockOutcome.stubs;
+		var eCaseReal = macro MockOutcome.callsRealMethod;
 		var eCaseNone = macro MockOutcome.none;
 
 		var eArgs = args.toArray(); //reference to args
@@ -665,7 +666,8 @@ class MockMaker
 				case $eCaseReturns: return v;
 				case $eCaseThrows: throw v;
 				case $eCaseCalls: return v($eArgs);
-				case $eCaseMocks: return $eDefaultReturnValue;
+				case $eCaseStubs: return $eDefaultReturnValue;
+				case $eCaseReal: return $eSuper;
 				case $eCaseNone: return $eIf;
 			}
 		}
@@ -682,11 +684,17 @@ class MockMaker
 			{
 				case $eCaseThrows: throw v;
 				case $eCaseCalls: v($eArgs);
-				case $eCaseMocks: $eNull;
+				case $eCaseStubs: $eNull;
+				case $eCaseReal: $eSuper;
 				default: $eIf;
 			}
 		}
 
+		// var eFieldName = EConst(CString(field.name)).at();
+		// var eTraceArgs = [eFieldName, eArgs,eMockOutcome].toArray();
+		// var eTrace = "haxe.Log.trace".resolve().call([eTraceArgs]);
+		// f.expr = createBlock([eTrace,eSwitch]);
+		
 		f.expr = createBlock([eSwitch]);
 
 		field.kind = FFun(f);
