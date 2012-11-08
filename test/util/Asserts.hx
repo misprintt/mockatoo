@@ -39,7 +39,7 @@ class Asserts
 
 	/**
 	 * Compares enum equality, ignoring any non enum parameters, so that:
-	 *	Fail(IO("One thing happened")) == Fail(IO("Another thing happened"))
+	 *	Fail(IO("One thing happened")) == Fail(IO("One thing happened"))
 	 * 
 	 * Also allows for wildcard matching by passing through <code>null</code> for
 	 * any params, so that:
