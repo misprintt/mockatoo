@@ -24,6 +24,8 @@ class InitMacro
 		initialized = true;
 
 		Compiler.define("no-inline");
+
+		#if MOCKATOO_LOG
 		
 		createTempDirectory();
 
@@ -31,6 +33,8 @@ class InitMacro
 
 		Console.start();
 		Console.removePrinter(Console.defaultPrinter);
+
+		#end
 	}
 
 	static function createTempDirectory()
