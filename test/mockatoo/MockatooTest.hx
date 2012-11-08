@@ -424,6 +424,18 @@ class MockatooTest
 		Assert.isNull(mock.iterator());
 	}
 
+	@Test
+	public function should_mock_classes_incomplete_optional_arg()
+	{
+		var mock = Mockatoo.mock(ClassWithOptionalArg);
+		mock.foo(true);
+
+		Assert.isTrue(true);
+	}
+
+
+	
+
 	// ------------------------------------------------------------------------- typedef structures
 	
 	@Test

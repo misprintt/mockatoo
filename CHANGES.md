@@ -1,3 +1,7 @@
+v1.2.x
+- Issue #9 optional method args without a `?` cause compilation error
+- Added -D MOCKATOO_LOG to opt into generation of log file (performance optimisation)
+
 v1.2.0
 - added support for mocking property fields (with autowiring of getter/setters where applicable)
 - added when().thenStub() for stubbing spy objects using default mock values

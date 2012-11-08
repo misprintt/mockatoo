@@ -253,6 +253,24 @@ private class PrivateClass
 }
 
 
+class ClassWithOptionalArg
+{
+	public function new()
+	{
+
+	}
+
+	public function foo(value:Bool=false):String
+	{
+		return "";
+	}
+
+	public function foo2(?value:Bool=false):String
+	{
+		return "";
+	}
+}
+
 // ----------------------------------------------------------------------------- Properties
 
 class ClassWithProperties

@@ -9,8 +9,10 @@ import haxe.macro.Type;
 import haxe.PosInfos;
 using tink.macro.tools.MacroTools;
 using tink.macro.tools.ExprTools;
+using tink.macro.tools.TypeTools;
+import tink.macro.tools.TypeTools;
 import tink.macro.tools.Printer;
-
+using mockatoo.macro.Types;
 
 typedef TypeDeclaration = 
 {
@@ -270,17 +272,46 @@ class ClassFields
 
 		for(arg in args)
 		{
+			var argType = convertType(arg.t, paramMap);
+
+			var value:Null<Expr> = arg.opt ? arg.t.toComplex(true).defaultValue() : null;
+
+
+			if(arg.opt)
+			{
+				//NOTE(Dom) - this is to prevent #9 - optional method args without a `?` cause compilation error
+				arg.opt = verifyOptionalArgIsActuallyNullable(arg);
+
+				if(!arg.opt)
+					value = arg.t.toComplex(true).defaultValue();
+			}
+
 			var value = 
 			{
-				value : null, //Null<Expr>
-				type : convertType(arg.t, paramMap), //<ComplexType>
+				value : value, //Null<Expr>
+				type : argType, //<ComplexType>
 				opt : arg.opt,
 				name : arg.name
 			}
+
+			trace(arg.name + ":" + arg + "\n   " + value);
 			converted.push(value);
 		}
 
 		return converted;
+	}
+
+	static function verifyOptionalArgIsActuallyNullable(arg:{ t : Type, opt : Bool, name : String }):Bool
+	{
+		switch(arg.t)
+		{
+			case TType(t, params):
+				if(t.get().name == "Null")
+					return true;
+			default: null;
+		}
+
+		return false;
 	}
 
 	static function getVarAccess(access:VarAccess):String
