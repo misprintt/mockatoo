@@ -1,7 +1,7 @@
 <project name="mockatoo" url="http://github.com/misprintt/mockatoo" license="MIT">
 	<user name="massive"/>
 	<description><![CDATA[Mockatoo is a Haxe library for mocks creation, verification and stubbing.]]></description>
-	<version name="1.2.0"><![CDATA[Added stubbing properties (read-only, write-only, getters, setters). Improved options for partial mocking and spying with thenCallRealMethod() and thenStub(). See CHANGES and README for details.]]></version>
+	<version name="1.2.1"><![CDATA[Fixed issue with optional method args without a `?` causing compilation error. See CHANGES and README for more details.]]></version>
 	<depends name="mconsole"/>
 	<depends name="tink_macros"/>
 </project>
