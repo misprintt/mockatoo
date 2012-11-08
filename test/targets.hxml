@@ -10,6 +10,7 @@
 -swf bin/test/as3_test.swf
 --no-inline
 -debug
+-D MOCKATOO_LOG
 
 --next
 
@@ -22,6 +23,7 @@
 -lib tink_macros
 -cp test
 -js bin/test/js_test.js
+-D MOCKATOO_LOG
 --no-inline
 
 --next
@@ -35,6 +37,7 @@
 -lib tink_macros
 -cp test
 -neko bin/test/neko_test.n
+-D MOCKATOO_LOG
 --no-inline
 
 --next
@@ -49,6 +52,7 @@
 -cp test
 #-D HXCPP_M64
 -cpp bin/test/cpp_test
+-D MOCKATOO_LOG
 --no-inline
 
 
