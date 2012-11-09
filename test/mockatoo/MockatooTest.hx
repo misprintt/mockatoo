@@ -3,6 +3,7 @@ package mockatoo;
 import massive.munit.util.Timer;
 import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
+import mockatoo.exception.VerificationException;
 import mockatoo.exception.StubbingException;
 import mockatoo.Mockatoo;
 import mockatoo.Mock;
@@ -47,15 +48,35 @@ class MockatooTest
 	// ------------------------------------------------------------------------- verification
 
 	@Test
-	public function should_throw_exception_if_verify_non_mock()
+	public function should_throw_exception_if_verify_null_mock()
 	{
+		var mock:Mock = null;
 		try
 		{
-			Mockatoo.verify(null);	
+			Mockatoo.verify(mock);	
 			Assert.fail("Expected exception for non mock class");
 		}
-		catch(e:Dynamic)
+		catch(e:VerificationException)
 		{
+			trace(e);
+			Assert.isTrue(true);
+		}
+		
+	}
+
+
+	@Test
+	public function should_throw_exception_if_verify_non_mock()
+	{
+		var instance:SimpleClass = new SimpleClass();
+		try
+		{
+			Mockatoo.verify(instance);	
+			Assert.fail("Expected exception for non mock class");
+		}
+		catch(e:VerificationException)
+		{
+			trace(e);
 			Assert.isTrue(true);
 		}
 		
@@ -83,6 +104,7 @@ class MockatooTest
 		Asserts.assertEnumTypeEq(never, verification.mode);
 		
 	}
+
 
 	// ------------------------------------------------------------------------- stubbing
 

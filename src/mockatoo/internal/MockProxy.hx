@@ -1,7 +1,7 @@
 package mockatoo.internal;
 import mockatoo.Mockatoo;
 import mockatoo.exception.StubbingException;
-
+import haxe.PosInfos;
 /**
 Responsible for run time mocking behaviour of a Mock instance.
 */
@@ -34,7 +34,7 @@ class MockProxy
 	/**
 	Called by Mockatoo.verify to access verifications for a mock class.
 	*/
-	public function verify(?mode:VerificationMode):Verification
+	public function verify(?mode:VerificationMode, ?pos:PosInfos):Verification
 	{
 		if(mode == null) mode = VerificationMode.times(1);
 		
@@ -44,7 +44,7 @@ class MockProxy
 		{
 			var f = Reflect.makeVarArgs(function(a:Array<Dynamic>)
 			{
-				return proxy.verify(mode, a);
+				return proxy.verify(mode, a, pos);
 			});
 
 			Reflect.setField(temp, proxy.fieldName, f);

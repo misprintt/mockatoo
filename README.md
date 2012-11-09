@@ -34,10 +34,10 @@ Mock any class or interface, including typedef aliases and types with generics (
 	var mockedInterface = Mockatoo.mock(SomeInterface);
 	var mockedClassWithGenerics = Mockatoo.mock(Foo, [Bar]);
 
-Verify a method has been called with specific paramaters
+Verify a method has been called with specific paramaters (cleaner syntax since 1.3.0)
 
-	Mockatoo.verify(mock).foo();
-	Mockatoo.verify(mock).someMethod("foo", "bar");
+	Mockatoo.verify(mock.foo());
+	Mockatoo.verify(mock.someMethod("foo", "bar"));
 
 Define a stub response when a method is invoked
 
@@ -49,12 +49,13 @@ Custom argument matchers and wildcards
 	Mockatoo.when(mock.foo(anyString)).thenReturn("hello");
 	Mockatoo.when(mock.foo(isNull)).thenReturn("world");
 
-Verify exact number of invocations
+Verify exact number of invocations 
 
-	Mockatoo.verify(mock, times(2)).foo();
-	Mockatoo.verify(mock, atLeast(2)).foo();
-	Mockatoo.verify(mock, atLeastOnce).foo();
-	Mockatoo.verify(mock, never).foo();
+	Mockatoo.verify(mock.foo(), 2);//raw integers supported since 1.3.0
+	Mockatoo.verify(mock.foo(), times(2));
+	Mockatoo.verify(mock.foo(), atLeast(2));
+	Mockatoo.verify(mock.foo(), atLeastOnce);
+	Mockatoo.verify(mock.foo(), never);
 
 Spying on real objects (Since 1.1.0)
 
@@ -79,6 +80,17 @@ Mock properties that are read or write only (Since 1.2.0)
 	Mockatoo.when(mock.someSetter).thenThrow("exception");
 	Mockatoo.when(mock.someGetter).thenThrow("exception");
 	Mockatoo.when(mock.someGetter).thenCall(function(){return "foo"});
+
+
+Improved syntax when using 'using' (i.e. mixins) (Since 1.3.0)
+
+	using mockatoo.Mockatoo;
+
+	...
+
+	var mock = SomeClass.mock();
+	mock.doSomething("a").verify(2); //verify called 3 times
+
 
 
 Click here for detailed [documentation and examples](http://github.com/misprintt/mockatoo/wiki/Developer-Guide)

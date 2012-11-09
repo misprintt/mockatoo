@@ -1,3 +1,11 @@
+v1.3.0
+- Added verification of full expression. eg - Mockatoo.verify(mock.someMethod("foo"));
+- verification exceptions correctly reference position where verification was executed
+- verifying null or invalid mock instances now throws VerificationExceptions
+- compile time check that method being verified exists on mock object
+- compile time check that method being stubbed exists on mock object
+- support for raw integer verification count. e.g. - Mockatto.verify(mock.someMethod(), 2);
+
 v1.2.x
 - Issue #9 optional method args without a `?` cause compilation error
 - Added -D MOCKATOO_LOG to opt into generation of log file (performance optimisation)

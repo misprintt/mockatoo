@@ -32,7 +32,7 @@ class WhenMacro
 				var ident = e.toString();
 
 				var parts = ident.split(".");
-				var methodName = EConst(CString(parts.pop())).at();
+				var methodName = parts.pop();
 
 				var args = params.toArray();
 
@@ -42,8 +42,13 @@ class WhenMacro
 
 				var eMethod = eCast.field("mockProxy").field("stubMethod");
 
-				var actualExpr = eMethod.call([methodName, args]);
-				trace(actualExpr.toString());
+				var whenExpr = eMethod.call([EConst(CString(methodName)).at(), args]);
+
+				var eField = ident.resolve().field(methodName);
+				var compilerCheck = EIf(EConst(CIdent("false")).at(), eField, null).at();
+
+				var actualExpr = EBlock([compilerCheck, whenExpr]).at();
+				// trace(actualExpr.toString());
 				return actualExpr;
 
 			case EField(e, field):
@@ -56,12 +61,15 @@ class WhenMacro
 
 				var eFieldName = EConst(CString(field)).at();
 
-				var actualExpr = eMethod.call([eFieldName]);
+				var whenExpr = eMethod.call([eFieldName]);
 
-				trace(actualExpr.toString());
+				var compilerCheck = EIf(EConst(CIdent("false")).at(), expr, null).at();
+
+				var actualExpr = EBlock([compilerCheck, whenExpr]).at();
+				// trace(actualExpr.toString());
 				return actualExpr;
 
-			default: throw "Invalid arg [" + expr.print() + "]";
+			default: throw "Invalid expression [" + expr.print() + "]";
 		}
 		return expr;
 	}

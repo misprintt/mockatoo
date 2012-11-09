@@ -281,7 +281,7 @@ class ClassWithProperties
 	
 	public var setter(default, set_setter):String;
 	
-	public var never(never, never):String;
+	public var never(default, never):String;
 
 	public var func:Void->String;
 

@@ -3,7 +3,7 @@ import mockatoo.exception.VerificationException;
 import mockatoo.exception.StubbingException;
 import mockatoo.Mockatoo;
 import mockatoo.internal.MockOutcome;
-
+import haxe.PosInfos;
 using mockatoo.util.TypeEquality;
 
 /**
@@ -154,7 +154,6 @@ class MockMethod
 					if(compareArgs(stub.args[i],args[i])) 
 						matchingArgs ++;
 				}
-				
 			}
 
 			if(matchingArgs == stub.args.length)
@@ -165,7 +164,7 @@ class MockMethod
 		return null;
 	}
 
-	public function verify(mode:VerificationMode, ?args:Array<Dynamic>):Bool
+	public function verify(mode:VerificationMode, ?args:Array<Dynamic>, ?pos:PosInfos):Bool
 	{
 		var matchingInvocations = getMatchingArgs(invocations, args);
 
@@ -192,17 +191,17 @@ class MockMethod
 		if(range.max == null)
 		{
 			if(matches >= range.min) return true;
-			else throw new VerificationException(execptionMessage + "at least " + toTimes(range.min));
+			else throw new VerificationException(execptionMessage + "at least " + toTimes(range.min),pos);
 		}
 		else if(range.min == null)
 		{
 			 if(matches <= range.max) return true;
-			 else throw new VerificationException(execptionMessage + "less than " + toTimes(range.max));
+			 else throw new VerificationException(execptionMessage + "less than " + toTimes(range.max),pos);
 		}
 		else
 		{
 			if(matches == range.min) return true;
-			else throw new VerificationException(execptionMessage + toTimes(range.min));
+			else throw new VerificationException(execptionMessage + toTimes(range.min),pos);
 		}
 		
 		return false;

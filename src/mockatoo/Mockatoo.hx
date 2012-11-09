@@ -6,6 +6,7 @@ import haxe.macro.Expr;
 
 import mockatoo.macro.InitMacro;
 import mockatoo.macro.MockMaker;
+import mockatoo.macro.VerifyMacro;
 import mockatoo.macro.WhenMacro;
 
 
@@ -45,12 +46,16 @@ class Mockatoo
 	/**
 	Verifies certain behavior happened at least once / exact number of times / never. E.g:
 	<pre class="code"><code class="haxe">
-	  verify(mock, times(5)).someMethod("was called five times");
+	  verify(mock.someMethod("was called five times"), 5);
+
+	  //or the same call using a VerificationMode:
+	  verify(mock.someMethod("was called five times"), times(5));
 	
-	  verify(mock, atLeast(2)).someMethod("was called at least two times");
+	  verify(mock.someMethod("was called at least two times"), atLeast(2));
 	
 	  //you can use flexible argument matchers, e.g:
-	  verify(mock, atLeastOnce).someMethod(<b>anyString</b>);
+	  verify(mock.someMethod(<b>anyString</b>), atLeastOnce);
+
 	</code></pre>
 	
 	<b>times(1) is the default</b> and can be omitted
@@ -58,16 +63,15 @@ class Mockatoo
 	Arguments passed are compared using equality (==) with additional checks for enums with paramater values. 
 	<p>
 	
-	@param mock to be verified
-	@param mode times(x), atLeastOnce or never
+	@param mock expression to be verified
+	@param mode 5, times(x), atLeastOnce, atLeast(x) or never
 	
 	@return dynamic Verification for current mock's API 
 	 */
-	static public function verify(mock:Dynamic, ?mode:VerificationMode):mockatoo.internal.Verification
+
+	@:macro static public function verify(expr:ExprOf<Dynamic>, ?mode:ExprOf<VerificationMode>):ExprOf<mockatoo.internal.Verification>
 	{
-		Console.assert(mock != null, "Cannot verify [null] mock");
-		Console.assert(Std.is(mock, Mock), "Object is not an instance of mock");
-		return cast(mock, Mock).mockProxy.verify(mode);
+		return VerifyMacro.create(expr,mode);
 	}
 
 	/**
