@@ -13,11 +13,11 @@ Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode
 
 ## Installation
 
-Install current stable release from haxelib
+Install current official release from haxelib (1.2.1)
 
 	haxelib install mockatoo
 
-Install the latest directly from github:
+Install the latest directly from github (1.3.0):
 
 	haxelib git mockatoo https://github.com/misprintt/mockatoo.git src
 
