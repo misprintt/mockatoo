@@ -28,69 +28,65 @@ Or point to your local fork:
 
 ## Features
 
+Import and use the 'using' mixin
+
+	import mockatoo.Mockatoo;
+	using mockatoo.Mockatoo;
+
 Mock any class or interface, including typedef aliases and types with generics (type paramaters)
 
-	var mockedClass = Mockatoo.mock(SomeClass);
-	var mockedInterface = Mockatoo.mock(SomeInterface);
-	var mockedClassWithGenerics = Mockatoo.mock(Foo, [Bar]);
+	var mockedClass = SomeClass.mock();
+	var mockedInterface = SomeInterface.mock();
+	var mockedClassWithTypeParams = Foo.mock([Bar]); //e.g. Foo<Bar>
 
 Verify a method has been called with specific paramaters (cleaner syntax since 1.3.0)
 
-	Mockatoo.verify(mock.foo());
-	Mockatoo.verify(mock.someMethod("foo", "bar"));
+	mock.someMethod().verify();
+	mock.someMethod("foo", "bar").verify();
 
 Define a stub response when a method is invoked
 
-	Mockatoo.when(mock.foo("bar")).thenReturn("hello");
-	Mockatoo.when(mock.someMethod("foo", "bar").thenThrow(new Exception(""));
+	mock.foo("bar").returns("hello");
+	mock.someMethod("foo", "bar").throws(new Exception("error"));
 
 Custom argument matchers and wildcards
 
-	Mockatoo.when(mock.foo(anyString)).thenReturn("hello");
-	Mockatoo.when(mock.foo(isNull)).thenReturn("world");
+	mock.foo(anyString).returns("hello");
+	mock.foo(isNull).returns("world");
 
 Verify exact number of invocations 
 
-	Mockatoo.verify(mock.foo(), 2);//raw integers supported since 1.3.0
-	Mockatoo.verify(mock.foo(), times(2));
-	Mockatoo.verify(mock.foo(), atLeast(2));
-	Mockatoo.verify(mock.foo(), atLeastOnce);
-	Mockatoo.verify(mock.foo(), never);
+	mock.foo().verify(2);//raw integers supported since 1.3.0
+	mock.foo().verify(times(2));
+	mock.foo().verify(atLeast(2));
+	mock.foo().verify(atLeastOnce);
+	mock.foo().verify(never);
 
 Spying on real objects (Since 1.1.0)
 
-	var spy = Mockatoo.spy(SomeClass);//creates instance where all methods are real (not stubbed)
+	var spy = SomeClass.spy();//creates instance where all methods are real (not stubbed)
 	spy.foo(); // calls real method;
-	Mockatoo.when(spy.foo()).thenStub();
+	
+	spy.foo().stub();
 	spy.foo(); //calls default stub;
-	Mockatoo.when(spy.foo()).thenReturn("hello");
+	
+	spy.foo().returns("hello");
 	spy.foo(); //calls custom stub;
 
 
 Partial Mocking (Since 1.2.0)
 
-	 var mock = Mockatoo.mock(SomeClass);
-	 Mockatoo.when(mock.foo()).thenCallRealMethod();
-	 mock.foo();//calls out to real method
+	var mock = Mockatoo.mock(SomeClass);
+	mock.foo().callsRealMethod();
+	mock.foo();//calls out to real method
 
 
 Mock properties that are read or write only (Since 1.2.0)
 
-	Mockatoo.when(mock.someProperty).thenReturn("hello");
-	Mockatoo.when(mock.someSetter).thenThrow("exception");
-	Mockatoo.when(mock.someGetter).thenThrow("exception");
-	Mockatoo.when(mock.someGetter).thenCall(function(){return "foo"});
-
-
-Improved syntax when using 'using' (i.e. mixins) (Since 1.3.0)
-
-	using mockatoo.Mockatoo;
-
-	...
-
-	var mock = SomeClass.mock();
-	mock.doSomething("a").verify(2); //verify called 3 times
-
+	mock.someProperty.returns("hello");
+	mock.someSetter.throws("exception");
+	mock.someGetter.throws("exception");
+	mock.someGetter.calls(function(){return "foo"});
 
 
 Click here for detailed [documentation and examples](http://github.com/misprintt/mockatoo/wiki/Developer-Guide)

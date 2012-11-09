@@ -6,6 +6,7 @@ import haxe.macro.Compiler;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
+import mockatoo.exception.StubbingException;
 
 using tink.macro.tools.Printer;
 using tink.macro.tools.ExprTools;
@@ -14,9 +15,9 @@ using tink.macro.tools.TypeTools;
 /**
 Macro for remapping a mock's method invocation when using Mockatoo.when()
 */
-class WhenMacro
+class StubbingMacro
 {
-	public static function create(expr:Expr):Expr
+	public static function createWhen(expr:Expr):Expr
 	{
 		var str = expr.print();
 		trace(str);
@@ -72,6 +73,50 @@ class WhenMacro
 			default: throw "Invalid expression [" + expr.print() + "]";
 		}
 		return expr;
+	}
+
+	public static function returns(expr:Expr, returnExpr:Expr):Expr
+	{
+		return createThen(expr, "thenReturn", returnExpr);
+	}
+
+	public static function throws(expr:Expr, throwExpr:Expr):Expr
+	{
+		return createThen(expr, "thenThrow", throwExpr);
+	}
+
+	public static function calls(expr:Expr, callExpr:Expr):Expr
+	{
+		return createThen(expr, "thenCall", callExpr);
+	}
+
+	public static function callsRealMethod(expr:Expr):Expr
+	{
+		return createThen(expr, "thenCallRealMethod", null);
+	}
+
+	public static function stubs(expr:Expr):Expr
+	{
+		return createThen(expr, "thenStub", null);
+	}
+
+	static function createThen(whenExpr:Expr, thenMethod:String, ?thenExpr:Expr=null):Expr
+	{
+		whenExpr = createWhen(whenExpr);
+
+		var exprs = switch(whenExpr.expr)
+		{
+			case EBlock(e): e;
+			default: [whenExpr];
+		}
+
+		var actualExpr = exprs.pop();
+
+		var params = thenExpr != null ? [thenExpr] : [];
+		actualExpr = actualExpr.field(thenMethod).call(params);
+		exprs.push(actualExpr);
+
+		return EBlock(exprs).at();
 	}
 }
 

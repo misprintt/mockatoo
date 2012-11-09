@@ -47,105 +47,12 @@ class MockatooTest
 
 	// ------------------------------------------------------------------------- verification
 
-	@Test
-	public function should_throw_exception_if_verify_null_mock()
-	{
-		var mock:Mock = null;
-		try
-		{
-			Mockatoo.verify(mock);	
-			Assert.fail("Expected exception for non mock class");
-		}
-		catch(e:VerificationException)
-		{
-			trace(e);
-			Assert.isTrue(true);
-		}
-		
-	}
-
-
-	@Test
-	public function should_throw_exception_if_verify_non_mock()
-	{
-		var instance:SimpleClass = new SimpleClass();
-		try
-		{
-			Mockatoo.verify(instance);	
-			Assert.fail("Expected exception for non mock class");
-		}
-		catch(e:VerificationException)
-		{
-			trace(e);
-			Assert.isTrue(true);
-		}
-		
-	}
-
-	@Test
-	public function should_set_default_mode()
-	{
-		var instance = Mockatoo.mock(SimpleClass);
-
-		var verification = Mockatoo.verify(instance);
-
-		Asserts.assertEnumTypeEq(times(1), verification.mode);
-		
-	}
-
-
-	@Test
-	public function should_use_custom_mode()
-	{
-		var instance = Mockatoo.mock(SimpleClass);
-
-		var verification = Mockatoo.verify(instance, never);
-
-		Asserts.assertEnumTypeEq(never, verification.mode);
-		
-	}
+	
 
 
 	// ------------------------------------------------------------------------- stubbing
 
-	@Test
-	public function should_when()
-	{
-		var instance = Mockatoo.mock(VariableArgumentsClass);
-
-		var f = function(args:Array<Dynamic>)
-		{
-			return args[0];
-		}
-		var stub = Mockatoo.when(instance.one(1)).thenReturn(10).thenCall(f).thenThrow("exception");
-
-		var result = instance.one(1);
-		Assert.areEqual(10, result);
-
-		result = instance.one(1);
-		Assert.areEqual(1, result);
-
-		try
-		{
-			instance.one(1);
-			Assert.fail("Expected custom exception");
-		}
-		catch(e:String)
-		{
-			Assert.areEqual("exception", e);
-		}
-	}
-
-
-	@Test
-	public function should_cast_to_mock_when()
-	{
-		var instance:VariableArgumentsClass = Mockatoo.mock(VariableArgumentsClass);
-
-		var stub = Mockatoo.when(instance.one(1));
-
-		Assert.isNotNull(stub);
-	}
+	
 
 	// ------------------------------------------------------------------------- mocking
 

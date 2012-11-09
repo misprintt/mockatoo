@@ -1,29 +1,36 @@
 v1.3.0
+
 - Added verification of full expression. eg - Mockatoo.verify(mock.someMethod("foo"));
 - verification exceptions correctly reference position where verification was executed
 - verifying null or invalid mock instances now throws VerificationExceptions
 - compile time check that method being verified exists on mock object
 - compile time check that method being stubbed exists on mock object
 - support for raw integer verification count. e.g. - Mockatto.verify(mock.someMethod(), 2);
+- added shorthand API for stubbing with using mixins - e.g. mock.someMethod().returns("foo"), mock.someMethod.throws("error")
 
 v1.2.x
+
 - Issue #9 optional method args without a `?` cause compilation error
 - Added -D MOCKATOO_LOG to opt into generation of log file (performance optimisation)
 
 v1.2.0
+
 - added support for mocking property fields (with autowiring of getter/setters where applicable)
 - added when().thenStub() for stubbing spy objects using default mock values
 - added when().thenCallRealMethod() for suppressing mocks on specific methods
 
 v1.1.1
+
 - fixed bug where a custom stub call ('thenCall(f)') did not recieve arguments
 - fixed bug caused by when() not casting instance to mock;
 
 v1.1.0
+
 - added spying (partial mocking)
 - added compiler error if mocking final class on flash target
 
 v1.0.1
+
 - added mocking for typedef structures (no verify/stubbing though)
 - changed mock param type in verify to Dynamic (avoids casting)
 - added Mockatoo.reset(mock) to reset stubs/verifications

@@ -9,10 +9,14 @@ class Build extends mtask.core.BuildBase
 
 	@target function haxelib(t:HaxeLib)
 	{
-		t.description = "Mockatoo is a Haxe library for mocks creation, verification and stubbing.";
+		t.description = "Mockatoo is a Haxe library for mock creation, verification and stubbing.";
 		t.url = "http://github.com/misprintt/mockatoo";
 
-		t.versionDescription = "Fixed issue with optional method args without a `?` causing compilation error. See CHANGES and README for more details.";
+		t.versionDescription = "Simplified, smarter, macro enhanced API when using 'using' mixin (and still fully backwards compatible with existing API).
+<pre class=\"code\"><code class=\"haxe\">var mock = SomeClass.mock();
+mock.someMethod().returns(\"foo\");
+mock.someOtherMethod(\"foo\").throws(\"some error\");
+mock.someMethod().verify(1);</code></pre>See updated documentation on github, and CHANGES for full details.";
 		
 		t.addDependency("mconsole");
 		t.addDependency("tink_macros");

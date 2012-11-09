@@ -3,7 +3,7 @@ package mockatoo;
 import massive.munit.util.Timer;
 import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
-import mockatoo.exception.StubbingException;
+import mockatoo.exception.VerificationException;
 import mockatoo.Mockatoo;
 import mockatoo.Mock;
 import test.TestClasses;
@@ -102,6 +102,64 @@ class MockatooVerifyTest
 		instance.test("foo").verify(1);
 
 		Assert.areEqual(1, count);
+	}
+
+	@Test
+	public function should_throw_exception_if_verify_null_mock()
+	{
+		var mock:Mock = null;
+		try
+		{
+			Mockatoo.verify(mock);	
+			Assert.fail("Expected exception for non mock class");
+		}
+		catch(e:VerificationException)
+		{
+			trace(e);
+			Assert.isTrue(true);
+		}
+		
+	}
+
+
+	@Test
+	public function should_throw_exception_if_verify_non_mock()
+	{
+		var instance:SimpleClass = new SimpleClass();
+		try
+		{
+			Mockatoo.verify(instance);	
+			Assert.fail("Expected exception for non mock class");
+		}
+		catch(e:VerificationException)
+		{
+			trace(e);
+			Assert.isTrue(true);
+		}
+		
+	}
+
+	@Test
+	public function should_set_default_mode()
+	{
+		var instance = Mockatoo.mock(SimpleClass);
+
+		var verification = Mockatoo.verify(instance);
+
+		Asserts.assertEnumTypeEq(times(1), verification.mode);
+		
+	}
+
+
+	@Test
+	public function should_use_custom_mode()
+	{
+		var instance = Mockatoo.mock(SimpleClass);
+
+		var verification = Mockatoo.verify(instance, never);
+
+		Asserts.assertEnumTypeEq(never, verification.mode);
+		
 	}
 
 	//NOTE: THESE ARE MEANT TO CAUSE COMPILER ERRORS

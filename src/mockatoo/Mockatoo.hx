@@ -7,7 +7,7 @@ import haxe.macro.Expr;
 import mockatoo.macro.InitMacro;
 import mockatoo.macro.MockMaker;
 import mockatoo.macro.VerifyMacro;
-import mockatoo.macro.WhenMacro;
+import mockatoo.macro.StubbingMacro;
 
 
 /**
@@ -38,7 +38,6 @@ class Mockatoo
 	@:macro static public function spy<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
 	{
 		InitMacro.init();
-		trace("!");
 		var mock = new MockMaker(typeToMock, paramTypes, true);
 		return mock.toExpr();
 	}
@@ -110,13 +109,102 @@ class Mockatoo
       
     </code></pre>
 
-    @param reference to the mock's method signature to stub
+      @param reference to the mock's method signature to stub
     @return dynamic Stubber for matching method
     */
 	@:macro static public function when(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
 	{
-		return WhenMacro.create(expr);
+		return StubbingMacro.createWhen(expr);
 	}
+
+
+	/**
+	Shorthand for stubbing a when().thenReturn
+	<pre class="code"><code class="haxe">
+    Mockatoo.returns(mock.someMethod("foo"), "someValue");
+
+    //or with using
+    mock.someMethod("foo").returns("someValue");
+
+    //both of these are the equivalent of
+    Mockatoo.when(mock.someMethod("foo")).thenReturn("someValue");
+    </code></pre>
+	*/
+	@:macro static public function returns(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
+	{
+		return StubbingMacro.returns(expr, value);
+	}
+
+
+	/**
+	Shorthand for stubbing a when().thenThrow
+	<pre class="code"><code class="haxe">
+    Mockatoo.throws(mock.someMethod("foo"), "some exception");
+
+    //or with using
+    mock.someMethod("foo").throws("some exception");
+
+    //both of these are the equivalent of
+    Mockatoo.when(mock.someMethod("foo")).thenThrow("some exception");
+    </code></pre>
+	*/
+	@:macro static public function throws(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
+	{
+		return StubbingMacro.throws(expr, value);
+	}
+
+	/**
+	Shorthand for stubbing a when().thenCall 
+	<pre class="code"><code class="haxe">
+    Mockatoo.calls(mock.someMethod("foo"), someFunction);
+
+    //or with using
+    mock.someMethod("foo").calls(someFunction);
+
+    //both of these are the equivalent of
+    Mockatoo.when(mock.someMethod("foo")).thenCall(someFunction);
+    </code></pre>
+	*/
+	@:macro static public function calls(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
+	{
+		return StubbingMacro.calls(expr, value);
+	}
+
+
+	/**
+	Shorthand for stubbing a when().thenCallRealMethod
+	<pre class="code"><code class="haxe">
+    Mockatoo.callsRealMethod(mock.someMethod("foo"));
+
+    //or with using
+    mock.someMethod("foo").callsRealMethod();
+
+    //both of these are the equivalent of
+    Mockatoo.when(mock.someMethod("foo")).thenCallRealMethod();
+    </code></pre>
+	*/
+	@:macro static public function callsRealMethod(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
+	{
+		return StubbingMacro.callsRealMethod(expr);
+	}
+
+	/**
+	Shorthand for stubbing a when().thenStub()
+	<pre class="code"><code class="haxe">
+    Mockatoo.stub(mock.someMethod("foo"));
+
+    //or with using
+    mock.someMethod("foo").stub();
+
+    //both of these are the equivalent of
+    Mockatoo.when(mock.someMethod("foo")).thenStub();
+    </code></pre>
+	*/
+	@:macro static public function stub(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
+	{
+		return StubbingMacro.stubs(expr);
+	}
+
 
 	/**
 	Resets a mock object. This removes any existing stubbings or verifications on
