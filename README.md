@@ -13,11 +13,11 @@ Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode
 
 ## Installation
 
-Install current official release from haxelib (1.2.1)
+Install current official release from haxelib (1.3.0)
 
 	haxelib install mockatoo
 
-Install the latest directly from github (1.3.0):
+Install the latest directly from github:
 
 	haxelib git mockatoo https://github.com/misprintt/mockatoo.git src
 
@@ -90,6 +90,45 @@ Mock properties that are read or write only (Since 1.2.0)
 
 
 Click here for detailed [documentation and examples](http://github.com/misprintt/mockatoo/wiki/Developer-Guide)
+
+
+## Release Notes
+
+### New in 1.3.0
+
+Mockatoo 1.3.0 provides a simplified, smarter, macro enhanced API when using Haxe's 
+'using' mixin (and is still fully backwards compatible with existing API).
+
+	using mockatoo.Mockatoo;
+	...
+	var mock = SomeClass.mock();
+	var mock = SomeInterface.mock();
+	var spy = SomeClass.spy(); // partial mock that calls real methods unless stubbed
+
+New macros have been added for simplified stubbing with 'using':
+
+	mock.someMethod().returns("foo");
+	mock.someMethod("foo").throws("some error");
+	mock.someMethod("bar").calls(function(args){return "bar";});
+	mock.someMethod().callsRealMethod();
+	mock.someMethod().stub(); // resets to default stub value (i.e. null)
+
+You can allso stub properties and getter setters (since 1.2.0)
+
+	mock.someProperty.returns("some value");
+
+Verifications now also support raw integer counts
+
+	mock.someMethod().verify(1); //converted to verify(times(1))
+
+Verfifying and stubbing mock fields are now validated at compile time to prevent
+runtime exceptions caused by out of date field references.
+
+	mock.someMethodThatDoesNotExist().verify(); //causes compilation error
+
+The syntax for wildcard Matchers has been updated to be compiler-safe when using 'using'
+
+	mock.someMethod(Mockatoo.anyString()).returns("foo");
 
 ## Credits
 
