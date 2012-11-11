@@ -10,6 +10,8 @@ import mockatoo.Mock;
 import test.TestClasses;
 import util.Asserts;
 
+using mockatoo.Mockatoo;
+
 typedef Field = 
 {
 	name:String,
@@ -437,6 +439,11 @@ class MockatooTest
 		Mockatoo.when(instance.property).thenReturn("foo");
 
 		Assert.areEqual("foo", instance.property);
+		
+		//using `using`
+		instance.property.returns("bar");
+		Assert.areEqual("bar", instance.property);
+
 	}
 
 	@Test
@@ -450,7 +457,14 @@ class MockatooTest
 			Assert.fail("Expected StubbingException");
 		}
 		catch(e:StubbingException){}
-		
+
+		try
+		{
+			instance.property.throws("bar");
+			Assert.fail("Expected StubbingException");
+		}
+		catch(e:StubbingException){}
+
 	}
 
 
