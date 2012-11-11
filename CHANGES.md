@@ -7,6 +7,8 @@ v1.3.0
 - compile time check that method being stubbed exists on mock object
 - support for raw integer verification count. e.g. - Mockatto.verify(mock.someMethod(), 2);
 - added shorthand API for stubbing with using mixins - e.g. mock.someMethod().returns("foo"), mock.someMethod.throws("error")
+- added static methods to mockatoo.Mockatoo to return untyped Matchers when using 'using'
+- removed Matcher.isNull as it is the same as just specifying 'null'
 
 v1.2.x
 

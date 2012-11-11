@@ -215,35 +215,173 @@ class Mockatoo
 		Console.assert(Std.is(mock, Mock), "Object is not an instance of mock");
 		return mock.mockProxy.reset();
 	}
+
+	// ------------------------------------------------------------------------- Matchers
+	
+	/**
+	Matches any String value
+	<pre class="code"><code class="haxe">
+	mock.someMethod(Mockatoo.anyString()).returns("foo");
+	mock.someMethod(Mockatoo.anyString()).verify();
+    </code></pre>
+	*/
+	static public function anyString():Dynamic
+	{
+		return Matcher.anyString;
+	}
+
+	/**
+	Matches any Int value
+	<pre class="code"><code class="haxe">
+	mock.someMethod(Mockatoo.anyInt()).returns("foo");
+	mock.someMethod(Mockatoo.anyInt()).verify();
+    </code></pre>
+	*/
+	static public function anyInt():Dynamic
+	{
+		return Matcher.anyInt;
+	}
+	
+	/**
+	Matches any Float value
+	<pre class="code"><code class="haxe">
+	mock.someMethod(Mockatoo.anyFloat()).returns("foo");
+	mock.someMethod(Mockatoo.anyFloat()).verify();
+    </code></pre>
+	*/
+	static public function anyFloat():Dynamic
+	{
+		return Matcher.anyFloat;
+	}
+	
+	/**
+	Matches any Bool value
+	<pre class="code"><code class="haxe">
+	mock.someMethod(Mockatoo.anyBool()).returns("foo");
+	mock.someMethod(Mockatoo.anyBool()).verify();
+    </code></pre>
+	*/
+	static public function anyBool():Dynamic
+	{
+		return Matcher.anyBool;
+	}
+	
+	/**
+	Matches any iterator or iterable including Array, List, etc
+	<pre class="code"><code class="haxe">
+	mock.someMethod(Mockatoo.anyIterator()).returns("foo");
+	mock.someMethod(Mockatoo.anyIterator()).verify();
+    </code></pre>
+	*/
+	static public function anyIterator():Dynamic
+	{
+		return cast Matcher.anyIterator;
+	}
+
+	/**
+	Matches any Dynamic or typedef data structure
+	<pre class="code"><code class="haxe">
+	mock.someMethod(Mockatoo.anyObject()).returns("foo");
+	mock.someMethod(Mockatoo.anyObject()).verify();
+    </code></pre>
+	*/
+	static public function anyObject():Dynamic
+	{
+		return cast Matcher.anyObject;
+	}
+
+	/**
+	Matches any Enum value
+	<pre class="code"><code class="haxe">
+	mock.someMethod(Mockatoo.anyEnum()).returns("foo");
+	mock.someMethod(Mockatoo.anyEnum()).verify();
+    </code></pre>
+	*/
+	static public function anyEnum():Dynamic
+	{
+		return cast Matcher.anyEnum;
+	}
+
+	/**
+	Matches any Enum value of a specific type
+	<pre class="code"><code class="haxe">
+	mock.someMethod(Mockatoo.enumOf(SomeEnum)).returns("foo");
+	mock.someMethod(Mockatoo.enumOf(SomeEnum)).verify();
+    </code></pre>
+	*/
+	static public function enumOf(e:Enum<Dynamic>):Dynamic
+	{
+		return cast Matcher.enumOf(e);
+	}	
+
+	/**
+	Matches any instance of a class or it's subclasses
+	<pre class="code"><code class="haxe">
+	mock.someMethod(Mockatoo.instanceOf(SomeClass)).returns("foo");
+	mock.someMethod(Mockatoo.instanceOf(SomeClass)).verify();
+    </code></pre>
+	*/
+	static public function instanceOf(c:Class<Dynamic>):Dynamic
+	{
+		return cast Matcher.instanceOf(c);
+	}
+
+	/**
+	Matches any non-null value
+	<pre class="code"><code class="haxe">
+	mock.someMethod(Mockatoo.isNotNull()).returns("foo");
+	mock.someMethod(Mockatoo.isNotNull()).verify();
+    </code></pre>
+	*/
+	static public function isNotNull():Dynamic
+	{
+		return cast Matcher.isNotNull;
+	}
+
+	/**
+	Wildcard to match any value (or null)
+	<pre class="code"><code class="haxe">
+	mock.someMethod(Mockatoo.any()).returns("foo");
+	mock.someMethod(Mockatoo.any()).verify();
+    </code></pre>
+	*/
+	static public function any():Dynamic
+	{
+		return cast Matcher.any;
+	}	
+	
+	/**
+	Extension point for matching against the result of a custom function
+	<pre class="code"><code class="haxe">
+	var f = function(value:Dynamic):Bool
+	{
+		return Std.string(value).indexOf("foo") == 1;
+	}
+	mock.someMethod(Mockatoo.customMatcher(f)).returns("foo");
+	mock.someMethod(Mockatoo.customMatcher(f)).verify();
+    </code></pre>
+	*/
+	static public function customMatcher(f:Dynamic -> Bool):Dynamic
+	{
+		return cast Matcher.customMatcher(f);
+	}
 }
 
+
 /**
- * Allows flexible verification or stubbing of arguments based on type
- *
- * <pre class="code"><code class="haxe">
- * 
- * //if using 'using', you may need to cast the matcher to avoid a false compilation error
- * mock.someMethod(cast anyString).verify();
- *
- * //if not using 'using'
- * verify(mock).someMethod(anyString);
- * 
- * mock.someMethod(cast anyInt).verify();
- * mock.someMethod(cast anyFloat).verify();
- * mock.someMethod(cast anyBool).verify();
- * mock.someMethod(cast anyIterator).verify(); //array, hash, iterable, iterator, etc
- * mock.someMethod(cast anyObject).verify(); //anonymous data structure
- * mock.someMethod(cast anyEnum).verify();
- * 
- * mock.someMethod(cast enumOf(SomEnum)).verify(); //an enum value of a specific enum type
- * mock.someMethod(cast instanceOf(SomeClass)).verify();
- * 
- * mock.someMethod(cast isNotNull).verify(); // any non null value
- * mock.someMethod(cast any).verify(); // wildcard for any value
- *  
- * mock.someMethod(cast customMatch(someFunction)).verify(); //custom function to verify value
- *
- * </code></pre>
+Allows flexible verification or stubbing of arguments based on type. 
+These values should not need to be called directly, as they are exposed as functions
+on mockatoo.Mockatoo
+
+<pre class="code"><code class="haxe">
+
+//if using 'using', you may need to cast the matcher to avoid a false compilation error
+mock.someMethod(cast anyString).verify();
+
+//if not using 'using'
+verify(mock).someMethod(anyString);
+</code></pre>
+
  */
 enum Matcher
 {
@@ -251,17 +389,15 @@ enum Matcher
 	anyInt;
 	anyFloat;
 	anyBool;
-	anyIterator;
-	anyObject;
+	anyIterator; //array, hash, iterable, iterator, etc
+	anyObject;  //anonymous data structure
 	anyEnum;
-	enumOf(e:Enum<Dynamic>);
+	enumOf(e:Enum<Dynamic>);  //an enum value of a specific enum type
 	instanceOf(c:Class<Dynamic>);
-	isNotNull;
-    isNull;
-	any;
-	customMatcher(f:Dynamic -> Bool);
+	isNotNull; // any non null value
+	any;  // wildcard for any value
+	customMatcher(f:Dynamic -> Bool); //custom function to verify value
 }
-
 
 
 /**

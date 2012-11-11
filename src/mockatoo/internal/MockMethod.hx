@@ -269,7 +269,6 @@ class MockMethod
 						case enumOf(en): return isEnumValueOf(actual, en);
 						case instanceOf(c): return Std.is(actual, c);
 						case isNotNull: return actual != null;
-						case isNull: return actual == null;
 						case any: return true;
 						case customMatcher(f): return f(actual);
 					}

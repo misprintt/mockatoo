@@ -59,7 +59,7 @@ class Main
 		mock.round(0).throws("exception");
 
 		//stub a custom response for any other values
-		mock.round(cast anyFloat).returns(99);
+		mock.round(Mockatoo.anyFloat()).returns(99);
 
 		var result = mock.round(1.1);
 		assertEqual(11, result);

@@ -51,8 +51,8 @@ Define a stub response when a method is invoked
 
 Custom argument matchers and wildcards
 
-	mock.foo(cast anyString).returns("hello");
-	mock.foo(cast anyString).verify();
+	mock.foo(Mockatoo.anyString()).returns("hello");
+	mock.foo(Mockatoo.anyString()).verify();
 
 Verify exact number of invocations 
 

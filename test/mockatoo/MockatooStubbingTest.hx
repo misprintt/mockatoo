@@ -104,14 +104,14 @@ class MockatooStubbingTest
 	{
 		var instance = StubSomeClass.mock();
 
-		Mockatoo.returns(instance.parse(anyString), "foo");
+		Mockatoo.returns(instance.parse(Mockatoo.anyString()), "foo");
 
 		var result = instance.parse("a");
 
 		Assert.areEqual("foo", result);
 
 		Mockatoo.reset(instance);
-		instance.parse(cast anyString).returns("bar");
+		instance.parse(Mockatoo.anyString()).returns("bar");
 
 		result = instance.parse("b");
 

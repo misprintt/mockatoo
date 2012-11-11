@@ -567,24 +567,6 @@ class MockMethodTest
 	}
 
 	@Test
-	public function should_verify_isNull():Void
-	{
-		instance = createInstance();
-
-		try
-		{
-			instance.getOutcomeFor([1]);
-			instance.verify(times(1), [isNull]);
-			Assert.fail("Expected VerificationException");
-		}
-		catch(e:VerificationException) {}
-
-		instance.getOutcomeFor([null]);
-		instance.verify(times(1), [isNull]);
-
-	}
-
-	@Test
 	public function should_verify_any():Void
 	{
 		instance = createInstance();
