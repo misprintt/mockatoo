@@ -1,6 +1,7 @@
 import mockatoo.Mockatoo;
 import mockatoo.exception.VerificationException;
-import mockatoo.exception.StubbingException;
+
+using mockatoo.Mockatoo;
 /**
 Simple example showing mocking for interfaces, classes and typedef alisas.
 Each mock overrides/implements the methods and returns stub values 
@@ -18,7 +19,7 @@ class Main
 	static function basicMocking()
 	{
 		//crate a mock;
-		var mock = Mockatoo.mock(math.Calculator);
+		var mock = math.Calculator.mock();
 
 		//invoke a method and trace stubbed result
 		var result = mock.round(1.1);
@@ -30,13 +31,13 @@ class Main
 		#end
 
 		//verify 'round' was called with arguments 1.1;
-		Mockatoo.verify(mock).round(1.1); //all good
+		mock.round(1.1).verify(); //all good
 
 
 		//attempt to verify with arguments that were not used
 		try
 		{
-			Mockatoo.verify(mock).round(3.14);
+			mock.round(3.14).verify();
 		}
 		catch(e:Dynamic)
 		{
@@ -49,16 +50,16 @@ class Main
 	static function stubbing()
 	{
 		//crate a mock;
-		var mock = Mockatoo.mock(math.Calculator);
+		var mock = math.Calculator.mock();
 
 		//stub some responses
-		Mockatoo.when(mock.round(1.1)).thenReturn(11);
+		mock.round(1.1).returns(11);
 
 		//stub an exception response
-		Mockatoo.when(mock.round(0)).thenThrow("exception");
+		mock.round(0).throws("exception");
 
 		//stub a custom response for any other values
-		Mockatoo.when(mock.round(anyFloat)).thenReturn(99);
+		mock.round(cast anyFloat).returns(99);
 
 		var result = mock.round(1.1);
 		assertEqual(11, result);
@@ -79,40 +80,37 @@ class Main
 	static function verifying()
 	{
 		//create a mock;
-		var mock = Mockatoo.mock(math.Calculator);
+		var mock = math.Calculator.mock();
 
-		Mockatoo.verify(mock, never).round(1.0);// never called
+		mock.round(1.0).verify(never);// never called
 
 		mock.round(1.0);
 		mock.round(1.2);
 		mock.round(1.2);
 
-		Mockatoo.verify(mock, times(1)).round(1.0);// matches first call
-		Mockatoo.verify(mock, atLeast(2)).round(1.2);// matches second and third call
-		Mockatoo.verify(mock, times(3)).round(anyFloat);// matches all calls
+		mock.round(1.0).verify(1);// matches first call
+		mock.round(1.2).verify(atLeast(2));// matches second and third call
+		mock.round(cast anyFloat).verify(3);// matches all calls
 	}
-
-
 
 	static function spying()
 	{
 		//crate a spy mock;
-		var mock = Mockatoo.spy(math.Calculator);
+		var mock = math.Calculator.spy();
 
 		//invoke the real method
 		var result = mock.round(1.1);
 		assertEqual(1, result);
 
 		//stub some responses
-		Mockatoo.when(mock.round(1.1)).thenReturn(11);
+		mock.round(1.1).returns(11);
 
 		//invoke again to return stub value
 		result = mock.round(1.1);
 		assertEqual(11, result);
 
-
 		//verify method was called twice
-		Mockatoo.verify(mock, times(2)).round(1.1);
+		mock.round(1.1).verify(2);
 	}
 
 	////

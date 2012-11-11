@@ -83,9 +83,9 @@ class MockMaker
 		type = Context.getType(e.toString());
 		actualType = type.reduce();
 
-		trace(id);
-		trace(type);
-		trace(actualType);
+		Console.log(id);
+		Console.log(type);
+		Console.log(actualType);
 
 		params = [];
 
@@ -130,7 +130,7 @@ class MockMaker
 			generatedExpr = ExprTools.instantiate(typeDefinitionId, [eIsSpy], typeParams, pos);
 		}
 
-		trace(Printer.print(generatedExpr));
+		Console.log(Printer.print(generatedExpr));
 		return generatedExpr;	
 		
 	}
@@ -146,7 +146,7 @@ class MockMaker
 
 		for(field in fields)
 		{
-			trace(field.name);
+			Console.log(field.name);
 			arg = {field:field.name, expr:null};
 
 			switch(field.type)
@@ -182,10 +182,10 @@ class MockMaker
 	*/
 	function createMockFromClass()
 	{
-		trace("expr: " + expr);
-		trace("id: " + id);
-		trace("type: " + type);
-		trace("actual: " + actualType);
+		Console.log("expr: " + expr);
+		Console.log("id: " + id);
+		Console.log("type: " + type);
+		Console.log("actual: " + actualType);
 
 		switch(actualType)
 		{
@@ -201,7 +201,7 @@ class MockMaker
 		if(mockedClassHash.exists(id))
 		{
 			typeDefinitionId = mockedClassHash.get(id);
-			trace("existing: " + id + ", " + typeDefinitionId);
+			Console.log("existing: " + id + ", " + typeDefinitionId);
 			return;
 		}
 
@@ -209,13 +209,13 @@ class MockMaker
 
 		if(isInterface) isSpy = false;
 
-		trace("params: " + params);
-		trace("isSpy " +  isSpy);
-		trace("class " +  classType.name);
-		trace("   interface: " + isInterface);
-		trace("   params: " + classType.params);
-		trace("   pos: " + classType.pos);
-		trace("   module: " + classType.module);
+		Console.log("params: " + params);
+		Console.log("isSpy " +  isSpy);
+		Console.log("class " +  classType.name);
+		Console.log("   interface: " + isInterface);
+		Console.log("   params: " + classType.params);
+		Console.log("   pos: " + classType.pos);
+		Console.log("   module: " + classType.module);
 
 		typeDefinition = createTypeDefinition();
 		typeDefinitionId = (typeDefinition.pack.length > 0 ? typeDefinition.pack.join(".")  + "." : "") + typeDefinition.name;
@@ -260,7 +260,7 @@ class MockMaker
 			paramTypes.push({name:param.name, constraints:[]});
 		}
 
-		//trace(paramTypes);
+		//Console.log(paramTypes);
 
 		var a:Array<Type> = [];
 		for(p in classType.params)
@@ -269,13 +269,13 @@ class MockMaker
 		}
 		var typeParams = untyped TypeTools.paramsToComplex(a);
 
-		trace(typeParams);
+		Console.log(typeParams);
 
 		var extendId = classType.module + "." + classType.name;
 
 		extendTypePath = TypeTools.asTypePath(extendId, typeParams);
 
-		trace(extendTypePath);
+		Console.log(extendTypePath);
 
 
 		var kind = createKind();
@@ -385,7 +385,7 @@ class MockMaker
 
 		preview += "\n}";
 
-		trace(preview);
+		Console.log(preview);
 	}
 
 	function updateMeta(source:Metadata):Metadata
@@ -394,7 +394,7 @@ class MockMaker
 
 		for(meta in source)
 		{
-			trace(meta.name + ":" + Printer.printExprList("", meta.params));
+			Console.log(meta.name + ":" + Printer.printExprList("", meta.params));
 
 			switch(meta.name)
 			{
@@ -407,8 +407,6 @@ class MockMaker
 			}
 		}
 		
-		//metadata.push({pos:Context.currentPos(), name:":extern", params:[]});
-
 		return metadata;
 	}
 
@@ -428,7 +426,7 @@ class MockMaker
 		}
 		else
 		{
-			trace(extendTypePath);
+			Console.log(extendTypePath);
 			extension = extendTypePath;
 			interfaces = [mockInterface];
 		}
@@ -589,7 +587,7 @@ class MockMaker
 
 			for(arg in f.args)
 			{
-				trace(arg);
+				Console.log(arg);
 				var argExpr = arg.type.defaultValue();
 				args.push(argExpr);
 			}
@@ -651,7 +649,7 @@ class MockMaker
 		{
 			f.ret = normaliseReturnType(f.ret);
 
-			trace(field.name + ":" + Std.string(f.ret));
+			Console.log(field.name + ":" + Std.string(f.ret));
 		
 			var eDefaultReturnValue = f.ret.defaultValue(); //default return type (usually 'null')
 
@@ -692,11 +690,6 @@ class MockMaker
 			}
 		}
 
-		// var eFieldName = EConst(CString(field.name)).at();
-		// var eTraceArgs = [eFieldName, eArgs,eMockOutcome].toArray();
-		// var eTrace = "haxe.Log.trace".resolve().call([eTraceArgs]);
-		// f.expr = createBlock([eTrace,eSwitch]);
-		
 		f.expr = createBlock([eSwitch]);
 
 		field.kind = FFun(f);
@@ -708,10 +701,9 @@ class MockMaker
 		//validate optional args
 		for(arg in f.args)
 		{
-			//{ name => bar, type => TPath({ name => StdTypes, pack => [], params => [], sub => Bool }), opt => true, value => null }
 			if(!arg.opt) continue;
 
-			trace(arg.name + ":" + arg.type.toString());
+			Console.log(arg.name + ":" + arg.type.toString());
 		}
 	}
 
@@ -765,7 +757,7 @@ class MockMaker
 		var args:Array<Expr> = [];
 		for(arg in f.args)
 		{
-			trace(arg);
+			Console.log(arg);
 
 			var value:String = arg.opt ? "?" : "";
 

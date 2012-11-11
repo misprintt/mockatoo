@@ -22,8 +22,8 @@ class VerifyMacro
 	public static function create(expr:Expr, mode:Expr):Expr
 	{
 		var str = expr.print();
-		// trace(str);
-		// trace(expr);
+		// Console.log(str);
+		// Console.log(expr);
 
 		mode = validateModeExpr(mode);
 
@@ -51,7 +51,7 @@ class VerifyMacro
 			case ECall(e, params):
 
 				var actualExpr = convertCallExprToVerification(e.toString(), params, mode);
-				//trace(actualExpr.toString());
+				//Console.log(actualExpr.toString());
 				return actualExpr;
 
 			default: throw "Invalid verify expression [" + expr.print() + "]";

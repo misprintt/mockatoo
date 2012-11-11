@@ -82,7 +82,6 @@ class MockatooStubbingTest
 
 	// ------------------------------------------------------------------------- advanced stubbing macros
 
-
 	@Test
 	public function should_generate_returns()
 	{
@@ -96,6 +95,25 @@ class MockatooStubbingTest
 		Assert.areEqual("foo", result);
 
 		result = instance.toString();
+
+		Assert.areEqual("bar", result);
+	}
+
+	@Test
+	public function should_generate_return_using_matcher()
+	{
+		var instance = StubSomeClass.mock();
+
+		Mockatoo.returns(instance.parse(anyString), "foo");
+
+		var result = instance.parse("a");
+
+		Assert.areEqual("foo", result);
+
+		Mockatoo.reset(instance);
+		instance.parse(cast anyString).returns("bar");
+
+		result = instance.parse("b");
 
 		Assert.areEqual("bar", result);
 	}
@@ -199,6 +217,11 @@ class StubSomeClass
 	public function toString():String
 	{
 		return "";
+	}
+
+	public function parse(value:String):String
+	{
+		return value;
 	}
 }
 

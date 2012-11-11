@@ -42,5 +42,3 @@ class MockatooException
 	}
 }
 #end
-
-// [{ mockatoo.internal.MockMethod.verify(191), MockMethod.hx, lineNumber => 191, methodName => verify }]

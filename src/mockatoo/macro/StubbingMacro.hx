@@ -20,8 +20,8 @@ class StubbingMacro
 	public static function createWhen(expr:Expr):Expr
 	{
 		var str = expr.print();
-		trace(str);
-		trace(expr);
+		Console.log(str);
+		Console.log(expr);
 
 		//converts instance.one(1)
 		//into instance.mockProxy.when("one", [1])
@@ -49,7 +49,7 @@ class StubbingMacro
 				var compilerCheck = EIf(EConst(CIdent("false")).at(), eField, null).at();
 
 				var actualExpr = EBlock([compilerCheck, whenExpr]).at();
-				// trace(actualExpr.toString());
+				// Console.log(actualExpr.toString());
 				return actualExpr;
 
 			case EField(e, field):
@@ -67,7 +67,7 @@ class StubbingMacro
 				var compilerCheck = EIf(EConst(CIdent("false")).at(), expr, null).at();
 
 				var actualExpr = EBlock([compilerCheck, whenExpr]).at();
-				// trace(actualExpr.toString());
+				// Console.log(actualExpr.toString());
 				return actualExpr;
 
 			default: throw "Invalid expression [" + expr.print() + "]";
@@ -116,7 +116,10 @@ class StubbingMacro
 		actualExpr = actualExpr.field(thenMethod).call(params);
 		exprs.push(actualExpr);
 
-		return EBlock(exprs).at();
+		var ret = EBlock(exprs).at();
+		Console.log(Printer.print(ret));
+
+		return ret;
 	}
 }
 

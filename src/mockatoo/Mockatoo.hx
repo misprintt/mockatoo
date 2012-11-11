@@ -205,7 +205,6 @@ class Mockatoo
 		return StubbingMacro.stubs(expr);
 	}
 
-
 	/**
 	Resets a mock object. This removes any existing stubbings or verifications on
 	the methods of the instance
@@ -222,23 +221,29 @@ class Mockatoo
  * Allows flexible verification or stubbing of arguments based on type
  *
  * <pre class="code"><code class="haxe">
+ * 
+ * //if using 'using', you may need to cast the matcher to avoid a false compilation error
+ * mock.someMethod(cast anyString).verify();
+ *
+ * //if not using 'using'
  * verify(mock).someMethod(anyString);
- * verify(mock).someMethod(anyInt);
- * verify(mock).someMethod(anyFloat);
- * verify(mock).someMethod(anyBool);
- * verify(mock).someMethod(anyIterator); //array, hash, iterable, iterator, etc
- * verify(mock).someMethod(anyObject); //anonymous data structure
- * verify(mock).someMethod(anyEnum);
+ * 
+ * mock.someMethod(cast anyInt).verify();
+ * mock.someMethod(cast anyFloat).verify();
+ * mock.someMethod(cast anyBool).verify();
+ * mock.someMethod(cast anyIterator).verify(); //array, hash, iterable, iterator, etc
+ * mock.someMethod(cast anyObject).verify(); //anonymous data structure
+ * mock.someMethod(cast anyEnum).verify();
+ * 
+ * mock.someMethod(cast enumOf(SomEnum)).verify(); //an enum value of a specific enum type
+ * mock.someMethod(cast instanceOf(SomeClass)).verify();
+ * 
+ * mock.someMethod(cast isNotNull).verify(); // any non null value
+ * mock.someMethod(cast any).verify(); // wildcard for any value
+ *  
+ * mock.someMethod(cast customMatch(someFunction)).verify(); //custom function to verify value
  *
- * verify(mock).someMethod(enumOf(SomEnum)); //an enum value of a specific enum type
- * verify(mock).someMethod(instanceOf(SomeClass));
- *
- * verify(mock).someMethod(isNull);
- * verify(mock).someMethod(isNotNull); // any non null value
- * verify(mock).someMethod(any); // wildcard for any value
- *
- * verify(mock).someMethod(customMatch(someFunction)); //custom function to verify value
-
+ * </code></pre>
  */
 enum Matcher
 {
@@ -264,14 +269,17 @@ enum Matcher
  * of times / never. E.g:
  * 
  * <pre class="code"><code class="haxe">
+ * 
+ * // if using 'using'
+ * mock.someMethod(&quot;was called five times&quot;).verify(times(5));
+ * 
+ * // if not using 'using'
  * verify(mock, times(5)).someMethod(&quot;was called five times&quot;);
  * 
+ * // other examples
  * verify(mock, never.someMethod(&quot;was never called&quot;);
- * 
  * verify(mock, atLeastOnce.someMethod(&quot;was called at least once&quot;);
- * 
  * verify(mock, atLeast(2)).someMethod(&quot;was called at least twice&quot;);
- * 
  * verify(mock, atMost(3)).someMethod(&quot;was called at most 3 times&quot;);
  * 
  * </code></pre>

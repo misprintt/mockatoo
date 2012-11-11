@@ -255,8 +255,6 @@ class MockProxy
 	{
 		if(props == null) return;
 
-		//trace(props);
-
 		for(prop in props)
 		{
 			properties.set(prop.name, prop);
@@ -269,8 +267,6 @@ class MockProxy
 
 		for(fieldName in fieldNames)
 		{	
-			//trace(fieldName);
-
 			#if flash
 				if(Reflect.hasField(target, fieldName))
 				{
@@ -286,15 +282,12 @@ class MockProxy
 			if(fieldMeta != null && Reflect.hasField(fieldMeta, "mockatoo"))
 			{
 				var mockMeta = Reflect.field(fieldMeta, "mockatoo");
-				//trace("   " + fieldName + ": " + Std.string(mockMeta));
 
 				var args:Array<String> = cast mockMeta[0];
 				var ret:String = cast(mockMeta.length > 1 ? mockMeta[1] : null);
 				var proxy = new MockMethod(targetClassName, fieldName, args, ret);
 
 				methods.set(fieldName, proxy);
-
-				//Reflect.setField(this, fieldName, proxy.verify);
 			}
 		}
 	}

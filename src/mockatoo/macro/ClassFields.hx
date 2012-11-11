@@ -37,7 +37,7 @@ class ClassFields
 		if(paramTypes == null) paramTypes = [];
 		if(fieldHash == null) fieldHash = new Hash();
 
-		trace(c.name + ":" + paramTypes);
+		Console.log(c.name + ":" + paramTypes);
 
 		var paramMap = getClassTypeDeclarationMap(c, paramTypes);
 		
@@ -53,7 +53,7 @@ class ClassFields
 		{
 			var superParams = mapTypes( type.params, paramMap);
 
-			trace("     superParams: " + superParams);
+			Console.log("     superParams: " + superParams);
 			var superFields = getClassFields(type.t.get(), includeStatics, superParams, fieldHash);
 
 			for(field in superFields)
@@ -294,7 +294,7 @@ class ClassFields
 				name : arg.name
 			}
 
-			trace(arg.name + ":" + arg + "\n   " + value);
+			Console.log(arg.name + ":" + arg + "\n   " + value);
 			converted.push(value);
 		}
 

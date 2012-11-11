@@ -171,7 +171,7 @@ class MockMethod
 		var matches:Int = matchingInvocations.length;
 		
 		var range:Range = null;
-		//trace(fieldName + ":" + Std.string(mode) + ": " + Std.string(args) + ", " + count);
+
 		switch(mode)
 		{
 			case times(value):

@@ -25,6 +25,8 @@ class InitMacro
 
 		Compiler.define("no-inline");
 
+		Console.removePrinter(Console.defaultPrinter);
+
 		#if MOCKATOO_LOG
 		
 		createTempDirectory();
@@ -32,8 +34,9 @@ class InitMacro
 		Console.addPrinter(new FilePrinter(TEMP_DIR + "mockatoo.log"));
 
 		Console.start();
-		Console.removePrinter(Console.defaultPrinter);
 
+		#else
+		Console.stop();
 		#end
 	}
 
