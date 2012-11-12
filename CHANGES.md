@@ -1,3 +1,6 @@
+v1.3.1
+- Issue #12 : added support for typed param contraints (class Test<T:(Foo,Bar)>{})
+
 v1.3.0
 
 - Added verification of full expression. eg - Mockatoo.verify(mock.someMethod("foo"));

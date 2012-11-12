@@ -356,7 +356,21 @@ class MockatooTest
 	}
 
 
-	
+	@Test
+	public function should_mock_class_with_typed_constraints()
+	{
+		var mock = Mockatoo.mock(ClassWithTypedConstraint, [Array]);
+		mock.test();
+		Assert.isTrue(true);
+	}
+
+	@Test
+	public function should_mock_class_with_multiple_typed_constraints()
+	{
+		var mock = Mockatoo.mock(ClassWithMultipleTypedConstraints, [TypedConstraintFooBar]);
+		mock.test();
+		Assert.isTrue(true);
+	}
 
 	// ------------------------------------------------------------------------- typedef structures
 	

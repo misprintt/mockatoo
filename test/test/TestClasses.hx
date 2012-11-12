@@ -271,6 +271,69 @@ class ClassWithOptionalArg
 	}
 }
 
+
+class ClassWithTypedConstraint<T:Array<Dynamic>>
+{
+	public function new()
+	{
+
+	}
+	public function test():String
+	{
+		return "";
+	}
+}
+
+class ClassWithMultipleTypedConstraints<T:(TypedConstraintFoo,TypedConstraintBar)>
+{
+	public function new()
+	{
+
+	}
+
+	public function test():String
+	{
+		return "";
+	}
+}
+
+class TypedConstraintFoo
+{
+	public function new()
+	{
+		
+	}
+
+	public function foo()
+	{
+
+	}
+}
+
+interface TypedConstraintBar
+{
+	function bar():Void;
+}
+
+class TypedConstraintFooBar extends TypedConstraintFoo, implements TypedConstraintBar
+{
+	public function new()
+	{
+		super();
+	}
+
+	public function fooBar()
+	{
+		
+	}
+
+	public function bar()
+	{
+		
+	}
+}
+
+
 // ----------------------------------------------------------------------------- Properties
 
 class ClassWithProperties

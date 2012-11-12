@@ -208,7 +208,6 @@ class MockMaker
 		isInterface = classType.isInterface;
 
 		if(isInterface) isSpy = false;
-
 		Console.log("params: " + params);
 		Console.log("isSpy " +  isSpy);
 		Console.log("class " +  classType.name);
@@ -253,14 +252,16 @@ class MockMaker
 	function createTypeDefinition():TypeDefinition
 	{
 		propertyMetas = [];
-
 		var paramTypes:Array<TypeParamDecl> = [];
-		for(param in classType.params)
+		
+		for(i in 0...classType.params.length)
 		{
-			paramTypes.push({name:param.name, constraints:[]});
+			var param = classType.params[i];
+			var constraints = params[i] != null ? [params[i].toComplex(true)] : [];//issue #12 - support typed constraints
+			paramTypes.push({name:param.name, constraints:constraints});
 		}
 
-		//Console.log(paramTypes);
+		Console.log(paramTypes);
 
 		var a:Array<Type> = [];
 		for(p in classType.params)
