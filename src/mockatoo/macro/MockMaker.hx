@@ -186,7 +186,7 @@ class MockMaker
 		Console.log("id: " + id);
 		Console.log("type: " + type);
 		Console.log("actual: " + actualType);
-
+		
 		switch(actualType)
 		{
 			case TInst(t, typeParams):
@@ -253,15 +253,32 @@ class MockMaker
 	{
 		propertyMetas = [];
 		var paramTypes:Array<TypeParamDecl> = [];
+
+		Console.log("classType.params:" + classType.params);
 		
 		for(i in 0...classType.params.length)
 		{
 			var param = classType.params[i];
-			var constraints = params[i] != null ? [params[i].toComplex(true)] : [];//issue #12 - support typed constraints
+
+			var constraints:Array<ComplexType> = [];
+			switch(param.t)
+			{
+				case TInst(t, ps):
+				{
+					if(t.get().kind == ClassKind.KTypeParameter && t.get().interfaces.length > 0)
+					{
+						Console.log(t.get());
+						if(params[i] != null)
+							constraints.push(params[i].toComplex(true));//issue #12 - support typed constraints
+					}
+				}
+				default: null;
+			}
+
 			paramTypes.push({name:param.name, constraints:constraints});
 		}
 
-		Console.log(paramTypes);
+		Console.log("paramTypes:" + paramTypes);
 
 		var a:Array<Type> = [];
 		for(p in classType.params)

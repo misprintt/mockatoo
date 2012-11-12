@@ -334,6 +334,25 @@ class TypedConstraintFooBar extends TypedConstraintFoo, implements TypedConstrai
 }
 
 
+
+class BaseTypedParam<T>
+{
+	public function new()
+	{
+
+	}
+}
+
+class ConcreteTypedParam<T> extends BaseTypedParam<T>
+{
+	public function new()
+	{
+		super();
+	}
+}
+
+typedef AnyConcreteTypedParam = ConcreteTypedParam<Dynamic>;
+
 // ----------------------------------------------------------------------------- Properties
 
 class ClassWithProperties
