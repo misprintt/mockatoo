@@ -359,7 +359,7 @@ class MockatooTest
 	@Test
 	public function should_mock_class_with_typed_constraints()
 	{
-		var mock = Mockatoo.mock(ClassWithTypedConstraint, [Array]);
+		var mock = ClassWithTypedConstraint.mock([Array]);
 		mock.test();
 		Assert.isTrue(true);
 	}
@@ -367,7 +367,7 @@ class MockatooTest
 	@Test
 	public function should_mock_class_with_multiple_typed_constraints()
 	{
-		var mock = Mockatoo.mock(ClassWithMultipleTypedConstraints, [TypedConstraintFooBar]);
+		var mock = ClassWithMultipleTypedConstraints.mock([TypedConstraintFooBar]);
 		mock.test();
 		Assert.isTrue(true);
 	}
