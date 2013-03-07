@@ -22,7 +22,7 @@ private typedef StringMap<T> = Hash<T>
 typedef TypeParamDecl = {
 	var name : String;
 	@:optional var constraints : Array<ComplexType>;
-	//@:optional var params : Array<TypeParamDecl>;
+	// @:optional var params : Array<TypeParamDecl>;
 }
 #end
 
@@ -115,7 +115,7 @@ class MockMaker
 		{
 			case TAnonymous(a):
 				createMockFromStruct(a.get().fields);
-			case TInst(t, params):
+			case TInst(_,_):
 				id = actualType.getID().split(".").pop();
 				createMockFromClass();
 			default:
@@ -164,11 +164,11 @@ class MockMaker
 		
 			switch(field.type)
 			{
-				case TInst(t, tparams):
+				case TInst(_,_):
 					arg.expr = toComplexType(field.type).defaultValue();
-				case TType(t, tparams):
+				case TType(_,_):
 					arg.expr = toComplexType(field.type).defaultValue();
-				case TEnum(t, tparams):
+				case TEnum(_,_):
 					arg.expr = toComplexType(field.type).defaultValue();					
 				case TFun(functionArgs, ret):
 					var e = toComplexType(field.type).defaultValue();
@@ -275,7 +275,7 @@ class MockMaker
 			var constraints:Array<ComplexType> = [];
 			switch(param.t)
 			{
-				case TInst(t, ps):
+				case TInst(t,_):
 				{
 					switch(t.get().kind)
 					{
@@ -297,7 +297,12 @@ class MockMaker
 				default: null;
 			}
 
+			#if haxe3
+			paramTypes.push({name:param.name, constraints:constraints, params:[]});
+			#else
 			paramTypes.push({name:param.name, constraints:constraints});
+			#end
+			
 		}
 
 		var extendId = classType.module + "." + classType.name;
@@ -587,9 +592,9 @@ class MockMaker
 						fields.push(field);
 					}
 						
-				case FVar(t, e):
+				case FVar(_,_):
 					if(isInterface) fields.push(field);
-				case FProp(get, set, t, e):
+				case FProp(get, set, _,_):
 					if(isInterface) fields.push(field);
 
 					var getMethod = toGetterSetter(get);
@@ -627,7 +632,7 @@ class MockMaker
 
 		switch(mockInterface)
 		{
-			case TInst(t, typeParams):
+			case TInst(t,_):
 				var mockFields = ClassFields.getClassFields(t.get(), false);
 
 				for(field in mockFields)

@@ -327,7 +327,7 @@ class ClassFields
 	{
 		switch(arg.t)
 		{
-			case TType(t, params):
+			case TType(t,_):
 				if(t.get().name == "Null")
 					return true;
 			default: null;
@@ -346,9 +346,9 @@ class ClassFields
 			case AccCall(m): m;
 			case AccResolve: throw "not implemented for VarAccess [" + access + "]";
 			#if haxe3
-			case AccRequire(r,msg): throw "not implemented VarAccess [" + access + "]";
+			case AccRequire(_,_): throw "not implemented VarAccess [" + access + "]";
 			#else
-			case AccRequire(r): throw "not implemented VarAccess [" + access + "]";
+			case AccRequire(_): throw "not implemented VarAccess [" + access + "]";
 			#end
 		}		
 	}
@@ -366,16 +366,16 @@ class ClassFields
 
 		switch(classField.kind)
 		{
-			case FMethod(k):
+			case FMethod(_):
 			{
 				switch(expr.expr)
 				{
-					case EFunction(name, f):
+					case EFunction(_, f):
 						return f.expr;
 					default: throw "not implemented for ExprDef [" + expr.expr + "]";//return null;
 				}
 			}
-			case FVar(read, write):
+			case FVar(_,_):
 			{
 				return expr;
 			}

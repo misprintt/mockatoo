@@ -737,10 +737,7 @@ class MockatooTest
 		{
 			try
 			{
-				if(field.args!= null && field.args.length > 0)
-					Reflect.callMethod(mock, Reflect.field(mock, field.name), field.args);
-				else
-					Reflect.callMethod(mock, Reflect.field(mock, field.name), null);
+				Reflect.callMethod(mock, Reflect.field(mock, field.name), field.args);
 			}
 			catch(e:String)
 			{
@@ -754,16 +751,15 @@ class MockatooTest
 
 	function addField(fields:Array<Field>, name:String, ?args:Array<Dynamic>)
 	{
-		#if haxe3
-		fields.push({name:name, args:toArgs(args)});
-		#else
-		if(args == null) args = [];
+		if(args == null)
+			args = [];
+
 		fields.push({name:name, args:args});
-		#end
-		
-		
 	}
 
+	/**
+	utility function for haxe3 to create dynamic arrays of arguments for a function
+	*/
 	function toArgs(?arg1:Dynamic, ?arg2:Dynamic, ?arg3:Dynamic):Array<Dynamic>
 	{
 		var args:Array<Dynamic> = new Array<Dynamic>();

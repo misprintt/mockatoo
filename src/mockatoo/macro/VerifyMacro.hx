@@ -43,7 +43,7 @@ class VerifyMacro
 				var exprs = createVerifyExpressions(expr, mode);
 				return EBlock(exprs).at();
 
-			case EField(e, field):
+			case EField(_,_):
 
 				var exprs = createVerifyExpressions(expr, mode);
 				return EBlock(exprs).at();
@@ -99,7 +99,7 @@ class VerifyMacro
 			case EConst(c):
 				switch(c)
 				{
-					case CInt(v): return "VerificationMode.times".resolve().call([expr]);
+					case CInt(_): return "VerificationMode.times".resolve().call([expr]);
 					default: return expr;
 				}
 			default: return expr;
