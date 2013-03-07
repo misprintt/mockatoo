@@ -12,6 +12,7 @@ import util.Asserts;
 
 using mockatoo.Mockatoo;
 
+typedef AnyArray = Array<Dynamic>;
 typedef Field = 
 {
 	name:String,
@@ -74,23 +75,29 @@ class MockatooTest
 	public function should_mock_class_with_fields():Void
 	{
 		var fields:Array<Field> = [];
+		var args:Array<Dynamic> = [];
 
-		addField(fields, "toBool");
-		addField(fields, "toInt");
-		addField(fields, "toFloat");
-		addField(fields, "toString");
-		addField(fields, "toDynamic");
-		addField(fields, "toVoid");
+		addField(fields, "toBool", args);
+		addField(fields, "toInt", args);
+		addField(fields, "toFloat", args);
+		addField(fields, "toString", args);
+		addField(fields, "toDynamic", args);
+		addField(fields, "toVoid", args);
 
-		addField(fields, "toBoolWithArgs", [true]);
-		addField(fields, "toIntWithArgs", [1]);
-		addField(fields, "toFloatWithArgs", [1.0]);
-		addField(fields, "toStringWithArgs", ["string"]);
-		addField(fields, "toDynamicWithArgs", [{name:"foo"}]);
-		addField(fields, "toVoidWithArgs", [1]);
+		addField(fields, "toBoolWithArgs", toArgs(true));
 
-		addField(fields, "withMultipleArgs", [1, true]);
-		addField(fields, "withOptionalArgs", [1.0]);
+		addField(fields, "toIntWithArgs", toArgs(1));
+
+		addField(fields, "toFloatWithArgs", toArgs(1.0));
+		
+		addField(fields, "toStringWithArgs", toArgs("string"));
+
+		addField(fields, "toDynamicWithArgs", toArgs({name:"foo"}));
+
+		addField(fields, "toVoidWithArgs", toArgs(1));
+
+		addField(fields, "withMultipleArgs", toArgs(1,true));
+		addField(fields, "withOptionalArgs", toArgs(1.0));
 
 		var mock = Mockatoo.mock(ClassWithFields);
 		assertMock(mock, ClassWithFields, fields);
@@ -101,12 +108,12 @@ class MockatooTest
 	{
 		var fields:Array<Field> = [];
 
-		addField(fields, "toBool");
-		addField(fields, "toInt");
-		addField(fields, "toFloat");
-		addField(fields, "toString");
-		addField(fields, "toDynamic");
-		addField(fields, "toVoid");
+		addField(fields, "toBool", null);
+		addField(fields, "toInt", null);
+		addField(fields, "toFloat", null);
+		addField(fields, "toString", null);
+		addField(fields, "toDynamic", null);
+		addField(fields, "toVoid", null);
 
 		addField(fields, "toBoolWithArgs", [true]);
 		addField(fields, "toIntWithArgs", [1]);
@@ -269,7 +276,11 @@ class MockatooTest
 
 	// ------------------------------------------------------------------------- edge cases
 
-	@Test #if !haxe_211 @Ignore("Cannot override inline methods") #end
+	#if haxe3
+	@Test
+	#else
+	@Test @Ignore("Can only override inline methods in Haxe3")
+	#end
 	public function should_mock_class_with_inlined_methods():Void
 	{
 		var fields:Array<Field> = [];
@@ -301,7 +312,7 @@ class MockatooTest
 
 	#end
 
-	#if haxe_211
+	#if haxe3
 	@Test
 	public function should_mock_class_with_private_type_references():Void
 	{
@@ -312,14 +323,14 @@ class MockatooTest
 		assertMock(mock, ClassWithPrivateReference, fields);
 	}
 	#else
-	@Test  @Ignore("Requires tink_macros fork https://github.com/back2dos/tinkerbell/pull/37")
+	@Test  @Ignore("Requires Haxe 3 and corresponding tink_macros")
 	public function should_mock_class_with_private_type_references():Void
 	{
 		
 	}
 	#end
 
-	#if haxe_211
+	#if haxe3
 	@Test
 	public function should_mock_http():Void
 	{
@@ -330,8 +341,7 @@ class MockatooTest
 		assertMock(mock, haxe.Http, fields);
 	}
 	#else
-	@Test
-	@Ignore("Requires tink_macros fork https://github.com/back2dos/tinkerbell/pull/37")
+	@Test  @Ignore("Requires Haxe 3 and corresponding tink_macros")
 	public function should_mock_http():Void
 	{
 		
@@ -355,11 +365,10 @@ class MockatooTest
 		Assert.isTrue(true);
 	}
 
-
 	@Test
 	public function should_mock_class_with_typed_constraints()
 	{
-		var mock = ClassWithTypedConstraint.mock([Array]);
+		var mock = Mockatoo.mock(ClassWithTypedConstraint, [TypedConstraintFoo]);
 		mock.test();
 		Assert.isTrue(true);
 	}
@@ -496,7 +505,7 @@ class MockatooTest
 	@Test
 	public function should_return_instanceOf_matcher()
 	{
-		Asserts.assertEnumTypeEq(Matcher.instanceOf(Hash), cast Mockatoo.instanceOf(Hash));
+		Asserts.assertEnumTypeEq(Matcher.instanceOf(Map), cast Mockatoo.instanceOf(Map));
 	}
 	
 	@Test
@@ -733,7 +742,16 @@ class MockatooTest
 
 	function addField(fields:Array<Field>, name:String, ?args:Array<Dynamic>)
 	{
-		if(args == null) args = [];
-		fields.push({name:name, args:args});
+		fields.push({name:name, args:toArgs(args)});
 	}
+
+	function toArgs(?arg1:Dynamic, ?arg2:Dynamic, ?arg3:Dynamic):Array<Dynamic>
+	{
+		var args:Array<Dynamic> = new Array<Dynamic>();
+		if(arg1 != null) args.push(arg1);
+		if(arg2 != null) args.push(arg2);
+		if(arg3 != null) args.push(arg3);
+		return args;
+	}
+
 }

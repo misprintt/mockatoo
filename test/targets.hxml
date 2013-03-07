@@ -24,6 +24,9 @@
 -cp test
 -js bin/test/js_test.js
 -D MOCKATOO_LOG
+-D no-unused-var-warnings
+# -v
+# -debug
 --no-inline
 
 --next

@@ -1,15 +1,26 @@
+
 ## Overview
 
 Mockatoo is a Haxe library for mocks creation, verification and stubbing.
 
 Uses Haxe macros to generated mock implementations of classes and interfaces for testing.
-Tested against Haxe 2.10 across most platforms (AVM2, JavaScript, Neko, C++, etc)
+
 
 Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode.com/hg/latest/org/mockito/Mockito.html>
 
 
 > Disambiguation: The **Mockatoo** belongs to the bird family *Cacatuidae* and look suspiciously like a taxidermied [Cockatoo](http://en.wikipedia.org/wiki/Cockatoo) with fake plumage. They are mostly found nesting within testing habitats and like  to repeat what you say (like a parrot). A Mockatoo may turn violent if mistaken for a *MockingBird* :)
 
+
+### Haxe 3 RC
+ 
+Known issues
+
+- Classes with typed constraints cannot be mocked 
+
+### Haxe 2
+
+Tested against Haxe 3 across most platforms (AVM2, JavaScript, Neko, C++, etc)
 
 ## Installation
 

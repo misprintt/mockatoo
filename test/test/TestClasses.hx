@@ -158,15 +158,14 @@ interface TypedInterface<T>
 	function toTypeWithArg(value:T):T;
 }
 
-interface StringTypedInterface implements TypedInterface<String>
-{
+#if haxe3
+interface StringTypedInterface extends TypedInterface<String> {}
+interface ImplementsTypedInterface<TFoo, TBar> extends TypedInterface<TBar> {}
+#else
+interface StringTypedInterface implements TypedInterface<String> {}
+interface ImplementsTypedInterface<TFoo, TBar> implements TypedInterface<TBar> {}
+#end
 
-}
-
-interface ImplementsTypedInterface<TFoo, TBar> implements TypedInterface<TBar>
-{
-
-}
 
 class TypedClass<T>
 {
@@ -272,7 +271,7 @@ class ClassWithOptionalArg
 }
 
 
-class ClassWithTypedConstraint<T:Array<Dynamic>>
+class ClassWithTypedConstraint<T:TypedConstraintFoo>
 {
 	public function new()
 	{
@@ -315,7 +314,11 @@ interface TypedConstraintBar
 	function bar():Void;
 }
 
+#if haxe3
+class TypedConstraintFooBar extends TypedConstraintFoo implements TypedConstraintBar
+#else
 class TypedConstraintFooBar extends TypedConstraintFoo, implements TypedConstraintBar
+#end
 {
 	public function new()
 	{
@@ -373,7 +376,7 @@ class ClassWithProperties
 		return value;
 	}
 
-	public var getterSetter(get_getterSetter, set_getterSetter):String;
+	@:isVar public var getterSetter(get_getterSetter, set_getterSetter):String;
 	
 	function get_getterSetter():String
 	{

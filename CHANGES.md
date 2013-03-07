@@ -1,3 +1,6 @@
+v2.0.x
+- Migrated to Haxe 3
+
 v1.3.1
 - Issue #12 : added support for typed param contraints (class Test<T:(Foo,Bar)>{})
 
