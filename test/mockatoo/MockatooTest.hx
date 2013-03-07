@@ -737,7 +737,10 @@ class MockatooTest
 		{
 			try
 			{
-				Reflect.callMethod(mock, Reflect.field(mock, field.name), field.args);
+				if(field.args!= null && field.args.length > 0)
+					Reflect.callMethod(mock, Reflect.field(mock, field.name), field.args);
+				else
+					Reflect.callMethod(mock, Reflect.field(mock, field.name), null);
 			}
 			catch(e:String)
 			{
