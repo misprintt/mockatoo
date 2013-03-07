@@ -461,7 +461,7 @@ class MockMaker
 		}
 		preview += "\n}";
 
-		Console.log(result);
+		Console.log(preview);
 
 	}
 	#end

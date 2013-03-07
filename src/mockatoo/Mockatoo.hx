@@ -20,11 +20,7 @@ class Mockatoo
 	*/
 
 	
-	#if haxe3
-	macro static public function mock<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
-	#else
-	@macro static public function mock<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
-	#end
+	#if haxe3 macro #else @:macro #end static public function mock<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
 	{
 		InitMacro.init();
 		var mock = new MockMaker(typeToMock, paramTypes);
@@ -39,7 +35,7 @@ class Mockatoo
 	@return new instance of generated Mock class
 	*/
 	
-	#if haxe3 macro #else @macro #end static public function spy<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
+	#if haxe3 macro #else @:macro #end static public function spy<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
 	{
 		InitMacro.init();
 		var mock = new MockMaker(typeToMock, paramTypes, true);
@@ -73,7 +69,7 @@ class Mockatoo
 	 */
 
 	
-	#if haxe3 macro #else @macro #end static public function verify(expr:ExprOf<Dynamic>, ?mode:ExprOf<VerificationMode>):ExprOf<mockatoo.internal.Verification>
+	#if haxe3 macro #else @:macro #end static public function verify(expr:ExprOf<Dynamic>, ?mode:ExprOf<VerificationMode>):ExprOf<mockatoo.internal.Verification>
 	{
 		return VerifyMacro.create(expr,mode);
 	}
@@ -118,7 +114,7 @@ class Mockatoo
     @return dynamic Stubber for matching method
     */
 	
-	#if haxe3 macro #else @macro #end static public function when(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
+	#if haxe3 macro #else @:macro #end static public function when(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
 	{
 		return StubbingMacro.createWhen(expr);
 	}
@@ -137,7 +133,7 @@ class Mockatoo
     </code></pre>
 	*/
 	
-	#if haxe3 macro #else @macro #end static public function returns(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
+	#if haxe3 macro #else @:macro #end static public function returns(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
 	{
 		return StubbingMacro.returns(expr, value);
 	}
@@ -156,7 +152,7 @@ class Mockatoo
     </code></pre>
 	*/
 	
-	#if haxe3 macro #else @macro #end static public function throws(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
+	#if haxe3 macro #else @:macro #end static public function throws(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
 	{
 		return StubbingMacro.throws(expr, value);
 	}
@@ -174,7 +170,7 @@ class Mockatoo
     </code></pre>
 	*/
 	
-	#if haxe3 macro #else @macro #end static public function calls(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
+	#if haxe3 macro #else @:macro #end static public function calls(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
 	{
 		return StubbingMacro.calls(expr, value);
 	}
@@ -192,7 +188,7 @@ class Mockatoo
     Mockatoo.when(mock.someMethod("foo")).thenCallRealMethod();
     </code></pre>
 	*/
-	#if haxe3 macro #else @macro #end static public function callsRealMethod(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
+	#if haxe3 macro #else @:macro #end static public function callsRealMethod(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
 	{
 		return StubbingMacro.callsRealMethod(expr);
 	}
@@ -209,7 +205,7 @@ class Mockatoo
     Mockatoo.when(mock.someMethod("foo")).thenStub();
     </code></pre>
 	*/
-	#if haxe3 macro #else @macro #end static public function stub(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
+	#if haxe3 macro #else @:macro #end static public function stub(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
 	{
 		return StubbingMacro.stubs(expr);
 	}

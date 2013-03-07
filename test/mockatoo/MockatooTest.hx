@@ -10,6 +10,12 @@ import mockatoo.Mock;
 import test.TestClasses;
 import util.Asserts;
 
+#if haxe3
+import haxe.ds.StringMap;
+#else
+private typedef StringMap<T> = Hash<T>
+#end
+
 using mockatoo.Mockatoo;
 
 typedef AnyArray = Array<Dynamic>;
@@ -278,9 +284,6 @@ class MockatooTest
 
 	#if haxe3
 	@Test
-	#else
-	@Test @Ignore("Can only override inline methods in Haxe3")
-	#end
 	public function should_mock_class_with_inlined_methods():Void
 	{
 		var fields:Array<Field> = [];
@@ -290,6 +293,12 @@ class MockatooTest
 		var mock = Mockatoo.mock(ClassWithInlinedMethod);
 		assertMock(mock, ClassWithInlinedMethod, fields);
 	}
+	#else
+	@Test @Ignore("Can only override inline methods in Haxe3")
+	public function should_mock_class_with_inlined_methods():Void
+	{
+	}
+	#end
 
 	#if flash
 	@Ignore("Cannot override final methods in AS3")
@@ -505,7 +514,7 @@ class MockatooTest
 	@Test
 	public function should_return_instanceOf_matcher()
 	{
-		Asserts.assertEnumTypeEq(Matcher.instanceOf(Map), cast Mockatoo.instanceOf(Map));
+		Asserts.assertEnumTypeEq(Matcher.instanceOf(StringMap), cast Mockatoo.instanceOf(StringMap));
 	}
 	
 	@Test
