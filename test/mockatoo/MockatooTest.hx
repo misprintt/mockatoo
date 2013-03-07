@@ -754,7 +754,14 @@ class MockatooTest
 
 	function addField(fields:Array<Field>, name:String, ?args:Array<Dynamic>)
 	{
+		#if haxe3
 		fields.push({name:name, args:toArgs(args)});
+		#else
+		if(args == null) args = [];
+		fields.push({name:name, args:args});
+		#end
+		
+		
 	}
 
 	function toArgs(?arg1:Dynamic, ?arg2:Dynamic, ?arg3:Dynamic):Array<Dynamic>
