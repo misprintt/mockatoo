@@ -323,7 +323,7 @@ class ClassFields
 			case AccNever: "never";
 			case AccCall(m): m;
 			case AccResolve: throw "not implemented for VarAccess [" + access + "]";
-			#if haxe_211
+			#if haxe3
 			case AccRequire(r,msg): throw "not implemented VarAccess [" + access + "]";
 			#else
 			case AccRequire(r): throw "not implemented VarAccess [" + access + "]";

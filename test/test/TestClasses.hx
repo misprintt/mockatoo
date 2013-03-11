@@ -392,6 +392,22 @@ class ClassWithProperties
 	}
 
 }
+
+interface InterfaceWithProperties
+{
+	public var getterSetter(get_getterSetter, set_getterSetter):String;
+    public var getter(default, null):String;
+    public var setter(default, set_setter):String;
+}
+
+interface InterfaceWithTypedProperties<T>
+{
+    public var getterSetter(get_getterSetter, set_getterSetter):T;
+    public var getter(default, null):T;
+    public var setter(default, set_setter):T;
+}
+
+
 // ----------------------------------------------------------------------------- Typedef Aliases
 
 
