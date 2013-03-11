@@ -1,3 +1,6 @@
+v1.3.2
+- Issue #14 : setter for property defined in interface is missing
+
 v1.3.1
 - Issue #12 : added support for typed param contraints (class Test<T:(Foo,Bar)>{})
 
