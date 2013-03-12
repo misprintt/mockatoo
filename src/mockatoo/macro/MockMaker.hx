@@ -538,78 +538,151 @@ class MockMaker
 
 		for(field in superFields)
 		{
-
-			field.meta = updateMeta(field.meta);
-
-			switch(field.kind)
-			{
-				case FFun(f):
-
-					if(field.name == "new")
-					{
-						overrideConstructor(field, f);
-					}
-					else
-					{
-						overrideField(field, f);
-					}
-
-					if(field.access.remove(AInline))
-					{
-						#if haxe3
-							#if no_inline
-								fields.push(field);
-							#else
-								Context.warning("Cannot mock inline method [" + id + "." + field.name + "]. Please set '--no-inline' compiler flag.", Context.currentPos());
-							#end
-						#else
-							Context.warning("Cannot mock inline method [" + id + "." + field.name + "] please upgrade to Haxe 2.11 and set '--no-inline' compiler flag (See http://code.google.com/p/haxe/issues/detail?id=1231)", Context.currentPos());
-						#end
-
-						continue;
-						
-					}
-
-					if(Context.defined("flash"))
-					{
-						var skip = false;
-						for(m in field.meta)
-						{
-							if(m.name == ":hack")
-							{
-								skip = true;
-								break;
-							}
-						}
-
-						if(skip)
-							Context.warning("Cannot mock final method [" + id + "." + field.name + "] on flash target.", Context.currentPos());
-						else
-							fields.push(field);
-					}
-					else
-					{
-						fields.push(field);
-					}
-						
-				case FVar(_,_):
-					if(isInterface) fields.push(field);
-				case FProp(get, set, _,_):
-					if(isInterface) fields.push(field);
-
-					var getMethod = toGetterSetter(get);
-					var setMethod = toGetterSetter(set);
-
-					if(getMethod != "" || setMethod != "")
-						propertyMetas.push({name:field.name, set:setMethod, get:getMethod});
-
-			}
+			createField(field, fields);
 		}
 
 		fields = appendMockInterfaceFields(fields);
-		
 		return fields;
+
 	}
+
+	/**
+	Generates the mocked verison of a field.
+	Generates additional getter/setter function fields for interface properties
+	*/
+	function createField(field:Field, fields:Array<Field>)
+	{
+
+		field.meta = updateMeta(field.meta);
+
+		switch(field.kind)
+		{
+			case FFun(f):
+
+				if(field.name == "new")
+				{
+					overrideConstructor(field, f);
+				}
+				else
+				{
+					overrideField(field, f);
+				}
+
+				if(field.access.remove(AInline))
+				{
+					#if haxe3
+						#if no_inline
+							fields.push(field);
+						#else
+							Context.warning("Cannot mock inline method [" + id + "." + field.name + "]. Please set '--no-inline' compiler flag.", Context.currentPos());
+						#end
+					#else
+						Context.warning("Cannot mock inline method [" + id + "." + field.name + "] please upgrade to Haxe 2.11 and set '--no-inline' compiler flag (See http://code.google.com/p/haxe/issues/detail?id=1231)", Context.currentPos());
+					#end
+
+					return;
+					
+				}
+
+				if(Context.defined("flash"))
+				{
+					var skip = false;
+					for(m in field.meta)
+					{
+						if(m.name == ":hack")
+						{
+							skip = true;
+							break;
+						}
+					}
+
+					if(skip)
+						Context.warning("Cannot mock final method [" + id + "." + field.name + "] on flash target.", Context.currentPos());
+					else
+						fields.push(field);
+				}
+				else
+				{
+					fields.push(field);
+				}
+					
+			case FVar(_,_):
+				if(isInterface) fields.push(field);
+			case FProp(get, set, t,_):
+
+				var getMethod = toGetterSetter(get);
+				var setMethod = toGetterSetter(set);
+
+				if(getMethod != "" || setMethod != "")
+					propertyMetas.push({name:field.name, set:setMethod, get:getMethod});
+
+				if(isInterface) 
+				{
+					fields.push(field);
+ 
+					if(getMethod != "")
+					{
+						var getter = createGetterFunction(getMethod, t, field.pos);
+						createField(getter, fields);
+					}
+					if(setMethod != "")
+					{
+						var setter = createSetterFunction(setMethod, t, field.pos);
+						createField(setter, fields);
+					}
+				}
+
+		}
+	}
+
+	/**
+	Generates a stub setter function when mocking a FProp on an interface
+	*/
+	function createSetterFunction(name:String, ret:ComplexType, pos:Position):Field
+	{
+		var arg = {
+			value:null,
+			type:ret,
+			opt:false,
+			name:"value"
+		}
+		var f = {
+			ret: ret,
+			params: [],
+			expr: EReturn(EConst(CIdent("null")).at()).at(),
+			args: [arg]
+		}
+		return {
+			pos: pos,
+			name: name,
+			meta: [],
+			kind: FFun(f),
+			doc: null,
+			access: []
+		}
+	}
+ 
+	/**
+	Generates a stub getter function when mocking a FProp on an interface
+	*/
+	function createGetterFunction(name:String, ret:ComplexType, pos:Position ):Field
+	{
+		var f = {
+			ret: ret,
+			params: [],
+			expr: EReturn(EConst(CIdent("null")).at()).at(),
+			args: []
+		}
+		return {
+			pos: pos,
+			name: name,
+			meta: [],
+			kind: FFun(f),
+			doc: null,
+			access: []
+		}
+	}
+
 
 	function toGetterSetter(value:String):String
 	{

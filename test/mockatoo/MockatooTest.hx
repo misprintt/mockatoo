@@ -721,6 +721,67 @@ class MockatooTest
 		Assert.areEqual("foo", instance.func());
 	}
 
+	///
+
+	@Test
+	public function should_stub_interface_with_getterSetter()
+	{
+		var instance = Mockatoo.mock(InterfaceWithProperties);
+ 
+		Mockatoo.when(instance.getterSetter).thenReturn("foo");
+ 
+		Assert.areEqual("foo", instance.getterSetter);
+	}
+ 
+	@Test
+	public function should_stub_interface_with_getter()
+	{
+		var instance = Mockatoo.mock(InterfaceWithProperties);
+ 
+		Mockatoo.when(instance.getter).thenReturn("foo");
+ 
+		Assert.areEqual("foo", instance.getter);
+	}
+ 
+ 
+	@Test
+	public function should_stub_interface_with_setter()
+	{
+		var instance = Mockatoo.mock(InterfaceWithProperties);
+ 
+		Mockatoo.when(instance.setter).thenThrow("foo");
+ 
+		try
+		{
+			instance.setter = "a";
+			Assert.fail("Expected exception");
+		}
+		catch(e:String){
+			Assert.areEqual("foo", e);
+		}
+	}
+ 
+ 
+	@Test
+	public function should_stub_interface_with_typed_setter()
+	{
+		var instance = Mockatoo.mock(InterfaceWithTypedProperties);
+ 
+		Mockatoo.when(instance.getter).thenReturn("foo");
+		Mockatoo.when(instance.setter).thenThrow("bar");
+ 
+		Assert.areEqual("foo", instance.getter);
+ 
+		try
+		{
+			instance.setter = "a";
+			Assert.fail("Expected exception");
+		}
+		catch(e:String){
+			Assert.areEqual("bar", e);
+		}
+	}
+
 	// ------------------------------------------------------------------------- utilities
 
 	function assertMock(mock:Mock, cls:Class<Dynamic>, ?fields:Array<Field>, ?pos:haxe.PosInfos)
