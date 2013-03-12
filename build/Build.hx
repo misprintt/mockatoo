@@ -19,8 +19,14 @@ class Build extends mtask.core.BuildBase
 
 		t.beforeCompile = function(path)
 		{
+			rm("src/haxelib.xml");
 			cp("src/*", path);
 			cp("README.md", path);
+		}
+
+		t.afterCompile = function(path)
+		{
+			cp("bin/release/haxelib/haxelib.xml", "src/haxelib.xml");
 		}
 	}
 
