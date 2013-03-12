@@ -13,7 +13,7 @@ Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode
 
 ## Installation
 
-Install current official release from haxelib (1.3.0)
+Install current official release from haxelib (1.3.2)
 
 	haxelib install mockatoo
 
@@ -93,6 +93,11 @@ Click here for detailed [documentation and examples](http://github.com/misprintt
 
 
 ## Release Notes
+
+
+### New in 1.3.2
+
+Fixed issues preventing mocking of interface properties (getter/setters)
 
 ### New in 1.3.0
 
