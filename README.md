@@ -12,9 +12,15 @@ Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode
 > Disambiguation: The **Mockatoo** belongs to the bird family *Cacatuidae* and look suspiciously like a taxidermied [Cockatoo](http://en.wikipedia.org/wiki/Cockatoo) with fake plumage. They are mostly found nesting within testing habitats and like  to repeat what you say (like a parrot). A Mockatoo may turn violent if mistaken for a *MockingBird* :)
 
 
-## Haxe Versions
-
 Mockatoo supports Haxe 3 and 2.10 across most platforms (AVM2, JavaScript, Neko, C++, etc)
+
+## Haxe 3 RC
+
+To compile against Haxe 3 you will need the following dependencies:
+
+- `feature/haxe-3` branch of mconsole
+- `master` branch of tink_macros
+
 
 Known issues with Haxe 3 RC
 
@@ -23,7 +29,7 @@ Known issues with Haxe 3 RC
 
 ## Installation
 
-Install current official release from haxelib (1.3.0)
+Install current official release from haxelib (1.3.2)
 
 	haxelib install mockatoo
 
@@ -103,6 +109,11 @@ Click here for detailed [documentation and examples](http://github.com/misprintt
 
 
 ## Release Notes
+
+### New in 1.3.2
+
+Fixed issues preventing mocking of interface properties (getter/setters)
+
 
 ### New in 1.3.0
 
