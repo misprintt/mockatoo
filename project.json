@@ -1,5 +1,16 @@
 {
-	"name":"Mockatoo",
-	"version":"2.0.0",
-	"id":"mockatoo"
+	"project": 
+	{
+		"name": "Mockatoo",
+		"version": "2.0.0",
+		"id": "mockatoo"
+	},
+	"haxelib": 
+	{
+		"user": "massive"
+	},
+	"dependencies": 
+	{
+ 
+	}
 }

@@ -618,6 +618,9 @@ class MockMaker
 
 				if(isInterface) 
 				{
+					//force concrete property for getter setter
+					addConcretePropertyMetadata(field);
+
 					fields.push(field);
  
 					if(getMethod != "")
@@ -632,6 +635,24 @@ class MockMaker
 					}
 				}
 
+		}
+	}
+
+	function addConcretePropertyMetadata(field:Field)
+	{
+		var isVar = false;
+		for(meta in field.meta)
+		{
+			if(meta.name == ":isVar")
+			{
+				isVar = true;
+				break;
+			}
+		}
+
+		if(!isVar)
+		{
+			field.meta.push({pos:field.pos, params:[], name:":isVar"});
 		}
 	}
 

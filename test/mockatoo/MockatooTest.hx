@@ -696,6 +696,7 @@ class MockatooTest
 
 	}
 
+	#if cpp @Ignore("Cannot stub 'never' field in cpp")#end
 	@Test
 	public function should_stub_hidden_property()
 	{
