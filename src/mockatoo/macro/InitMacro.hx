@@ -51,9 +51,11 @@ class InitMacro
 			var part = temp.shift();
 			if(part == "" && temp.length == 0) break;
 
-			path += part + "/";
+			path += part;
 
 			if(!FileSystem.exists(path)) FileSystem.createDirectory(path);
+
+			path += "/";
 		}
 	}
 }
