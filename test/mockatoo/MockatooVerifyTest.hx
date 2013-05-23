@@ -46,7 +46,7 @@ class MockatooVerifyTest
 	@Test
 	public function should_verify_mock_instance()
 	{
-		var instance = VerifySomeClass.mock();
+		var instance = Mockatoo.mock(VerifySomeClass);
 		
 		instance.test("foo");
 
@@ -62,7 +62,7 @@ class MockatooVerifyTest
 	@Test
 	public function should_verify_mock_instance_as_field()
 	{
-		mock = VerifySomeClass.mock();
+		mock = Mockatoo.mock(VerifySomeClass);
 		
 		mock.test("foo");
 
@@ -165,7 +165,7 @@ class MockatooVerifyTest
 	// @Test
 	// public function should_cause_compilation_error_if_verify_non_existent_field()
 	// {
-	// 	var instance = VerifySomeClass.mock();
+	// 	var instance = Mockatoo.mock(VerifySomeClass);
 
 	// 	Mockatoo.when(instance.notAnActualMethod());
 	// 	Mockatoo.verify(instance.notAnActualMethod());

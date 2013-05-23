@@ -9,6 +9,10 @@ import mockatoo.Mock;
 import test.TestClasses;
 import util.Asserts;
 
+#if haxe3
+import mockatoo.Mockatoo.*;
+#end
+
 using mockatoo.Mockatoo;
 
 class MockatooStubbingTest 
@@ -85,7 +89,8 @@ class MockatooStubbingTest
 	@Test
 	public function should_generate_returns()
 	{
-		var instance = StubSomeClass.mock();
+
+		var instance = Mockatoo.mock(StubSomeClass);
 
 		Mockatoo.returns(instance.toString(), "foo");
 		instance.toString().returns("bar");
@@ -102,7 +107,7 @@ class MockatooStubbingTest
 	@Test
 	public function should_generate_return_using_matcher()
 	{
-		var instance = StubSomeClass.mock();
+		var instance = Mockatoo.mock(StubSomeClass);
 
 		Mockatoo.returns(instance.parse(Mockatoo.anyString()), "foo");
 
@@ -121,7 +126,7 @@ class MockatooStubbingTest
 	@Test
 	public function should_generate_throws()
 	{
-		var instance = StubSomeClass.mock();
+		var instance = Mockatoo.mock(StubSomeClass);
 
 		Mockatoo.throws(instance.toString(), "foo");
 		instance.toString().throws("bar");
@@ -150,7 +155,7 @@ class MockatooStubbingTest
 	@Test
 	public function should_generate_calls()
 	{
-		var instance = StubSomeClass.mock();
+		var instance = Mockatoo.mock(StubSomeClass);
 
 		var f = function(args)
 		{
@@ -178,7 +183,7 @@ class MockatooStubbingTest
 	@Test
 	public function should_generate_callsRealMethod()
 	{
-		var instance = StubSomeClass.mock();
+		var instance = Mockatoo.mock(StubSomeClass);
 
 		instance.toString().callsRealMethod();
 		
@@ -189,7 +194,7 @@ class MockatooStubbingTest
 	@Test
 	public function should_generate_stub()
 	{
-		var instance = StubSomeClass.spy();
+		var instance = Mockatoo.spy(StubSomeClass);
 		
 		var result = instance.toString();
 		Assert.areEqual("", result);
@@ -200,8 +205,6 @@ class MockatooStubbingTest
 		Assert.isNull(result);
 	}
 }
-
-
 class StubSomeClass
 {
 	public function new()

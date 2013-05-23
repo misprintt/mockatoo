@@ -639,10 +639,11 @@ class MockMethodTest
 		instance.getOutcomeFor([array]);
 		instance.verify(times(2), [anyIterator]);
 
-		var map = new IntMap<Int>();
-		instance.getOutcomeFor([map]);
-		instance.verify(times(3), [anyIterator]);
+		
+		var intMap = new IntMap<Int>();
 
+		instance.getOutcomeFor([intMap]);
+		instance.verify(times(3), [anyIterator]);
 		var list = new List<String>();
 		instance.getOutcomeFor([list]);
 		instance.verify(times(4), [anyIterator]);

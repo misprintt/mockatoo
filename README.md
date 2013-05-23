@@ -22,9 +22,24 @@ To compile against Haxe 3 you will need the following dependencies:
 - `master` branch of tink_macros
 
 
-Known issues with Haxe 3 RC
+### Known issues with Haxe 3 RC
 
-- Classes with typed constraints cannot be mocked 
+#### Classes with typed constraints cannot be mocked (RC1)
+
+#### Cannot mock or spy a Class "using" mockatoo.Mockatoo
+
+See <https://code.google.com/p/haxe/issues/detail?id=1843>
+
+	using mockatoo.Mockatoo;
+	...
+	Mockatoo.mock(SomeClass);//works
+	SomeClass.mock();//fails compilation 
+
+Workaround is to use static importing (new in Haxe 3)
+
+	import mockatoo.Mockatoo.*;
+	...
+	mock(SomeClass);
 
 
 ## Installation

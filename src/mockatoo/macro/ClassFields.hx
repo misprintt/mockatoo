@@ -250,7 +250,15 @@ class ClassFields
 		{
 			case FVar(read, write):
 			{
-				return FProp(getVarAccess(read), getVarAccess(write), convertType(field.type, paramMap), expr);
+				var readAccess = getVarAccess(read);
+				var writeAccess = getVarAccess(write);
+
+				#if haxe3
+				if(readAccess == "property") readAccess = "get_" + field.name;
+				if(writeAccess == "property") writeAccess = "set_" + field.name;
+				#end
+
+				return FProp(readAccess, writeAccess, convertType(field.type, paramMap), expr);
 			}
 			case FMethod(methodKind):
 			{
@@ -343,12 +351,13 @@ class ClassFields
 			case AccNormal, AccInline: "default";
 			case AccNo: "null";
 			case AccNever: "never";
-			case AccCall(m): m;
 			case AccResolve: throw "not implemented for VarAccess [" + access + "]";
 			#if haxe3
+			case AccCall: "property";
 			case AccRequire(_,_): throw "not implemented VarAccess [" + access + "]";
 			#else
 			case AccRequire(_): throw "not implemented VarAccess [" + access + "]";
+			case AccCall(m): m;
 			#end
 		}		
 	}

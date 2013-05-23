@@ -19,7 +19,6 @@ class Mockatoo
 	@return new instance of generated Mock class
 	*/
 
-	
 	#if haxe3 macro #else @:macro #end static public function mock<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
 	{
 		InitMacro.init();
@@ -118,7 +117,6 @@ class Mockatoo
 	{
 		return StubbingMacro.createWhen(expr);
 	}
-
 
 	/**
 	Shorthand for stubbing a when().thenReturn
@@ -371,6 +369,89 @@ class Mockatoo
 		return cast Matcher.customMatcher(f);
 	}
 }
+
+
+#if haxe3 
+/**
+Provides compatibility in haxe3 for "using" Mockatoo on methods that return Void.
+This is not needed when calling static Mockatoo functions directly 
+*/
+class MockatooVoid
+{	
+	/**
+	Verifies certain behavior happened on a method that returns Void at least once / exact number of times / never
+	@see Mockatoo.verify
+	*/
+
+	
+	macro static public function verify(expr:ExprOf<Void>, ?mode:ExprOf<VerificationMode>):ExprOf<mockatoo.internal.Verification>
+	{
+		return VerifyMacro.create(expr,mode);
+	}
+
+	/**
+    Enables stubbing methods that return Void
+   	@see Mockatoo.when
+    */
+	
+	macro static public function when(expr:ExprOf<Void>):ExprOf<mockatoo.internal.Stubber>
+	{
+		return StubbingMacro.createWhen(expr);
+	}
+
+	/**
+	Shorthand for stubbing a when().thenReturn on a method that returns Void
+	@see Mockatoo.returns
+	*/
+	macro static public function returns(expr:ExprOf<Void>, value:Expr):ExprOf<mockatoo.internal.Stubber>
+	{
+		return StubbingMacro.returns(expr, value);
+	}
+
+
+	/**
+	Shorthand for stubbing a when().thenThrow on a method that returns Void
+	@see Mockatoo.throws
+	*/
+	
+	macro static public function throws(expr:ExprOf<Void>, value:Expr):ExprOf<mockatoo.internal.Stubber>
+	{
+		return StubbingMacro.throws(expr, value);
+	}
+
+	/**
+	Shorthand for stubbing a when().thenCall on a method that returns Void
+	@see Mockatoo.calls
+	*/
+	
+	macro static public function calls(expr:ExprOf<Void>, value:Expr):ExprOf<mockatoo.internal.Stubber>
+	{
+		return StubbingMacro.calls(expr, value);
+	}
+
+
+	/**
+	Shorthand for stubbing a when().thenCallRealMethod on a method that returns Void
+	@see Mockatoo.callsRealMethod
+	*/
+	macro static public function callsRealMethod(expr:ExprOf<Void>):ExprOf<mockatoo.internal.Stubber>
+	{
+		return StubbingMacro.callsRealMethod(expr);
+	}
+
+	/**
+	Shorthand for stubbing a when().thenStub() on a method that returns Void
+	@see Mockatoo.stub
+	*/
+	macro static public function stub(expr:ExprOf<Void>):ExprOf<mockatoo.internal.Stubber>
+	{
+		return StubbingMacro.stubs(expr);
+	}
+}
+
+#end
+
+
 
 
 /**

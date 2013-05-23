@@ -386,15 +386,15 @@ class MockatooTest
 	@Test
 	public function should_mock_class_with_multiple_typed_constraints()
 	{
-		var mock = ClassWithMultipleTypedConstraints.mock([TypedConstraintFooBar]);
+		var mock = Mockatoo.mock(ClassWithMultipleTypedConstraints,[TypedConstraintFooBar]);
 		mock.test();
 		Assert.isTrue(true);
 	}
 
-		@Test
+	@Test
 	public function should_mock_class_with_typed_constraints_using_typdef_ref()
 	{
-		var mock = AnyConcreteTypedParam.mock();
+		var mock = Mockatoo.mock(AnyConcreteTypedParam);
 		Assert.isTrue(true);
 	}
 
