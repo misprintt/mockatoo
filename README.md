@@ -14,17 +14,32 @@ Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode
 
 Mockatoo supports Haxe 3 and 2.10 across most platforms (AVM2, JavaScript, Neko, C++, etc)
 
-## Haxe 3 RC
+## Haxe 3
 
-To compile against Haxe 3 you will need the following dependencies:
+### Installation
 
-- `feature/haxe-3` branch of mconsole
-- `master` branch of tink_macros
+Install current official release from haxelib (2.0.0)
 
+	haxelib install mockatoo
 
-### Known issues with Haxe 3 RC
+Install the latest directly from github:
 
-#### Classes with typed constraints cannot be mocked (RC1)
+	haxelib git mockatoo https://github.com/misprintt/mockatoo.git src
+
+Or point to your local fork:
+
+	haxelib dev mockatoo /ABSOLUTE_PATH_TO_REPO/src
+
+### Dependencies
+
+Until a haxe 3 version of `tink_macros` is released to haxelib, you may need to 
+build against the following fork that addresses a few compatibility issues:
+
+<http://github.com/massiveinteractive/tinkerbell>
+
+	haxelib git tink_macros https://github.com/massiveinteractive/tinkerbell.git
+
+### Known issues
 
 #### Cannot mock or spy a Class "using" mockatoo.Mockatoo
 
@@ -42,7 +57,9 @@ Workaround is to use static importing (new in Haxe 3)
 	mock(SomeClass);
 
 
-## Installation
+## Haxe 2
+
+### Installation
 
 Install current official release from haxelib (1.3.2)
 
