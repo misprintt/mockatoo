@@ -2,7 +2,7 @@
 	"project": 
 	{
 		"name": "Mockatoo",
-		"version": "1.3.2",
+		"version": "1.3.3",
 		"id": "mockatoo"
 	},
 	"haxelib": 
@@ -11,6 +11,7 @@
 	},
 	"dependencies": 
 	{
-
+		"tink_macros": "2.x",
+		"mconsole": "1.x"
 	}
 }

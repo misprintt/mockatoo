@@ -1,7 +1,7 @@
 <project name="mockatoo" url="http://github.com/misprintt/mockatoo" license="MIT">
 	<user name="massive"/>
 	<description><![CDATA[Mockatoo is a Haxe library for mock creation, verification and stubbing.]]></description>
-	<version name="1.3.2"><![CDATA[Fixed issue #14 - setter for property defined in interface is missing. This update is NOT Haxe 3 compatible (see feature/haxe3 on gitub for compatible branch). See CHANGES for full details.]]></version>
+	<version name="1.3.3"><![CDATA[Minor]]></version>
 	<depends name="mconsole"/>
 	<depends name="tink_macros"/>
 </project>
