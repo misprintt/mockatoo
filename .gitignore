@@ -1,6 +1,7 @@
 # mtask
 /bin
 /.temp
+/lib
 
 # munit and mcover
 /.mcover

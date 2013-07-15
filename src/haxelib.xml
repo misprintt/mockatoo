@@ -1,5 +1,9 @@
-<project name="mockatoo" url="${url}" license="${license}">
-	<user name="${username}"/>
-	<description><![CDATA[${description}]]></description>
-	<version name="${version}"><![CDATA[${versionDescription}]]></version>${block}
+
+<project name="mockatoo" url="http://github.com/misprintt/mockatoo" license="MIT">
+	<user name="massive"/>
+	<description><![CDATA[Mockatoo is a Haxe library for mock creation, verification and stubbing.]]></description>
+	<version name="2.1.0"><![CDATA[Official Haxe 3 release.]]></version>
+	<depends name="mconsole"/>
+	<depends name="tink_macro"/>
+	<depends name="tink_core"/>
 </project>
