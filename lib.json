@@ -1,4 +1,8 @@
 {
-	"mconsole":"1.4.0",
-	"tink_macros":"2.0.1"
+	"msignal":"1.2.1",
+	"msys":"1.2.2",
+	"mconsole":"1.5.0",
+	"mcore":"1.3.3",
+	"tink_macros":"2.0.1",
+	"mtask":"2.0.1"
 }

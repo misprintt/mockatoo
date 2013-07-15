@@ -3,15 +3,19 @@
 	{
 		"name": "Mockatoo",
 		"version": "1.3.3",
-		"id": "mockatoo"
+		"id": "mockatoo",
+		"dependencies": 
+		{
+			"tink_macros": "2.x",
+			"mconsole": "1.x"
+		},
+		"devDependencies":
+		{
+			"mtask":"2.x"
+		}
 	},
 	"haxelib": 
 	{
 		"user": "massive"
-	},
-	"dependencies": 
-	{
-		"tink_macros": "2.x",
-		"mconsole": "1.x"
 	}
 }
