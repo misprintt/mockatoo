@@ -29,12 +29,6 @@ Or point to your local fork:
 
 > For Legacy Haxe 2.10 refer to the haxe2 branch
 
-
-## Upgrading to Haxe 3
-
-See [upgrading to haxe 3](http://github.com/misprintt/mockatoo/wiki/Upgrading-To-Haxe-3)
-
-
 ## Features
 
 Import and use the 'using' mixin
@@ -103,10 +97,56 @@ Click here for detailed [documentation and examples](http://github.com/misprintt
 
 ## Release Notes
 
-### New in 2.0.0
+### New in 2.1.0
 
 - Haxe 3 support
-- Changes to use static imports (`import mockatoo.Mockatoo.*`)
+- Changes to use static imports (see below)
+- Changes to referencing Matchers (see below)
+
+
+#### Static imports
+
+Due to a limitations in Haxe 3.0 with `using` + `macro` on class references, developers should use static importing avoid explicit references to `Mockatoo.mock` and `Mockatoo.spy`.
+
+
+In Haxe 2
+
+	using mockatoo.Mockatoo;
+	...
+	var mock = SomeClass.mock();
+	var spy SomeClass.spy();
+
+In Haxe 3 the recommended approach is:
+
+	import mockatoo.Mockatoo.*;
+	using mockatoo.Mockatoo;
+	...
+
+	var mock = mock(SomeClass);
+	var spy = spy(SomeClass);
+
+
+
+#### Matchers
+
+The matcher helper methods in the Mockatoo class have been removed - (e.g. `anyString()`, `anyInt()`, `enumOf(SomeEnum)`) as they are no longer required when using static imports.
+
+
+In Haxe 2:
+
+	mock.someMethod(Mockatoo.anyString()).returns("foo");
+
+With Haxe 3 refer to the Matcher enum value directly
+
+	mock.someMethod(cast anyString).returns("foo");
+
+
+>Note: As of Mockatoo 2.1, matchers need to be explicitly cast (as in the example above) to circumvent compiler type errors.
+
+
+### New in 2.0.0
+
+- Haxe 3 RC1 support
 
 ### New in 1.3.2
 
@@ -147,28 +187,6 @@ runtime exceptions caused by out of date field references.
 The syntax for wildcard Matchers has been updated to be compiler-safe when using 'using'
 
 	mock.someMethod(Mockatoo.anyString()).returns("foo");
-
-
-## Known issues (Haxe 3)
-
-See [upgrading to haxe 3](http://github.com/misprintt/mockatoo/wiki/Upgrading-To-Haxe-3) for more details
-
-
-#### Cannot mock or spy a Class "using" mockatoo.Mockatoo
-
-See <https://code.google.com/p/haxe/issues/detail?id=1843>
-
-	using mockatoo.Mockatoo;
-	...
-	Mockatoo.mock(SomeClass);//works
-	SomeClass.mock();//fails compilation 
-
-Workaround is to use static importing (new in Haxe 3)
-
-	import mockatoo.Mockatoo.*;
-	...
-	mock(SomeClass);
-
 
 ## Credits
 
