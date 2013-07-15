@@ -7,4 +7,5 @@
 -neko bin/main.n
 -cp src
 -lib mockatoo
+# -D MOCKATOO_LOG
 -cmd neko bin/main.n

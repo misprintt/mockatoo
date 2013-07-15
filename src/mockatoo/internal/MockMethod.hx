@@ -4,8 +4,10 @@ import mockatoo.exception.StubbingException;
 import mockatoo.Mockatoo;
 import mockatoo.internal.MockOutcome;
 import haxe.PosInfos;
+
 using mockatoo.util.TypeEquality;
 
+typedef AnyEnum = Enum<Dynamic>;
 /**
 Represents a single method in a Mock class, storing all calls, verifications
 and stubs for that method.
@@ -249,37 +251,37 @@ class MockMethod
 		{
 			case TUnknown:
 			case TObject:
-			case TNull:
-				return actual == null;
+			case TNull: return actual == null;
 			case TInt:
 			case TFunction:
 			case TFloat:
 			case TEnum(e): //Enum<Dynamic>
 				if(e == Matcher)
 				{
-					switch(expected)
+					var expectedMatcher:Matcher = cast expected;
+					switch(expectedMatcher)
 					{
-						case anyString: return Std.is(actual, String);
-						case anyInt:  return Std.is(actual, Int);
-						case anyFloat: return Std.is(actual, Float);
-						case anyBool: return Std.is(actual, Bool);
-						case anyIterator: return isIterable(actual);
-						case anyObject: return isObject(actual);
-						case anyEnum: return isEnumValueOf(actual, null);
-						case enumOf(en): return isEnumValueOf(actual, en);
-						case instanceOf(c): return Std.is(actual, c);
-						case isNotNull: return actual != null;
-						case any: return true;
-						case customMatcher(f): return f(actual);
+						case Matcher.anyString: return Std.is(actual, String);
+						case Matcher.anyInt:  return Std.is(actual, Int);
+						case Matcher.anyFloat: return Std.is(actual, Float);
+						case Matcher.anyBool: return Std.is(actual, Bool);
+						case Matcher.anyIterator: return isIterable(actual);
+						case Matcher.anyObject: return isObject(actual);
+						case Matcher.anyEnum: return isEnumValueOf(actual, null);
+						case Matcher.enumOf(en): return isEnumValueOf(actual, en);
+						case Matcher.instanceOf(c): return Std.is(actual, c);
+						case Matcher.isNotNull: return actual != null;
+						case Matcher.any: return true;
+						case Matcher.customMatcher(f): return f(actual);
 					}
 				}
-			case TClass(c): //Class<Dynamic>
+			case TClass(_):
 			case TBool:
 		}
 		return expected.equals(actual);
 	}
 
-	function isEnumValueOf(value:Dynamic, ?ofType:Enum<Dynamic>):Bool
+	function isEnumValueOf(value:Dynamic, ?ofType:Null<AnyEnum>):Bool
 	{
 		switch(Type.typeof(value))
 		{
@@ -304,8 +306,17 @@ class MockMethod
 	{
 		if(value == null) return false;
 		
+		#if haxe3
+		if(Std.is(value, Array) || Std.is(value, Map)) return true;
+		// need to check these dirtectly because 'IntMap' does not return true for Std.is(value,Map)
+		if(Std.is(value, haxe.ds.IntMap)) return true;
+		if(Std.is(value, haxe.ds.ObjectMap)) return true;
+		if(Std.is(value, haxe.ds.StringMap)) return true;
+		if(Std.is(value, haxe.ds.WeakMap)) return true;
+		if(Std.is(value, haxe.ds.HashMap)) return true;
+		#else
 		if(Std.is(value, Array) || Std.is(value, Hash) || Std.is(value, IntHash)) return true;
-
+		#end
 		//Iterable
 		var iterator = Reflect.field(value, "iterator");
 		

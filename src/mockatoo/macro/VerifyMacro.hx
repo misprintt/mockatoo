@@ -43,7 +43,7 @@ class VerifyMacro
 				var exprs = createVerifyExpressions(expr, mode);
 				return EBlock(exprs).at();
 
-			case EField(e, field):
+			case EField(_,_):
 
 				var exprs = createVerifyExpressions(expr, mode);
 				return EBlock(exprs).at();
@@ -54,20 +54,31 @@ class VerifyMacro
 				//Console.log(actualExpr.toString());
 				return actualExpr;
 
-			default: throw "Invalid verify expression [" + expr.print() + "]";
+			case ECast(e, t):
+				return create(e,mode);
+
+			case _: throw "Invalid verify expression [" + expr.print() + "]";
 		}
 		return expr;
 	}
 
 	static function createVerifyExpressions(expr:Expr, mode:Expr):Array<Expr>
 	{
-		var eIsNotNull =  macro Console.assert($expr != null, new mockatoo.exception.VerificationException("Cannot verify [null] mock"));
-		var eIsAMock =  macro Console.assert(Std.is($expr, mockatoo.Mock), new mockatoo.exception.VerificationException("Object is not an instance of mock"));
+		var eIsNotNull:Expr;
+		var eIsAMock:Expr;
 
-		var eCast = ECast(expr, "mockatoo.Mock".asComplexType()).at();
-		var eMethod = eCast.field("mockProxy").field("verify");
-		var verifyExpr = eMethod.call([mode]);
+		if(haxe.macro.Compiler.getDefine("cpp") != null)
+		{
+			eIsNotNull = macro if($expr == null) throw new mockatoo.exception.VerificationException("Cannot verify [null] mock");
+			eIsAMock = macro if(!Std.is($expr, mockatoo.Mock)) throw new mockatoo.exception.VerificationException("Object is not an instance of mock");
+		}
+		else
+		{
+			eIsNotNull = macro Console.assert($expr != null, new mockatoo.exception.VerificationException("Cannot verify [null] mock"));
+			eIsAMock = macro Console.assert(Std.is($expr, mockatoo.Mock), new mockatoo.exception.VerificationException("Object is not an instance of mock"));
+		}
 
+		var verifyExpr = macro cast($expr, mockatoo.Mock).mockProxy.verify($mode);
 		return [eIsNotNull, eIsAMock, verifyExpr];
 	}
 
@@ -99,7 +110,7 @@ class VerifyMacro
 			case EConst(c):
 				switch(c)
 				{
-					case CInt(v): return "VerificationMode.times".resolve().call([expr]);
+					case CInt(_): return "VerificationMode.times".resolve().call([expr]);
 					default: return expr;
 				}
 			default: return expr;

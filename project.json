@@ -2,7 +2,7 @@
 	"project": 
 	{
 		"name": "Mockatoo",
-		"version": "1.3.3",
+		"version": "2.1.0",
 		"id": "mockatoo",
 		"dependencies": 
 		{

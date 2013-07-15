@@ -12,7 +12,7 @@ class TypeEquality
 	{
 		switch(Type.typeof(expected))
 		{
-			case TEnum(e):
+			case TEnum(_):
 			{
 				return equalsEnum(cast expected, cast actual);
 			}

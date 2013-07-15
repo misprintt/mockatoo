@@ -7,12 +7,20 @@ import haxe.macro.Context;
 import haxe.macro.Compiler;
 import haxe.macro.Type;
 import haxe.PosInfos;
+import tink.macro.tools.TypeTools;
+import tink.macro.tools.Printer;
+
+#if haxe3
+import haxe.ds.StringMap;
+#else
+typedef StringMap<T> = Hash<T>
+#end
+
 using tink.macro.tools.MacroTools;
 using tink.macro.tools.ExprTools;
 using tink.macro.tools.TypeTools;
-import tink.macro.tools.TypeTools;
-import tink.macro.tools.Printer;
 using mockatoo.macro.Types;
+using haxe.macro.Tools;
 
 typedef TypeDeclaration = 
 {
@@ -32,10 +40,10 @@ class ClassFields
 	Recursively aggregates fields from class and super classes, ensuring that
 	inherited/overriden fields take precidence.
 	*/
-	public static function getClassFields(c:ClassType, ?includeStatics:Bool=false, ?paramTypes:Array<Type>, ?fieldHash:Hash<Field>):Array<Field>
+	public static function getClassFields(c:ClassType, ?includeStatics:Bool=false, ?paramTypes:Array<Type>, ?fieldMap:StringMap<Field>):Array<Field>
 	{
 		if(paramTypes == null) paramTypes = [];
-		if(fieldHash == null) fieldHash = new Hash();
+		if(fieldMap == null) fieldMap = new StringMap();
 
 		Console.log(c.name + ":" + paramTypes);
 
@@ -54,18 +62,18 @@ class ClassFields
 			var superParams = mapTypes( type.params, paramMap);
 
 			Console.log("     superParams: " + superParams);
-			var superFields = getClassFields(type.t.get(), includeStatics, superParams, fieldHash);
+			var superFields = getClassFields(type.t.get(), includeStatics, superParams, fieldMap);
 
 			for(field in superFields)
 			{
-				fieldHash.set(field.name, field);
+				fieldMap.set(field.name, field);
 			}
 		}
 		
 		for(classField in c.fields.get())
 		{
 			var field = getClassField(classField, paramMap);
-			fieldHash.set(field.name, field);
+			fieldMap.set(field.name, field);
 		}
 
 		if(includeStatics)
@@ -73,17 +81,17 @@ class ClassFields
 			for(classField in c.statics.get())
 			{
 				var field = getClassField(classField, paramMap, true);
-				fieldHash.set(field.name, field);
+				fieldMap.set(field.name, field);
 			}
 		}
 
 		if(c.constructor != null)
 		{
 			var field = getConstructorField(c,paramMap);
-			fieldHash.set(field.name, field);
+			fieldMap.set(field.name, field);
 		}
 
-		return Lambda.array(fieldHash);
+		return Lambda.array(fieldMap);
 	}
 
 
@@ -222,7 +230,12 @@ class ClassFields
 				if(t == null)
 					return TPath({pack:[], name:"StdTypes", sub:"Dynamic", params:[]});
 
+				#if haxe3
+				var param = TPType(t.toComplexType());
+				#else
 				var param = TPType(t.toComplex(true));
+				#end
+				
 				return TPath({pack:[], name:"StdTypes", sub:"Dynamic", params:[param]});
 			default:
 				return type.toComplex(PRETTY);
@@ -237,11 +250,19 @@ class ClassFields
 		{
 			case FVar(read, write):
 			{
-				return FProp(getVarAccess(read), getVarAccess(write), convertType(field.type, paramMap), expr);
+				var readAccess = getVarAccess(read);
+				var writeAccess = getVarAccess(write);
+
+				#if haxe3
+				if(readAccess == "property") readAccess = "get_" + field.name;
+				if(writeAccess == "property") writeAccess = "set_" + field.name;
+				#end
+
+				return FProp(readAccess, writeAccess, convertType(field.type, paramMap), expr);
 			}
-			case FMethod(k):
+			case FMethod(methodKind):
 			{
-				switch(k)
+				switch(methodKind)
 				{
 					case MethMacro: null;
 					default:
@@ -274,7 +295,12 @@ class ClassFields
 		{
 			var argType = convertType(arg.t, paramMap);
 
+			#if haxe3
+			var value:Null<Expr> = arg.opt ? arg.t.toComplexType().defaultValue() : null;
+			#else
 			var value:Null<Expr> = arg.opt ? arg.t.toComplex(true).defaultValue() : null;
+			#end
+			
 
 
 			if(arg.opt)
@@ -283,7 +309,11 @@ class ClassFields
 				arg.opt = verifyOptionalArgIsActuallyNullable(arg);
 
 				if(!arg.opt)
+				#if haxe3
+					value = arg.t.toComplexType().defaultValue();
+				#else
 					value = arg.t.toComplex(true).defaultValue();
+				#end
 			}
 
 			var value = 
@@ -305,7 +335,7 @@ class ClassFields
 	{
 		switch(arg.t)
 		{
-			case TType(t, params):
+			case TType(t,_):
 				if(t.get().name == "Null")
 					return true;
 			default: null;
@@ -321,12 +351,13 @@ class ClassFields
 			case AccNormal, AccInline: "default";
 			case AccNo: "null";
 			case AccNever: "never";
-			case AccCall(m): m;
 			case AccResolve: throw "not implemented for VarAccess [" + access + "]";
 			#if haxe3
-			case AccRequire(r,msg): throw "not implemented VarAccess [" + access + "]";
+			case AccCall: "property";
+			case AccRequire(_,_): throw "not implemented VarAccess [" + access + "]";
 			#else
-			case AccRequire(r): throw "not implemented VarAccess [" + access + "]";
+			case AccRequire(_): throw "not implemented VarAccess [" + access + "]";
+			case AccCall(m): m;
 			#end
 		}		
 	}
@@ -344,16 +375,16 @@ class ClassFields
 
 		switch(classField.kind)
 		{
-			case FMethod(k):
+			case FMethod(_):
 			{
 				switch(expr.expr)
 				{
-					case EFunction(name, f):
+					case EFunction(_, f):
 						return f.expr;
 					default: throw "not implemented for ExprDef [" + expr.expr + "]";//return null;
 				}
 			}
-			case FVar(read, write):
+			case FVar(_,_):
 			{
 				return expr;
 			}

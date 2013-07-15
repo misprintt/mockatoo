@@ -9,6 +9,14 @@ import mockatoo.exception.VerificationException;
 import mockatoo.exception.StubbingException;
 import mockatoo.Mockatoo;
 import util.Asserts;
+
+#if haxe3
+import haxe.ds.IntMap;
+import haxe.ds.StringMap;
+#else
+private typedef IntMap<T> = IntHash<T>
+private typedef StringMap<T> = Hash<T>
+#end
 /**
 * Auto generated MassiveUnit Test Class  for mockatoo.internal.MockMethod 
 */
@@ -445,7 +453,7 @@ class MockMethodTest
 		instance.getOutcomeFor([{foo:true}]);
 		instance.verify(times(1), [anyObject]);
 
-		instance.getOutcomeFor([new Hash<String>()]);
+		instance.getOutcomeFor([new StringMap<String>()]);
 		instance.verify(times(1), [anyObject]); //doesnt count instances - only annonomous objects
 	}
 
@@ -523,7 +531,7 @@ class MockMethodTest
 
 		try
 		{
-			instance.getOutcomeFor([new Hash<String>()]);
+			instance.getOutcomeFor([new StringMap<String>()]);
 			instance.verify(times(1), [instanceOf(SomeClass)]);
 			Assert.fail("Expected VerificationException");
 		}
@@ -623,18 +631,19 @@ class MockMethodTest
 		}
 		catch(e:VerificationException) {}
 		
-		var hash = new Hash<String>();
-		instance.getOutcomeFor([hash]);
+		var map = new StringMap<String>();
+		instance.getOutcomeFor([map]);
 		instance.verify(times(1), [anyIterator]);
 
 		var array = new Array<Int>();
 		instance.getOutcomeFor([array]);
 		instance.verify(times(2), [anyIterator]);
 
-		var intHash = new IntHash<Int>();
-		instance.getOutcomeFor([intHash]);
-		instance.verify(times(3), [anyIterator]);
+		
+		var intMap = new IntMap<Int>();
 
+		instance.getOutcomeFor([intMap]);
+		instance.verify(times(3), [anyIterator]);
 		var list = new List<String>();
 		instance.getOutcomeFor([list]);
 		instance.verify(times(4), [anyIterator]);
