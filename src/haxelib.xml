@@ -1,9 +1,0 @@
-
-<project name="mockatoo" url="http://github.com/misprintt/mockatoo" license="MIT">
-	<user name="massive"/>
-	<description><![CDATA[Mockatoo is a Haxe library for mock creation, verification and stubbing.]]></description>
-	<version name="2.1.0"><![CDATA[Official Haxe 3 release.]]></version>
-	<depends name="mconsole"/>
-	<depends name="tink_macro"/>
-	<depends name="tink_core"/>
-</project>

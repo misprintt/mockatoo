@@ -20,7 +20,6 @@ class Build extends mtask.core.BuildBase
 
 		t.beforeCompile = function(path)
 		{
-			rm("src/haxelib.xml");
 			rm("src/haxelib.json");
 			cp("src/*", path);
 			cp("README.md", path);
@@ -28,10 +27,19 @@ class Build extends mtask.core.BuildBase
  
 		t.afterCompile = function(path)
 		{
-			cp("bin/release/haxelib/haxelib.xml", "src/haxelib.xml");
 			cp("bin/release/haxelib/haxelib.json", "src/haxelib.json");
+
+			try
+			{
+				rm("src/haxelib.xml");	
+				rm("bin/release/haxelib/haxelib.xml");	
+			}
+			catch(e:Dynamic)
+			{
+
+			}
+			
 		}
-		
 	}
 
 	@task function sublime()
