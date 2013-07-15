@@ -24,6 +24,7 @@ class SimpleClass
 	}
 }
 
+
 class VariableArgumentsClass
 {
 	public function new()
@@ -60,6 +61,29 @@ class VariableArgumentsClass
 	{
 		return arg1;
 	}
+}
+
+class VariableArgumentsReturnsVoidClass
+{
+	public function new()
+	{
+
+	}
+
+	public function none()
+	{
+
+	}
+
+	public function one(arg:Int)
+	{
+	}
+
+	public function two(arg1:Int, arg2:Int)
+	{
+		
+	}
+
 }
 
 interface IntefaceWithFields

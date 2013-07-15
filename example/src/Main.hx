@@ -1,6 +1,8 @@
 import mockatoo.Mockatoo;
 import mockatoo.exception.VerificationException;
 
+import mockatoo.Mockatoo.*;
+
 using mockatoo.Mockatoo;
 /**
 Simple example showing mocking for interfaces, classes and typedef alisas.
@@ -19,7 +21,7 @@ class Main
 	static function basicMocking()
 	{
 		//crate a mock;
-		var mock = math.Calculator.mock();
+		var mock = mock(math.Calculator);
 
 		//invoke a method and trace stubbed result
 		var result = mock.round(1.1);
@@ -50,7 +52,7 @@ class Main
 	static function stubbing()
 	{
 		//crate a mock;
-		var mock = math.Calculator.mock();
+		var mock = mock(math.Calculator);
 
 		//stub some responses
 		mock.round(1.1).returns(11);
@@ -59,7 +61,7 @@ class Main
 		mock.round(0).throws("exception");
 
 		//stub a custom response for any other values
-		mock.round(Mockatoo.anyFloat()).returns(99);
+		mock.round(anyFloat()).returns(99);
 
 		var result = mock.round(1.1);
 		assertEqual(11, result);
@@ -80,7 +82,7 @@ class Main
 	static function verifying()
 	{
 		//create a mock;
-		var mock = math.Calculator.mock();
+		var mock = mock(math.Calculator);
 
 		mock.round(1.0).verify(never);// never called
 

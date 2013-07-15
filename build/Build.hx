@@ -12,11 +12,10 @@ class Build extends mtask.core.BuildBase
 		t.description = "Mockatoo is a Haxe library for mock creation, verification and stubbing.";
 		t.url = "http://github.com/misprintt/mockatoo";
 
-		t.versionDescription = "Fixed issue #12 - Mocking classes with typed constrain params (e.g. <T:(Foo,Bar)>)
-		See CHANGES for full details.";
+		t.versionDescription = "Updated for Haxe 3 RC2 and new haxelib.";
 		
 		t.addDependency("mconsole");
-		t.addDependency("tink_macros");
+		t.addDependency("tink_macro");
 
 		t.beforeCompile = function(path)
 		{
