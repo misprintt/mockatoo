@@ -7,4 +7,5 @@
 -cpp bin/main_cpp
 -cp src
 -lib mockatoo
+# -D MOCKATOO_LOG
 -cmd bin/main_cpp/Main

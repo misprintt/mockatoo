@@ -8,7 +8,6 @@ import mockatoo.Mockatoo;
 import mockatoo.Mock;
 import test.TestClasses;
 import util.Asserts;
-
 using mockatoo.Mockatoo;
 
 /**
@@ -47,7 +46,7 @@ class MockatooVerifyTest
 	@Test
 	public function should_verify_mock_instance()
 	{
-		var instance = VerifySomeClass.mock();
+		var instance = Mockatoo.mock(VerifySomeClass);
 		
 		instance.test("foo");
 
@@ -63,7 +62,7 @@ class MockatooVerifyTest
 	@Test
 	public function should_verify_mock_instance_as_field()
 	{
-		mock = VerifySomeClass.mock();
+		mock = Mockatoo.mock(VerifySomeClass);
 		
 		mock.test("foo");
 
@@ -74,11 +73,10 @@ class MockatooVerifyTest
 		this.mock.verify(1).test("foo");
 	}
 
-
 	@Test
 	public function should_verify_full_mock_expression()
 	{
-		var instance = VerifySomeClass.mock();
+		var instance = Mockatoo.mock(VerifySomeClass);
 
 		var count = 0;
 
@@ -87,9 +85,7 @@ class MockatooVerifyTest
 			count ++;
 		}
 		
-
-		instance.test("foo").when().thenCall(f);
-
+		Mockatoo.calls(instance.test("foo"),f);
 
 		instance.test("foo");
 
@@ -97,13 +93,16 @@ class MockatooVerifyTest
 		Mockatoo.verify(instance.test("foo"), times(1));
 		Mockatoo.verify(instance.test("foo"), 1);
 
-		instance.test("foo").verify();
+		#if !haxe3
+		//Note Haxe3 doesn't like using + macro for expression that returns void;
+		Mockatoo.verify(instance.test("foo"));
 		instance.test("foo").verify(times(1));
 		instance.test("foo").verify(1);
-
+		#end
 		Assert.areEqual(1, count);
 	}
 
+	
 	@Test
 	public function should_throw_exception_if_verify_null_mock()
 	{
@@ -115,10 +114,9 @@ class MockatooVerifyTest
 		}
 		catch(e:VerificationException)
 		{
-			trace(e);
+			// trace(e);
 			Assert.isTrue(true);
 		}
-		
 	}
 
 
@@ -133,10 +131,10 @@ class MockatooVerifyTest
 		}
 		catch(e:VerificationException)
 		{
-			trace(e);
+			// trace(e);
 			Assert.isTrue(true);
 		}
-		
+
 	}
 
 	@Test
@@ -166,7 +164,7 @@ class MockatooVerifyTest
 	// @Test
 	// public function should_cause_compilation_error_if_verify_non_existent_field()
 	// {
-	// 	var instance = VerifySomeClass.mock();
+	// 	var instance = Mockatoo.mock(VerifySomeClass);
 
 	// 	Mockatoo.when(instance.notAnActualMethod());
 	// 	Mockatoo.verify(instance.notAnActualMethod());

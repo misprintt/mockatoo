@@ -4,6 +4,7 @@
 -lib hamcrest
 -cp src
 -lib mconsole
+-lib tink_core
 -lib tink_macro
 -cp test
 -swf-version 9
@@ -20,10 +21,14 @@
 -lib hamcrest
 -cp src
 -lib mconsole
+-lib tink_core
 -lib tink_macro
 -cp test
 -js bin/test/js_test.js
 -D MOCKATOO_LOG
+-D no-unused-var-warnings
+# -v
+# -debug
 --no-inline
 
 --next
@@ -34,6 +39,7 @@
 -lib hamcrest
 -cp src
 -lib mconsole
+-lib tink_core
 -lib tink_macro
 -cp test
 -neko bin/test/neko_test.n
@@ -48,9 +54,10 @@
 -lib hamcrest
 -cp src
 -lib mconsole
+-lib tink_core
 -lib tink_macro
 -cp test
-#-D HXCPP_M64
+-D HXCPP_M64
 -cpp bin/test/cpp_test
 -D MOCKATOO_LOG
 --no-inline

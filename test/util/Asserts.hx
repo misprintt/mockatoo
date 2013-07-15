@@ -92,7 +92,7 @@ class Asserts
 
 		switch(Type.typeof(expected))
 		{
-			case TEnum(e):
+			case TEnum(_):
 			{
 				assertEnumTypeEq(cast expected, cast actual, info);
 			}

@@ -24,6 +24,7 @@ class SimpleClass
 	}
 }
 
+
 class VariableArgumentsClass
 {
 	public function new()
@@ -60,6 +61,29 @@ class VariableArgumentsClass
 	{
 		return arg1;
 	}
+}
+
+class VariableArgumentsReturnsVoidClass
+{
+	public function new()
+	{
+
+	}
+
+	public function none()
+	{
+
+	}
+
+	public function one(arg:Int)
+	{
+	}
+
+	public function two(arg1:Int, arg2:Int)
+	{
+		
+	}
+
 }
 
 interface IntefaceWithFields
@@ -158,15 +182,14 @@ interface TypedInterface<T>
 	function toTypeWithArg(value:T):T;
 }
 
-interface StringTypedInterface implements TypedInterface<String>
-{
+#if haxe3
+interface StringTypedInterface extends TypedInterface<String> {}
+interface ImplementsTypedInterface<TFoo, TBar> extends TypedInterface<TBar> {}
+#else
+interface StringTypedInterface implements TypedInterface<String> {}
+interface ImplementsTypedInterface<TFoo, TBar> implements TypedInterface<TBar> {}
+#end
 
-}
-
-interface ImplementsTypedInterface<TFoo, TBar> implements TypedInterface<TBar>
-{
-
-}
 
 class TypedClass<T>
 {
@@ -272,7 +295,7 @@ class ClassWithOptionalArg
 }
 
 
-class ClassWithTypedConstraint<T:Array<Dynamic>>
+class ClassWithTypedConstraint<T:TypedConstraintFoo>
 {
 	public function new()
 	{
@@ -315,7 +338,11 @@ interface TypedConstraintBar
 	function bar():Void;
 }
 
+#if haxe3
+class TypedConstraintFooBar extends TypedConstraintFoo implements TypedConstraintBar
+#else
 class TypedConstraintFooBar extends TypedConstraintFoo, implements TypedConstraintBar
+#end
 {
 	public function new()
 	{
@@ -373,7 +400,7 @@ class ClassWithProperties
 		return value;
 	}
 
-	public var getterSetter(get_getterSetter, set_getterSetter):String;
+	@:isVar public var getterSetter(get_getterSetter, set_getterSetter):String;
 	
 	function get_getterSetter():String
 	{
@@ -399,15 +426,15 @@ interface InterfaceWithProperties
     public var getter(default, null):String;
     public var setter(default, set_setter):String;
 }
-
+ 
 interface InterfaceWithTypedProperties<T>
 {
     public var getterSetter(get_getterSetter, set_getterSetter):T;
     public var getter(default, null):T;
     public var setter(default, set_setter):T;
 }
-
-
+ 
+ 
 // ----------------------------------------------------------------------------- Typedef Aliases
 
 
@@ -439,4 +466,29 @@ enum SomeEnumType
 {
 	foo;
 	bar;
+}
+
+class SomeClass
+{
+	public function new(){}
+}
+
+
+
+
+// ----------------------------------------------------------------------------- Matchers
+
+
+class SomeMatcherClass
+{
+	public function new(){}
+
+	public function fromString(?value:String):Bool{return false;}
+	public function fromInt(value:Int):Bool{return false;}
+	public function fromFloat(value:Float):Bool{return false;}
+	public function fromBool(value:Bool):Bool{return false;}
+	public function fromArray(value:Array<Int>):Bool{return false;}
+	public function fromDynamic(value:Dynamic):Bool{return false;}
+	public function fromEnum(value:SomeEnumType):Bool{return false;}
+	public function fromInstance(value:SomeClass):Bool{return false;}
 }

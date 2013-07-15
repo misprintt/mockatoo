@@ -1,14 +1,11 @@
 package mockatoo;
 
-#if macro
-import haxe.macro.Expr;
-#end
 
+import haxe.macro.Expr;
 import mockatoo.macro.InitMacro;
 import mockatoo.macro.MockMaker;
 import mockatoo.macro.VerifyMacro;
 import mockatoo.macro.StubbingMacro;
-
 
 /**
 Mockatoo library enables mocks creation, verification and stubbing.
@@ -21,7 +18,8 @@ class Mockatoo
 	@param typeToMock class or interface to mock
 	@return new instance of generated Mock class
 	*/
-	@:macro static public function mock<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
+
+	#if haxe3 macro #else @:macro #end static public function mock<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
 	{
 		InitMacro.init();
 		var mock = new MockMaker(typeToMock, paramTypes);
@@ -35,7 +33,8 @@ class Mockatoo
 	@param typeToMock class
 	@return new instance of generated Mock class
 	*/
-	@:macro static public function spy<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
+	
+	#if haxe3 macro #else @:macro #end static public function spy<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
 	{
 		InitMacro.init();
 		var mock = new MockMaker(typeToMock, paramTypes, true);
@@ -68,7 +67,8 @@ class Mockatoo
 	@return dynamic Verification for current mock's API 
 	 */
 
-	@:macro static public function verify(expr:ExprOf<Dynamic>, ?mode:ExprOf<VerificationMode>):ExprOf<mockatoo.internal.Verification>
+	
+	#if haxe3 macro #else @:macro #end static public function verify(expr:ExprOf<Dynamic>, ?mode:ExprOf<VerificationMode>):ExprOf<mockatoo.internal.Verification>
 	{
 		return VerifyMacro.create(expr,mode);
 	}
@@ -112,11 +112,11 @@ class Mockatoo
       @param reference to the mock's method signature to stub
     @return dynamic Stubber for matching method
     */
-	@:macro static public function when(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
+	
+	#if haxe3 macro #else @:macro #end static public function when(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
 	{
 		return StubbingMacro.createWhen(expr);
 	}
-
 
 	/**
 	Shorthand for stubbing a when().thenReturn
@@ -130,7 +130,8 @@ class Mockatoo
     Mockatoo.when(mock.someMethod("foo")).thenReturn("someValue");
     </code></pre>
 	*/
-	@:macro static public function returns(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
+	
+	#if haxe3 macro #else @:macro #end static public function returns(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
 	{
 		return StubbingMacro.returns(expr, value);
 	}
@@ -148,7 +149,8 @@ class Mockatoo
     Mockatoo.when(mock.someMethod("foo")).thenThrow("some exception");
     </code></pre>
 	*/
-	@:macro static public function throws(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
+	
+	#if haxe3 macro #else @:macro #end static public function throws(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
 	{
 		return StubbingMacro.throws(expr, value);
 	}
@@ -165,7 +167,8 @@ class Mockatoo
     Mockatoo.when(mock.someMethod("foo")).thenCall(someFunction);
     </code></pre>
 	*/
-	@:macro static public function calls(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
+	
+	#if haxe3 macro #else @:macro #end static public function calls(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
 	{
 		return StubbingMacro.calls(expr, value);
 	}
@@ -183,7 +186,7 @@ class Mockatoo
     Mockatoo.when(mock.someMethod("foo")).thenCallRealMethod();
     </code></pre>
 	*/
-	@:macro static public function callsRealMethod(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
+	#if haxe3 macro #else @:macro #end static public function callsRealMethod(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
 	{
 		return StubbingMacro.callsRealMethod(expr);
 	}
@@ -200,7 +203,7 @@ class Mockatoo
     Mockatoo.when(mock.someMethod("foo")).thenStub();
     </code></pre>
 	*/
-	@:macro static public function stub(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
+	#if haxe3 macro #else @:macro #end static public function stub(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
 	{
 		return StubbingMacro.stubs(expr);
 	}
@@ -215,157 +218,90 @@ class Mockatoo
 		Console.assert(Std.is(mock, Mock), "Object is not an instance of mock");
 		return mock.mockProxy.reset();
 	}
+}
 
-	// ------------------------------------------------------------------------- Matchers
+
+#if haxe3 
+/**
+Provides compatibility in haxe3 for "using" Mockatoo on methods that return Void.
+This is not needed when calling static Mockatoo functions directly 
+*/
+class MockatooVoid
+{	
+	/**
+	Verifies certain behavior happened on a method that returns Void at least once / exact number of times / never
+	@see Mockatoo.verify
+	*/
+
 	
-	/**
-	Matches any String value
-	<pre class="code"><code class="haxe">
-	mock.someMethod(Mockatoo.anyString()).returns("foo");
-	mock.someMethod(Mockatoo.anyString()).verify();
-    </code></pre>
-	*/
-	static public function anyString():Dynamic
+	macro static public function verify(expr:ExprOf<Void>, ?mode:ExprOf<VerificationMode>):ExprOf<mockatoo.internal.Verification>
 	{
-		return Matcher.anyString;
+		return VerifyMacro.create(expr,mode);
 	}
 
 	/**
-	Matches any Int value
-	<pre class="code"><code class="haxe">
-	mock.someMethod(Mockatoo.anyInt()).returns("foo");
-	mock.someMethod(Mockatoo.anyInt()).verify();
-    </code></pre>
-	*/
-	static public function anyInt():Dynamic
-	{
-		return Matcher.anyInt;
-	}
+    Enables stubbing methods that return Void
+   	@see Mockatoo.when
+    */
 	
-	/**
-	Matches any Float value
-	<pre class="code"><code class="haxe">
-	mock.someMethod(Mockatoo.anyFloat()).returns("foo");
-	mock.someMethod(Mockatoo.anyFloat()).verify();
-    </code></pre>
-	*/
-	static public function anyFloat():Dynamic
+	macro static public function when(expr:ExprOf<Void>):ExprOf<mockatoo.internal.Stubber>
 	{
-		return Matcher.anyFloat;
+		return StubbingMacro.createWhen(expr);
 	}
+
+	/**
+	Shorthand for stubbing a when().thenReturn on a method that returns Void
+	@see Mockatoo.returns
+	*/
+	macro static public function returns(expr:ExprOf<Void>, value:Expr):ExprOf<mockatoo.internal.Stubber>
+	{
+		return StubbingMacro.returns(expr, value);
+	}
+
+
+	/**
+	Shorthand for stubbing a when().thenThrow on a method that returns Void
+	@see Mockatoo.throws
+	*/
 	
-	/**
-	Matches any Bool value
-	<pre class="code"><code class="haxe">
-	mock.someMethod(Mockatoo.anyBool()).returns("foo");
-	mock.someMethod(Mockatoo.anyBool()).verify();
-    </code></pre>
-	*/
-	static public function anyBool():Dynamic
+	macro static public function throws(expr:ExprOf<Void>, value:Expr):ExprOf<mockatoo.internal.Stubber>
 	{
-		return Matcher.anyBool;
+		return StubbingMacro.throws(expr, value);
 	}
+
+	/**
+	Shorthand for stubbing a when().thenCall on a method that returns Void
+	@see Mockatoo.calls
+	*/
 	
-	/**
-	Matches any iterator or iterable including Array, List, etc
-	<pre class="code"><code class="haxe">
-	mock.someMethod(Mockatoo.anyIterator()).returns("foo");
-	mock.someMethod(Mockatoo.anyIterator()).verify();
-    </code></pre>
-	*/
-	static public function anyIterator():Dynamic
+	macro static public function calls(expr:ExprOf<Void>, value:Expr):ExprOf<mockatoo.internal.Stubber>
 	{
-		return cast Matcher.anyIterator;
+		return StubbingMacro.calls(expr, value);
+	}
+
+
+	/**
+	Shorthand for stubbing a when().thenCallRealMethod on a method that returns Void
+	@see Mockatoo.callsRealMethod
+	*/
+	macro static public function callsRealMethod(expr:ExprOf<Void>):ExprOf<mockatoo.internal.Stubber>
+	{
+		return StubbingMacro.callsRealMethod(expr);
 	}
 
 	/**
-	Matches any Dynamic or typedef data structure
-	<pre class="code"><code class="haxe">
-	mock.someMethod(Mockatoo.anyObject()).returns("foo");
-	mock.someMethod(Mockatoo.anyObject()).verify();
-    </code></pre>
+	Shorthand for stubbing a when().thenStub() on a method that returns Void
+	@see Mockatoo.stub
 	*/
-	static public function anyObject():Dynamic
+	macro static public function stub(expr:ExprOf<Void>):ExprOf<mockatoo.internal.Stubber>
 	{
-		return cast Matcher.anyObject;
-	}
-
-	/**
-	Matches any Enum value
-	<pre class="code"><code class="haxe">
-	mock.someMethod(Mockatoo.anyEnum()).returns("foo");
-	mock.someMethod(Mockatoo.anyEnum()).verify();
-    </code></pre>
-	*/
-	static public function anyEnum():Dynamic
-	{
-		return cast Matcher.anyEnum;
-	}
-
-	/**
-	Matches any Enum value of a specific type
-	<pre class="code"><code class="haxe">
-	mock.someMethod(Mockatoo.enumOf(SomeEnum)).returns("foo");
-	mock.someMethod(Mockatoo.enumOf(SomeEnum)).verify();
-    </code></pre>
-	*/
-	static public function enumOf(e:Enum<Dynamic>):Dynamic
-	{
-		return cast Matcher.enumOf(e);
-	}	
-
-	/**
-	Matches any instance of a class or it's subclasses
-	<pre class="code"><code class="haxe">
-	mock.someMethod(Mockatoo.instanceOf(SomeClass)).returns("foo");
-	mock.someMethod(Mockatoo.instanceOf(SomeClass)).verify();
-    </code></pre>
-	*/
-	static public function instanceOf(c:Class<Dynamic>):Dynamic
-	{
-		return cast Matcher.instanceOf(c);
-	}
-
-	/**
-	Matches any non-null value
-	<pre class="code"><code class="haxe">
-	mock.someMethod(Mockatoo.isNotNull()).returns("foo");
-	mock.someMethod(Mockatoo.isNotNull()).verify();
-    </code></pre>
-	*/
-	static public function isNotNull():Dynamic
-	{
-		return cast Matcher.isNotNull;
-	}
-
-	/**
-	Wildcard to match any value (or null)
-	<pre class="code"><code class="haxe">
-	mock.someMethod(Mockatoo.any()).returns("foo");
-	mock.someMethod(Mockatoo.any()).verify();
-    </code></pre>
-	*/
-	static public function any():Dynamic
-	{
-		return cast Matcher.any;
-	}	
-	
-	/**
-	Extension point for matching against the result of a custom function
-	<pre class="code"><code class="haxe">
-	var f = function(value:Dynamic):Bool
-	{
-		return Std.string(value).indexOf("foo") == 1;
-	}
-	mock.someMethod(Mockatoo.customMatcher(f)).returns("foo");
-	mock.someMethod(Mockatoo.customMatcher(f)).verify();
-    </code></pre>
-	*/
-	static public function customMatcher(f:Dynamic -> Bool):Dynamic
-	{
-		return cast Matcher.customMatcher(f);
+		return StubbingMacro.stubs(expr);
 	}
 }
+
+#end
+
+
 
 
 /**
@@ -389,7 +325,7 @@ enum Matcher
 	anyInt;
 	anyFloat;
 	anyBool;
-	anyIterator; //array, hash, iterable, iterator, etc
+	anyIterator; //array, map, iterable, iterator, etc
 	anyObject;  //anonymous data structure
 	anyEnum;
 	enumOf(e:Enum<Dynamic>);  //an enum value of a specific enum type

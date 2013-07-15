@@ -10,8 +10,15 @@ import mockatoo.Mock;
 import test.TestClasses;
 import util.Asserts;
 
+#if haxe3
+import haxe.ds.StringMap;
+#else
+private typedef StringMap<T> = Hash<T>
+#end
+
 using mockatoo.Mockatoo;
 
+typedef AnyArray = Array<Dynamic>;
 typedef Field = 
 {
 	name:String,
@@ -74,23 +81,29 @@ class MockatooTest
 	public function should_mock_class_with_fields():Void
 	{
 		var fields:Array<Field> = [];
+		var args:Array<Dynamic> = [];
 
-		addField(fields, "toBool");
-		addField(fields, "toInt");
-		addField(fields, "toFloat");
-		addField(fields, "toString");
-		addField(fields, "toDynamic");
-		addField(fields, "toVoid");
+		addField(fields, "toBool", args);
+		addField(fields, "toInt", args);
+		addField(fields, "toFloat", args);
+		addField(fields, "toString", args);
+		addField(fields, "toDynamic", args);
+		addField(fields, "toVoid", args);
 
-		addField(fields, "toBoolWithArgs", [true]);
-		addField(fields, "toIntWithArgs", [1]);
-		addField(fields, "toFloatWithArgs", [1.0]);
-		addField(fields, "toStringWithArgs", ["string"]);
-		addField(fields, "toDynamicWithArgs", [{name:"foo"}]);
-		addField(fields, "toVoidWithArgs", [1]);
+		addField(fields, "toBoolWithArgs", toArgs(true));
 
-		addField(fields, "withMultipleArgs", [1, true]);
-		addField(fields, "withOptionalArgs", [1.0]);
+		addField(fields, "toIntWithArgs", toArgs(1));
+
+		addField(fields, "toFloatWithArgs", toArgs(1.0));
+		
+		addField(fields, "toStringWithArgs", toArgs("string"));
+
+		addField(fields, "toDynamicWithArgs", toArgs({name:"foo"}));
+
+		addField(fields, "toVoidWithArgs", toArgs(1));
+
+		addField(fields, "withMultipleArgs", toArgs(1,true));
+		addField(fields, "withOptionalArgs", toArgs(1.0));
 
 		var mock = Mockatoo.mock(ClassWithFields);
 		assertMock(mock, ClassWithFields, fields);
@@ -101,12 +114,12 @@ class MockatooTest
 	{
 		var fields:Array<Field> = [];
 
-		addField(fields, "toBool");
-		addField(fields, "toInt");
-		addField(fields, "toFloat");
-		addField(fields, "toString");
-		addField(fields, "toDynamic");
-		addField(fields, "toVoid");
+		addField(fields, "toBool", null);
+		addField(fields, "toInt", null);
+		addField(fields, "toFloat", null);
+		addField(fields, "toString", null);
+		addField(fields, "toDynamic", null);
+		addField(fields, "toVoid", null);
 
 		addField(fields, "toBoolWithArgs", [true]);
 		addField(fields, "toIntWithArgs", [1]);
@@ -269,7 +282,8 @@ class MockatooTest
 
 	// ------------------------------------------------------------------------- edge cases
 
-	@Test #if !haxe3 @Ignore("Cannot override inline methods") #end
+	#if haxe3
+	@Test
 	public function should_mock_class_with_inlined_methods():Void
 	{
 		var fields:Array<Field> = [];
@@ -279,6 +293,12 @@ class MockatooTest
 		var mock = Mockatoo.mock(ClassWithInlinedMethod);
 		assertMock(mock, ClassWithInlinedMethod, fields);
 	}
+	#else
+	@Test @Ignore("Can only override inline methods in Haxe3")
+	public function should_mock_class_with_inlined_methods():Void
+	{
+	}
+	#end
 
 	#if flash
 	@Ignore("Cannot override final methods in AS3")
@@ -312,7 +332,7 @@ class MockatooTest
 		assertMock(mock, ClassWithPrivateReference, fields);
 	}
 	#else
-	@Test  @Ignore("Requires tink_macro fork https://github.com/back2dos/tinkerbell/pull/37")
+	@Test  @Ignore("Requires Haxe 3 and corresponding tink_macros")
 	public function should_mock_class_with_private_type_references():Void
 	{
 		
@@ -330,8 +350,7 @@ class MockatooTest
 		assertMock(mock, haxe.Http, fields);
 	}
 	#else
-	@Test
-	@Ignore("Requires tink_macro fork https://github.com/back2dos/tinkerbell/pull/37")
+	@Test  @Ignore("Requires Haxe 3 and corresponding tink_macros")
 	public function should_mock_http():Void
 	{
 		
@@ -355,11 +374,10 @@ class MockatooTest
 		Assert.isTrue(true);
 	}
 
-
 	@Test
 	public function should_mock_class_with_typed_constraints()
 	{
-		var mock = ClassWithTypedConstraint.mock([Array]);
+		var mock = Mockatoo.mock(ClassWithTypedConstraint, [TypedConstraintFoo]);
 		mock.test();
 		Assert.isTrue(true);
 	}
@@ -368,15 +386,15 @@ class MockatooTest
 	@Test
 	public function should_mock_class_with_multiple_typed_constraints()
 	{
-		var mock = ClassWithMultipleTypedConstraints.mock([TypedConstraintFooBar]);
+		var mock = Mockatoo.mock(ClassWithMultipleTypedConstraints,[TypedConstraintFooBar]);
 		mock.test();
 		Assert.isTrue(true);
 	}
 
-		@Test
+	@Test
 	public function should_mock_class_with_typed_constraints_using_typdef_ref()
 	{
-		var mock = AnyConcreteTypedParam.mock();
+		var mock = Mockatoo.mock(AnyConcreteTypedParam);
 		Assert.isTrue(true);
 	}
 
@@ -440,83 +458,6 @@ class MockatooTest
 		Assert.isTrue(true);//otherwise an expception would have been thrown
 	}
 
-
-	// ------------------------------------------------------------------------- matchers
-
-	
-	@Test
-	public function should_return_anyString_matcher()
-	{
-		Asserts.assertEnumTypeEq(Matcher.anyString, cast Mockatoo.anyString());
-	}
-	
-	@Test
-	public function should_return_anyInt_matcher()
-	{
-		Asserts.assertEnumTypeEq(Matcher.anyInt, cast Mockatoo.anyInt());
-	}
-	
-	
-	@Test
-	public function should_return_anyFloat_matcher()
-	{
-		Asserts.assertEnumTypeEq(Matcher.anyFloat, cast Mockatoo.anyFloat());
-	}
-	
-	@Test
-	public function should_return_anyBool_matcher()
-	{
-		Asserts.assertEnumTypeEq(Matcher.anyBool, cast Mockatoo.anyBool());
-	}
-	
-	@Test
-	public function should_return_anyIterator_matcher()
-	{
-		Asserts.assertEnumTypeEq(Matcher.anyIterator, cast Mockatoo.anyIterator());
-	}
-	
-	@Test
-	public function should_return_anyObject_matcher()
-	{
-		Asserts.assertEnumTypeEq(Matcher.anyObject, cast Mockatoo.anyObject());
-	}
-	
-	@Test
-	public function should_return_anyEnum_matcher()
-	{
-		Asserts.assertEnumTypeEq(Matcher.anyEnum, cast Mockatoo.anyEnum());
-	}
-	
-	@Test
-	public function should_return_enumOf_matcher()
-	{
-		Asserts.assertEnumTypeEq(Matcher.enumOf(Type.ValueType), cast Mockatoo.enumOf(Type.ValueType));
-	}
-	
-	@Test
-	public function should_return_instanceOf_matcher()
-	{
-		Asserts.assertEnumTypeEq(Matcher.instanceOf(Hash), cast Mockatoo.instanceOf(Hash));
-	}
-	
-	@Test
-	public function should_return_isNotNull_matcher()
-	{
-		Asserts.assertEnumTypeEq(Matcher.isNotNull, cast Mockatoo.isNotNull());
-	}
-	
-	@Test
-	public function should_return_any_matcher()
-	{
-		Asserts.assertEnumTypeEq(Matcher.any, cast Mockatoo.any());
-	}
-	
-	@Test
-	public function should_return_customMatcher()
-	{
-		var f = function(value:Dynamic):Bool { return true; }
-		Asserts.assertEnumTypeEq(Matcher.customMatcher(f), cast Mockatoo.customMatcher(f));
-	}
 
 	// ------------------------------------------------------------------------- stub properties
 
@@ -678,6 +619,7 @@ class MockatooTest
 
 	}
 
+	#if cpp @Ignore("Cannot stub 'never' field in cpp")#end
 	@Test
 	public function should_stub_hidden_property()
 	{
@@ -703,34 +645,36 @@ class MockatooTest
 		Assert.areEqual("foo", instance.func());
 	}
 
+	///
+
 	@Test
 	public function should_stub_interface_with_getterSetter()
 	{
 		var instance = Mockatoo.mock(InterfaceWithProperties);
-
+ 
 		Mockatoo.when(instance.getterSetter).thenReturn("foo");
-
+ 
 		Assert.areEqual("foo", instance.getterSetter);
 	}
-
+ 
 	@Test
 	public function should_stub_interface_with_getter()
 	{
 		var instance = Mockatoo.mock(InterfaceWithProperties);
-
+ 
 		Mockatoo.when(instance.getter).thenReturn("foo");
-
+ 
 		Assert.areEqual("foo", instance.getter);
 	}
-
-
+ 
+ 
 	@Test
 	public function should_stub_interface_with_setter()
 	{
-		var instance = Mockatoo.mock(ClassWithProperties);
-
+		var instance = Mockatoo.mock(InterfaceWithProperties);
+ 
 		Mockatoo.when(instance.setter).thenThrow("foo");
-
+ 
 		try
 		{
 			instance.setter = "a";
@@ -740,18 +684,18 @@ class MockatooTest
 			Assert.areEqual("foo", e);
 		}
 	}
-
-
+ 
+ 
 	@Test
 	public function should_stub_interface_with_typed_setter()
 	{
 		var instance = Mockatoo.mock(InterfaceWithTypedProperties);
-
+ 
 		Mockatoo.when(instance.getter).thenReturn("foo");
 		Mockatoo.when(instance.setter).thenThrow("bar");
-
+ 
 		Assert.areEqual("foo", instance.getter);
-
+ 
 		try
 		{
 			instance.setter = "a";
@@ -761,8 +705,6 @@ class MockatooTest
 			Assert.areEqual("bar", e);
 		}
 	}
-
-
 
 	// ------------------------------------------------------------------------- utilities
 
@@ -794,7 +736,22 @@ class MockatooTest
 
 	function addField(fields:Array<Field>, name:String, ?args:Array<Dynamic>)
 	{
-		if(args == null) args = [];
+		if(args == null)
+			args = [];
+
 		fields.push({name:name, args:args});
 	}
+
+	/**
+	utility function for haxe3 to create dynamic arrays of arguments for a function
+	*/
+	function toArgs(?arg1:Dynamic, ?arg2:Dynamic, ?arg3:Dynamic):Array<Dynamic>
+	{
+		var args:Array<Dynamic> = new Array<Dynamic>();
+		if(arg1 != null) args.push(arg1);
+		if(arg2 != null) args.push(arg2);
+		if(arg3 != null) args.push(arg3);
+		return args;
+	}
+
 }

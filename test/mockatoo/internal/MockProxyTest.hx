@@ -444,13 +444,20 @@ class ClassWithPropertiesToMock
 	public var propDefault(default, default):String;
 	public var propNull(default, null):String;
 
+	#if haxe3
+	@:isVar public var propSet(default, set):String;
+	@:isVar public var propGet(get, null):String;
+	@:isVar public var propGetSet(get, set):String;
+	#else
 	public var propSet(default, set_propSet):String;
+	public var propGet(get_propGet, null):String;
+	public var propGetSet(get_propGetSet, set_propGetSet):String;
+	#end
+
 	function set_propSet(value:String):String{propSet = value; return value;}
 
-	public var propGet(get_propGet, null):String;
 	function get_propGet():String{return propGet;}
 
-	public var propGetSet(get_propGetSet, set_propGetSet):String;
 	function get_propGetSet():String{return propGetSet;}
 	function set_propGetSet(value:String):String{propGetSet = value; return value;}
 

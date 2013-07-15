@@ -2,6 +2,13 @@ package mockatoo.internal;
 import mockatoo.Mockatoo;
 import mockatoo.exception.StubbingException;
 import haxe.PosInfos;
+
+#if haxe3
+import haxe.ds.StringMap;
+#else
+private typedef StringMap<T> = Hash<T>
+#end
+
 /**
 Responsible for run time mocking behaviour of a Mock instance.
 */
@@ -11,8 +18,8 @@ class MockProxy
 	public var spy:Bool;
 	var targetClass:Class<Mock>;
 	var targetClassName:String;
-	var methods:Hash<MockMethod>;
-	var properties:Hash<MockProperty>;
+	var methods:StringMap<MockMethod>;
+	var properties:StringMap<MockProperty>;
 
 	public function new(target:Mock, ?spy:Bool=false)
 	{
@@ -238,14 +245,13 @@ class MockProxy
 	*/
 	public function reset()
 	{
-		methods = new Hash();
-		properties = new Hash();
+		methods = new StringMap();
+		properties = new StringMap();
 
 		var m = haxe.rtti.Meta.getType(targetClass);
 		targetClassName = cast m.mockatoo[0];
 
-
-		parsePropertyMetadata(m.mockatooProperties);
+		parsePropertyMetadata(cast m.mockatooProperties);
 
 		var fieldMeta = haxe.rtti.Meta.getFields(targetClass);
 		parseMethodMetadata(fieldMeta);

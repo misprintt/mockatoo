@@ -1,5 +1,17 @@
+v2.1.0
+- released to new haxelib (3.x)
+
+
+v2.0.0
+- Migrated to Haxe 3
+- updated build files
+- added @:isVar metadata to mocked interface getter setters (haxe3)
+- added duplicate macro APIs when 'using' Mockatoo on methods that return Void (MacroVoid)
+
+
 v1.3.2
 - Issue #14 : setter for property defined in interface is missing
+ 
 
 v1.3.1
 - Issue #12 : added support for typed param contraints (class Test<T:(Foo,Bar)>{})
