@@ -6,12 +6,13 @@
 		"id": "mockatoo",
 		"dependencies": 
 		{
-			"tink_macros": "2.x",
+			"tink_macro": "2.x",
 			"mconsole": "1.x"
 		},
 		"devDependencies":
 		{
-			"mtask":"2.x"
+			"mtask":"2.x",
+			"munit":"2.x"
 		}
 	},
 	"haxelib": 
