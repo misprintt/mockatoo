@@ -312,7 +312,7 @@ class MockatooTest
 		assertMock(mock, ClassWithPrivateReference, fields);
 	}
 	#else
-	@Test  @Ignore("Requires tink_macros fork https://github.com/back2dos/tinkerbell/pull/37")
+	@Test  @Ignore("Requires tink_macro fork https://github.com/back2dos/tinkerbell/pull/37")
 	public function should_mock_class_with_private_type_references():Void
 	{
 		
@@ -331,7 +331,7 @@ class MockatooTest
 	}
 	#else
 	@Test
-	@Ignore("Requires tink_macros fork https://github.com/back2dos/tinkerbell/pull/37")
+	@Ignore("Requires tink_macro fork https://github.com/back2dos/tinkerbell/pull/37")
 	public function should_mock_http():Void
 	{
 		

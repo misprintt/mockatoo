@@ -139,4 +139,4 @@ The syntax for wildcard Matchers has been updated to be compiler-safe when using
 
 Mockatoo is heavily inspired by **Mockito**'s public API <http://docs.mockito.googlecode.com/hg/latest/org/mockito/Mockito.html>
 
-Mockatoo uses [tink_macros](https://github.com/back2dos/tinkerbell) for a lot of the low level macro manipulations.
+Mockatoo uses [tink_macro](https://github.com/back2dos/tinkerbell) for a lot of the low level macro manipulations.

@@ -15,7 +15,7 @@ class Build extends mtask.core.BuildBase
 		t.versionDescription = "Minor";
 		
 		t.addDependency("mconsole");
-		t.addDependency("tink_macros");
+		t.addDependency("tink_macro");
 
 		t.beforeCompile = function(path)
 		{

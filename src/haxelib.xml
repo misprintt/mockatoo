@@ -3,5 +3,5 @@
 	<description><![CDATA[Mockatoo is a Haxe library for mock creation, verification and stubbing.]]></description>
 	<version name="1.3.3"><![CDATA[Minor]]></version>
 	<depends name="mconsole"/>
-	<depends name="tink_macros"/>
+	<depends name="tink_macro"/>
 </project>

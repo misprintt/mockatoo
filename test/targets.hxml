@@ -4,7 +4,7 @@
 -lib hamcrest
 -cp src
 -lib mconsole
--lib tink_macros
+-lib tink_macro
 -cp test
 -swf-version 9
 -swf bin/test/as3_test.swf
@@ -20,7 +20,7 @@
 -lib hamcrest
 -cp src
 -lib mconsole
--lib tink_macros
+-lib tink_macro
 -cp test
 -js bin/test/js_test.js
 -D MOCKATOO_LOG
@@ -34,7 +34,7 @@
 -lib hamcrest
 -cp src
 -lib mconsole
--lib tink_macros
+-lib tink_macro
 -cp test
 -neko bin/test/neko_test.n
 -D MOCKATOO_LOG
@@ -48,7 +48,7 @@
 -lib hamcrest
 -cp src
 -lib mconsole
--lib tink_macros
+-lib tink_macro
 -cp test
 #-D HXCPP_M64
 -cpp bin/test/cpp_test
