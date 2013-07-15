@@ -467,3 +467,28 @@ enum SomeEnumType
 	foo;
 	bar;
 }
+
+class SomeClass
+{
+	public function new(){}
+}
+
+
+
+
+// ----------------------------------------------------------------------------- Matchers
+
+
+class SomeMatcherClass
+{
+	public function new(){}
+
+	public function fromString(?value:String):Bool{return false;}
+	public function fromInt(value:Int):Bool{return false;}
+	public function fromFloat(value:Float):Bool{return false;}
+	public function fromBool(value:Bool):Bool{return false;}
+	public function fromArray(value:Array<Int>):Bool{return false;}
+	public function fromDynamic(value:Dynamic):Bool{return false;}
+	public function fromEnum(value:SomeEnumType):Bool{return false;}
+	public function fromInstance(value:SomeClass):Bool{return false;}
+}

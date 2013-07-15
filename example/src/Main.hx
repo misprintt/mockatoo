@@ -1,8 +1,8 @@
-import mockatoo.Mockatoo;
+package ;
+
 import mockatoo.exception.VerificationException;
 
 import mockatoo.Mockatoo.*;
-
 using mockatoo.Mockatoo;
 /**
 Simple example showing mocking for interfaces, classes and typedef alisas.
@@ -61,7 +61,7 @@ class Main
 		mock.round(0).throws("exception");
 
 		//stub a custom response for any other values
-		mock.round(anyFloat()).returns(99);
+		mock.round(cast anyFloat).returns(99);
 
 		var result = mock.round(1.1);
 		assertEqual(11, result);

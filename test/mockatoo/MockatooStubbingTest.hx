@@ -9,10 +9,7 @@ import mockatoo.Mock;
 import test.TestClasses;
 import util.Asserts;
 
-#if haxe3
 import mockatoo.Mockatoo.*;
-#end
-
 using mockatoo.Mockatoo;
 
 class MockatooStubbingTest 
@@ -109,14 +106,14 @@ class MockatooStubbingTest
 	{
 		var instance = Mockatoo.mock(StubSomeClass);
 
-		Mockatoo.returns(instance.parse(Mockatoo.anyString()), "foo");
+		Mockatoo.returns(instance.parse(cast anyString), "foo");
 
 		var result = instance.parse("a");
 
 		Assert.areEqual("foo", result);
 
 		Mockatoo.reset(instance);
-		instance.parse(Mockatoo.anyString()).returns("bar");
+		instance.parse(cast anyString).returns("bar");
 
 		result = instance.parse("b");
 

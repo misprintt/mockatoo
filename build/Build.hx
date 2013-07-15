@@ -16,6 +16,7 @@ class Build extends mtask.core.BuildBase
 		
 		t.addDependency("mconsole");
 		t.addDependency("tink_macro");
+		t.addDependency("tink_core");
 
 		t.beforeCompile = function(path)
 		{
@@ -42,7 +43,7 @@ class Build extends mtask.core.BuildBase
 
 	@task function haxelibTest()
 	{
-		cmd("haxelib", ["test", "bin/release/haxelib.zip"]);
+		cmd("haxelib", ["local", "bin/release/haxelib.zip"]);
 	}
 
 	@task function example()

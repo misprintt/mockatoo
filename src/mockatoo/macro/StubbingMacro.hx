@@ -75,6 +75,28 @@ class StubbingMacro
 		return expr;
 	}
 
+	static function isMatcher(expr:Expr):Bool
+	{
+		return switch(expr.expr)
+		{
+			case EConst(CIdent("anyString")): 		true;
+			case EConst(CIdent("anyInt")): 			true;
+			case EConst(CIdent("anyFloat")): 		true;
+			case EConst(CIdent("anyBool")): 		true;
+			case EConst(CIdent("anyIterator")): 	true;
+			case EConst(CIdent("anyObject")): 		true;
+			case EConst(CIdent("anyEnum")): 		true;
+			case EConst(CIdent("enumOf")): 			true;
+			case EConst(CIdent("instanceOf")): 		true;
+			case EConst(CIdent("isNotNull")): 		true;
+			case EConst(CIdent("any")): 			true;
+			case EConst(CIdent("customMatcher")): 	true;
+			case ECall(e, params): 					isMatcher(e);
+			case _: 								false;
+
+		}
+	}
+
 	public static function returns(expr:Expr, returnExpr:Expr):Expr
 	{
 		return createThen(expr, "thenReturn", returnExpr);
