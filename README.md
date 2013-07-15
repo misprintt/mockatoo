@@ -11,14 +11,11 @@ Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode
 
 > Disambiguation: The **Mockatoo** belongs to the bird family *Cacatuidae* and look suspiciously like a taxidermied [Cockatoo](http://en.wikipedia.org/wiki/Cockatoo) with fake plumage. They are mostly found nesting within testing habitats and like  to repeat what you say (like a parrot). A Mockatoo may turn violent if mistaken for a *MockingBird* :)
 
-
-Mockatoo supports Haxe 3 and 2.10 across most platforms (AVM2, JavaScript, Neko, C++, etc)
-
-## Haxe 3
-
 ### Installation
 
-Install current official release from haxelib (2.0.0)
+Mockatoo supports Haxe 3 across most platforms (AVM2, JavaScript, Neko, C++, etc)
+
+Install current official release from haxelib (2.x)
 
 	haxelib install mockatoo
 
@@ -30,62 +27,26 @@ Or point to your local fork:
 
 	haxelib dev mockatoo /ABSOLUTE_PATH_TO_REPO/src
 
-### Dependencies
-
-Until a haxe 3 version of `tink_macros` is released to haxelib, you may need to 
-build against the following fork that addresses a few compatibility issues:
-
-<http://github.com/massiveinteractive/tinkerbell>
-
-	haxelib git tink_macros https://github.com/massiveinteractive/tinkerbell.git
-
-### Known issues
-
-#### Cannot mock or spy a Class "using" mockatoo.Mockatoo
-
-See <https://code.google.com/p/haxe/issues/detail?id=1843>
-
-	using mockatoo.Mockatoo;
-	...
-	Mockatoo.mock(SomeClass);//works
-	SomeClass.mock();//fails compilation 
-
-Workaround is to use static importing (new in Haxe 3)
-
-	import mockatoo.Mockatoo.*;
-	...
-	mock(SomeClass);
+> For Legacy Haxe 2.10 refer to the haxe2 branch
 
 
-## Haxe 2
+## Upgrading to Haxe 3
 
-### Installation
-
-Install current official release from haxelib (1.3.2)
-
-	haxelib install mockatoo
-
-Install the latest directly from github:
-
-	haxelib git mockatoo https://github.com/misprintt/mockatoo.git src
-
-Or point to your local fork:
-
-	haxelib dev mockatoo /ABSOLUTE_PATH_TO_REPO/src
+See [upgrading to haxe 3](http://github.com/misprintt/mockatoo/wiki/Upgrading-To-Haxe-3)
 
 
 ## Features
 
 Import and use the 'using' mixin
 
-	import mockatoo.Mockatoo;
+	import mockatoo.Mockatoo.*;
 	using mockatoo.Mockatoo;
 
 Mock any class or interface, including typedef aliases and types with generics (type paramaters)
 
-	var mockedClass = SomeClass.mock();
-	var mockedInterface = SomeInterface.mock();
-	var mockedClassWithTypeParams = Foo.mock([Bar]); //e.g. Foo<Bar>
+	var mockedClass = mock(SomeClass);
+	var mockedInterface = mock(SomeInterface);
+	var mockedClassWithTypeParams = mock(Foo,[Bar]); //e.g. Foo<Bar>
 
 Verify a method has been called with specific paramaters (cleaner syntax since 1.3.0)
 
@@ -99,8 +60,8 @@ Define a stub response when a method is invoked
 
 Custom argument matchers and wildcards
 
-	mock.foo(Mockatoo.anyString()).returns("hello");
-	mock.foo(Mockatoo.anyString()).verify();
+	mock.foo(anyString).returns("hello");
+	mock.foo(anyString).verify();
 
 Verify exact number of invocations 
 
@@ -110,9 +71,9 @@ Verify exact number of invocations
 	mock.foo().verify(atLeastOnce);
 	mock.foo().verify(never);
 
-Spying on real objects (Since 1.1.0)
+Spying on real objects
 
-	var spy = SomeClass.spy();//creates instance where all methods are real (not stubbed)
+	var spy = spy(SomeClass);//creates instance where all methods are real (not stubbed)
 	spy.foo(); // calls real method;
 	
 	spy.foo().stub();
@@ -122,14 +83,14 @@ Spying on real objects (Since 1.1.0)
 	spy.foo(); //calls custom stub;
 
 
-Partial Mocking (Since 1.2.0)
+Partial Mocking
 
-	var mock = Mockatoo.mock(SomeClass);
+	var mock = mock(SomeClass);
 	mock.foo().callsRealMethod();
 	mock.foo();//calls out to real method
 
 
-Mock properties that are read or write only (Since 1.2.0)
+Mock properties that are read or write only
 
 	mock.someProperty.returns("hello");
 	mock.someSetter.throws("exception");
@@ -142,10 +103,14 @@ Click here for detailed [documentation and examples](http://github.com/misprintt
 
 ## Release Notes
 
+### New in 2.0.0
+
+- Haxe 3 support
+- Changes to use static imports (`import mockatoo.Mockatoo.*`)
+
 ### New in 1.3.2
 
 Fixed issues preventing mocking of interface properties (getter/setters)
-
 
 ### New in 1.3.0
 
@@ -154,9 +119,9 @@ Mockatoo 1.3.0 provides a simplified, smarter, macro enhanced API when using Hax
 
 	using mockatoo.Mockatoo;
 	...
-	var mock = SomeClass.mock();
-	var mock = SomeInterface.mock();
-	var spy = SomeClass.spy(); // partial mock that calls real methods unless stubbed
+	var mock = mock(SomeClass);
+	var mock = mock(SomeInterface);
+	var spy = spy(SomeClass); // partial mock that calls real methods unless stubbed
 
 New macros have been added for simplified stubbing with 'using':
 
@@ -183,8 +148,30 @@ The syntax for wildcard Matchers has been updated to be compiler-safe when using
 
 	mock.someMethod(Mockatoo.anyString()).returns("foo");
 
+
+## Known issues (Haxe 3)
+
+See [upgrading to haxe 3](http://github.com/misprintt/mockatoo/wiki/Upgrading-To-Haxe-3) for more details
+
+
+#### Cannot mock or spy a Class "using" mockatoo.Mockatoo
+
+See <https://code.google.com/p/haxe/issues/detail?id=1843>
+
+	using mockatoo.Mockatoo;
+	...
+	Mockatoo.mock(SomeClass);//works
+	SomeClass.mock();//fails compilation 
+
+Workaround is to use static importing (new in Haxe 3)
+
+	import mockatoo.Mockatoo.*;
+	...
+	mock(SomeClass);
+
+
 ## Credits
 
 Mockatoo is heavily inspired by **Mockito**'s public API <http://docs.mockito.googlecode.com/hg/latest/org/mockito/Mockito.html>
 
-Mockatoo uses [tink_macros](https://github.com/back2dos/tinkerbell) for a lot of the low level macro manipulations.
+Mockatoo uses [tink_macro](https://github.com/back2dos/tinkerbell) for a lot of the low level macro manipulations.
