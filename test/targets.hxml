@@ -57,7 +57,7 @@
 -lib tink_core
 -lib tink_macro
 -cp test
-#-D HXCPP_M64
+-D HXCPP_M64
 -cpp bin/test/cpp_test
 -D MOCKATOO_LOG
 --no-inline

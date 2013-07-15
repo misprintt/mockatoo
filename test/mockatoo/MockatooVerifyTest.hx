@@ -114,10 +114,9 @@ class MockatooVerifyTest
 		}
 		catch(e:VerificationException)
 		{
-			trace(e);
+			// trace(e);
 			Assert.isTrue(true);
 		}
-		
 	}
 
 
@@ -132,10 +131,10 @@ class MockatooVerifyTest
 		}
 		catch(e:VerificationException)
 		{
-			trace(e);
+			// trace(e);
 			Assert.isTrue(true);
 		}
-		
+
 	}
 
 	@Test

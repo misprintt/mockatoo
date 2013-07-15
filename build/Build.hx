@@ -12,7 +12,7 @@ class Build extends mtask.core.BuildBase
 		t.description = "Mockatoo is a Haxe library for mock creation, verification and stubbing.";
 		t.url = "http://github.com/misprintt/mockatoo";
 
-		t.versionDescription = "Updated for Haxe 3 RC2 and new haxelib.";
+		t.versionDescription = "Official Haxe 3 release.";
 		
 		t.addDependency("mconsole");
 		t.addDependency("tink_macro");
@@ -20,6 +20,7 @@ class Build extends mtask.core.BuildBase
 		t.beforeCompile = function(path)
 		{
 			rm("src/haxelib.xml");
+			rm("src/haxelib.json");
 			cp("src/*", path);
 			cp("README.md", path);
 		}
@@ -27,6 +28,7 @@ class Build extends mtask.core.BuildBase
 		t.afterCompile = function(path)
 		{
 			cp("bin/release/haxelib/haxelib.xml", "src/haxelib.xml");
+			cp("bin/release/haxelib/haxelib.json", "src/haxelib.json");
 		}
 		
 	}

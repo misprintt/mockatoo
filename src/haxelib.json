@@ -9,6 +9,6 @@
   "contributors": ["Dominic"],
   "dependencies": {
     "tink_macro": "",
-    "mconsole": "1.4.0"
+    "mconsole": ""
   }
 }
