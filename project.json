@@ -6,7 +6,7 @@
 		"id": "mockatoo",
 		"dependencies": 
 		{
-			"tink_macro": "2.x",
+			"tink_macro": "3.x",
 			"mconsole": "1.x"
 		},
 		"devDependencies":
