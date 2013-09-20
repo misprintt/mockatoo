@@ -1,3 +1,6 @@
+v2.1.1
+- hotfix for mocking getter/setters of type Void-Void (issue #17)
+
 v2.1.0
 - released to new haxelib (3.x)
 

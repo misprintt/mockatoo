@@ -622,7 +622,7 @@ class MockMaker
 					addConcretePropertyMetadata(field);
 
 					fields.push(field);
- 
+			 
 					if(getMethod != "")
 					{
 						var getter = createGetterFunction(getMethod, t, field.pos);
@@ -682,7 +682,7 @@ class MockMaker
 			access: []
 		}
 	}
- 
+
 	/**
 	Generates a stub getter function when mocking a FProp on an interface
 	*/
@@ -823,7 +823,7 @@ class MockMaker
 
 		var eSwitch:Expr = null;
 
-		if(f.ret != null && !StringTools.endsWith(TypeTools.toString(f.ret), "Void"))
+		if(f.ret != null && isNotVoid(f.ret))
 		{
 			f.ret = normaliseReturnType(f.ret);
 
@@ -851,6 +851,29 @@ class MockMaker
 				case $eCaseNone: return $eIf;
 			}
 		}
+		else if(isVoidVoid(f.ret))
+		{	
+			var eReturn = macro function(){};
+
+			var eSuper =  ("super." + field.name).resolve().call(args);
+
+			if(isInterface)
+				eSuper = eReturn;
+
+			var eIf:Expr = macro $eIsSpy ? $eSuper : $eReturn;
+
+			eSwitch = macro switch($eMockOutcome)
+			{
+				case $eCaseReturns: return v;
+				case $eCaseThrows: throw v;
+				case $eCaseCalls: 
+					var args:Array<Dynamic> = $eArgs;
+					return v(args);
+				case $eCaseStubs: return $eReturn;
+				case $eCaseReal: return $eSuper;
+				default: return $eIf;
+			}
+		}
 		else
 		{
 			var eSuper =  ("super." + field.name).resolve().call(args);
@@ -872,6 +895,7 @@ class MockMaker
 			}
 		}
 
+
 		f.expr = createBlock([eSwitch]);
 
 		field.kind = FFun(f);
@@ -887,6 +911,50 @@ class MockMaker
 
 			Console.log(arg.name + ":" + arg.type.toString());
 		}
+	}
+
+	
+
+	/*
+	Returns true if complex type is Void ->Void
+	*/
+	function isVoidVoid(type:ComplexType):Bool
+	{
+		switch(type)
+		{
+			case TFunction(args,ret): 
+				if(args.length == 0 && !isNotVoid(ret))
+				{
+					return true;
+				}
+			case _:
+				return false;
+		}
+
+		return false;
+	}
+ 
+
+	function updateVoidVoid(type:ComplexType):ComplexType
+	{
+		if(!isVoidVoid(type)) return type;
+
+		var tpath = TPath({
+			sub:null,
+			name:"Void",
+			params: [],
+			pack:[]
+		});
+
+		switch(type)
+		{
+			case TFunction(fargs,fret):
+				fargs.push(tpath);
+
+				return TFunction(fargs,fret);
+			case _:
+		}
+		return type;
 	}
 
 	function getFunctionArgIdents(f:Function)
@@ -944,12 +1012,9 @@ class MockMaker
 			var value:String = arg.opt ? "?" : "";
 
 			//add the return type including if optional (?)
-			if(arg.type == null)
+			if(arg.type != null)
 			{
-				
-			}
-			else
-			{
+				// arg.type = updateVoidVoid(arg.type);
 				var ident = normaliseReturnType(arg.type).toString();
 				value += ident;
 			}
@@ -958,9 +1023,16 @@ class MockMaker
 
 		var params:Array<Expr> = [args.toArray()];
 
-		if(f.ret != null && !StringTools.endsWith(TypeTools.toString(f.ret), "Void"))
+		if(f.ret != null && isNotVoid(f.ret))
 		{
 			var ident = normaliseReturnType(f.ret).toString();
+			params.push(EConst(CString(ident)).at());
+		}
+		else if(isVoidVoid(f.ret))
+		{
+			//is of type Void->Void
+			var voidType = updateVoidVoid(f.ret);
+			var ident = normaliseReturnType(voidType).toString();
 			params.push(EConst(CString(ident)).at());
 		}
 
@@ -973,8 +1045,12 @@ class MockMaker
 		};
 	}
 
+	function isNotVoid(type:ComplexType):Bool
+	{
+		var s = type.toString();
 
-
+		return s != "Void" && s != "StdTypes.Void";
+	}
 
 	/**
 	Returns an empty block expression.
