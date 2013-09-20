@@ -710,9 +710,9 @@ class MockatooTest
 	Issue #17 - Compiler error when mocking interface with write-only properties (#17)
 	*/
 	@Test
-	public function should_mock_interface_with_write_only_properties():Void
+	public function should_mock_interface_with_with_property_type_void_void():Void
 	{
-		var instance = Mockatoo.mock(Issue17);
+		var instance = Mockatoo.mock(Issue17Interface);
 
 		var count = 0;
 		var func = function()
@@ -723,7 +723,7 @@ class MockatooTest
 		Mockatoo.when(instance.setter).thenReturn(func);
 		Mockatoo.when(instance.getter).thenReturn(func);
 		Mockatoo.when(instance.getterSetter).thenReturn(func);
-		Mockatoo.when(instance.nulledSetter).thenReturn(func);
+		Mockatoo.when(instance.nulledGetterSetter).thenReturn(func);
 
 		instance.getterSetter();
 		Assert.areEqual(1, count);
@@ -733,7 +733,35 @@ class MockatooTest
 
 		instance.setter = func;
 
-		instance.nulledSetter();
+		instance.nulledGetterSetter();
+		Assert.areEqual(3, count);
+	}
+
+	@Test
+	public function should_mock_class_with_with_property_type_void_void():Void
+	{
+		var instance = Mockatoo.mock(Issue17Class);
+
+		var count = 0;
+		var func = function()
+		{
+			count ++;
+		}
+
+		Mockatoo.when(instance.setter).thenReturn(func);
+		Mockatoo.when(instance.getter).thenReturn(func);
+		Mockatoo.when(instance.getterSetter).thenReturn(func);
+		Mockatoo.when(instance.nulledGetterSetter).thenReturn(func);
+
+		instance.getterSetter();
+		Assert.areEqual(1, count);
+
+		instance.getter();
+		Assert.areEqual(2, count);
+
+		instance.setter = func;
+
+		instance.nulledGetterSetter();
 		Assert.areEqual(3, count);
 	}
 

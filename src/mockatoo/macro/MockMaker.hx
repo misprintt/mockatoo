@@ -706,7 +706,9 @@ class MockMaker
 		{
 			case TFunction(args,ret): 
 				if(args.length == 0 && StringTools.endsWith(TypeTools.toString(ret), "Void"))
+				{
 					return true;
+				}
 			case _:
 				return false;
 		}
@@ -882,6 +884,29 @@ class MockMaker
 				case $eCaseNone: return $eIf;
 			}
 		}
+		else if(isVoidVoid(f.ret))
+		{	
+			var eReturn = macro function(){};
+
+			var eSuper =  ("super." + field.name).resolve().call(args);
+
+			if(isInterface)
+				eSuper = eReturn;
+
+			var eIf:Expr = macro $eIsSpy ? $eSuper : $eReturn;
+
+			eSwitch = macro switch($eMockOutcome)
+			{
+				case $eCaseReturns: return v;
+				case $eCaseThrows: throw v;
+				case $eCaseCalls: 
+					var args:Array<Dynamic> = $eArgs;
+					return v(args);
+				case $eCaseStubs: return $eReturn;
+				case $eCaseReal: return $eSuper;
+				default: return $eIf;
+			}
+		}
 		else
 		{
 			var eSuper =  ("super." + field.name).resolve().call(args);
@@ -903,6 +928,7 @@ class MockMaker
 			}
 		}
 
+
 		f.expr = createBlock([eSwitch]);
 
 		field.kind = FFun(f);
@@ -918,6 +944,28 @@ class MockMaker
 
 			Console.log(arg.name + ":" + arg.type.toString());
 		}
+	}
+
+	function updateVoidVoid(type:ComplexType):ComplexType
+	{
+		if(!isVoidVoid(type)) return type;
+
+		var tpath = TPath({
+			sub:null,
+			name:"Void",
+			params: [],
+			pack:[]
+		});
+
+		switch(type)
+		{
+			case TFunction(fargs,fret):
+				fargs.push(tpath);
+
+				return TFunction(fargs,fret);
+			case _:
+		}
+		return type;
 	}
 
 	function getFunctionArgIdents(f:Function)
@@ -975,12 +1023,9 @@ class MockMaker
 			var value:String = arg.opt ? "?" : "";
 
 			//add the return type including if optional (?)
-			if(arg.type == null)
+			if(arg.type != null)
 			{
-				
-			}
-			else
-			{
+				// arg.type = updateVoidVoid(arg.type);
 				var ident = normaliseReturnType(arg.type).toString();
 				value += ident;
 			}
@@ -994,6 +1039,13 @@ class MockMaker
 			var ident = normaliseReturnType(f.ret).toString();
 			params.push(EConst(CString(ident)).at());
 		}
+		else if(isVoidVoid(f.ret))
+		{
+			//is of type Void->Void
+			var voidType = updateVoidVoid(f.ret);
+			var ident = normaliseReturnType(voidType).toString();
+			params.push(EConst(CString(ident)).at());
+		}
 
 		return
 		{
@@ -1003,9 +1055,6 @@ class MockMaker
 
 		};
 	}
-
-
-
 
 	/**
 	Returns an empty block expression.

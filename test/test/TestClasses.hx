@@ -471,12 +471,51 @@ class SomeClass
 	public function new(){}
 }
 
-interface Issue17
+interface Issue17Interface
 {
 	var setter(null, set): Void->Void;
 	var getter(get, null): Void->Void;
-	var getterSetter(get, set): Void->Void;
-	var nulledSetter(get, set): Null<Void->Void>;
+	var getterSetter(default, default): Void->Void;
+	var nulledGetterSetter(get, set): Null<Void->Void>;
+}
+
+class Issue17Class implements Issue17Interface
+{
+	public function new()
+	{
+		value = function(){};
+	}
+	var value:Null<Void->Void>;
+
+	public var setter(null, set): Void->Void;
+
+	function set_setter(v:Void->Void):Void->Void
+	{
+		value = v;
+		return value;
+	}
+
+	public var getter(get, null): Void->Void;
+
+	function get_getter():Void->Void
+	{
+		return value;
+	}
+
+	public var getterSetter(default, default): Void->Void;
+
+	public var nulledGetterSetter(get, set): Null<Void->Void>;
+
+	function set_nulledGetterSetter(v:Void->Void):Void->Void
+	{
+		value = v;
+		return value;
+	}
+
+	function get_nulledGetterSetter():Void->Void
+	{
+		return value;
+	}
 }
 
 // ----------------------------------------------------------------------------- Matchers
