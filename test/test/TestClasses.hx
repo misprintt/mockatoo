@@ -437,7 +437,6 @@ interface InterfaceWithTypedProperties<T>
  
 // ----------------------------------------------------------------------------- Typedef Aliases
 
-
 typedef TypedefToSimpleInterface = SimpleInterface;
 typedef TypedefToSimpleClass = SimpleClass;
 typedef TypedefToStringTypedInterface = TypedInterface<String>;
@@ -445,7 +444,6 @@ typedef TypedefToStringTypedClass = TypedClass<String>;
 
 typedef TypedefToImplementsTypedInterface = ImplementsTypedInterface<String, String>;
 typedef TypedefToExtendsTypedClass = ExtendsTypedClass<String, String>;
-
 
 
 // ----------------------------------------------------------------------------- Typedef Structures
@@ -473,8 +471,13 @@ class SomeClass
 	public function new(){}
 }
 
-
-
+interface Issue17
+{
+	var setter(null, set): Void->Void;
+	var getter(get, null): Void->Void;
+	var getterSetter(get, set): Void->Void;
+	var nulledSetter(get, set): Null<Void->Void>;
+}
 
 // ----------------------------------------------------------------------------- Matchers
 

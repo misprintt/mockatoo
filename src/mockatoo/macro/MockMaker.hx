@@ -622,7 +622,20 @@ class MockMaker
 					addConcretePropertyMetadata(field);
 
 					fields.push(field);
- 
+
+
+					// need to wrap complex types of Void->Void into Null<Void->Void>
+					// when creating getter setters;
+					if(isVoidVoid(t))
+					{
+						t = TPath({
+							sub:null,
+							name:"Null",
+							params: [TPType(t)],
+							pack:[]
+						});
+					}
+			 
 					if(getMethod != "")
 					{
 						var getter = createGetterFunction(getMethod, t, field.pos);
@@ -681,6 +694,24 @@ class MockMaker
 			doc: null,
 			access: []
 		}
+	}
+
+
+	/*
+	Returns true if complex type is Void ->Void
+	*/
+	function isVoidVoid(type:ComplexType):Bool
+	{
+		switch(type)
+		{
+			case TFunction(args,ret): 
+				if(args.length == 0 && StringTools.endsWith(TypeTools.toString(ret), "Void"))
+					return true;
+			case _:
+				return false;
+		}
+
+		return false;
 	}
  
 	/**

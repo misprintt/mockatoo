@@ -706,6 +706,39 @@ class MockatooTest
 		}
 	}
 
+	/**
+	Issue #17 - Compiler error when mocking interface with write-only properties (#17)
+	*/
+	@Test
+	public function should_mock_interface_with_write_only_properties():Void
+	{
+		var instance = Mockatoo.mock(Issue17);
+
+		var count = 0;
+		var func = function()
+		{
+			count ++;
+		}
+
+		Mockatoo.when(instance.setter).thenReturn(func);
+		Mockatoo.when(instance.getter).thenReturn(func);
+		Mockatoo.when(instance.getterSetter).thenReturn(func);
+		Mockatoo.when(instance.nulledSetter).thenReturn(func);
+
+		instance.getterSetter();
+		Assert.areEqual(1, count);
+
+		instance.getter();
+		Assert.areEqual(2, count);
+
+		instance.setter = func;
+
+		instance.nulledSetter();
+		Assert.areEqual(3, count);
+	}
+
+
+
 	// ------------------------------------------------------------------------- utilities
 
 	function assertMock(mock:Mock, cls:Class<Dynamic>, ?fields:Array<Field>, ?pos:haxe.PosInfos)
@@ -716,7 +749,6 @@ class MockatooTest
 		Assert.isTrue(Std.is(mock, Mock), pos);
 
 		var className = Type.getClassName(cls);
-
 
 		for(field in fields)
 		{
