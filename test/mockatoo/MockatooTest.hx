@@ -706,6 +706,67 @@ class MockatooTest
 		}
 	}
 
+	/**
+	Issue #17 - Compiler error when mocking interface with write-only properties (#17)
+	*/
+	@Test
+	public function should_mock_interface_with_with_property_type_void_void():Void
+	{
+		var instance = Mockatoo.mock(Issue17Interface);
+
+		var count = 0;
+		var func = function()
+		{
+			count ++;
+		}
+
+		Mockatoo.when(instance.setter).thenReturn(func);
+		Mockatoo.when(instance.getter).thenReturn(func);
+		Mockatoo.when(instance.getterSetter).thenReturn(func);
+		Mockatoo.when(instance.nulledGetterSetter).thenReturn(func);
+
+		instance.getterSetter();
+		Assert.areEqual(1, count);
+
+		instance.getter();
+		Assert.areEqual(2, count);
+
+		instance.setter = func;
+
+		instance.nulledGetterSetter();
+		Assert.areEqual(3, count);
+	}
+
+	@Test
+	public function should_mock_class_with_with_property_type_void_void():Void
+	{
+		var instance = Mockatoo.mock(Issue17Class);
+
+		var count = 0;
+		var func = function()
+		{
+			count ++;
+		}
+
+		Mockatoo.when(instance.setter).thenReturn(func);
+		Mockatoo.when(instance.getter).thenReturn(func);
+		Mockatoo.when(instance.getterSetter).thenReturn(func);
+		Mockatoo.when(instance.nulledGetterSetter).thenReturn(func);
+
+		instance.getterSetter();
+		Assert.areEqual(1, count);
+
+		instance.getter();
+		Assert.areEqual(2, count);
+
+		instance.setter = func;
+
+		instance.nulledGetterSetter();
+		Assert.areEqual(3, count);
+	}
+
+
+
 	// ------------------------------------------------------------------------- utilities
 
 	function assertMock(mock:Mock, cls:Class<Dynamic>, ?fields:Array<Field>, ?pos:haxe.PosInfos)
@@ -716,7 +777,6 @@ class MockatooTest
 		Assert.isTrue(Std.is(mock, Mock), pos);
 
 		var className = Type.getClassName(cls);
-
 
 		for(field in fields)
 		{
