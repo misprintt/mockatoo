@@ -622,19 +622,6 @@ class MockMaker
 					addConcretePropertyMetadata(field);
 
 					fields.push(field);
-
-
-					// need to wrap complex types of Void->Void into Null<Void->Void>
-					// when creating getter setters;
-					if(isVoidVoid(t))
-					{
-						t = TPath({
-							sub:null,
-							name:"Null",
-							params: [TPType(t)],
-							pack:[]
-						});
-					}
 			 
 					if(getMethod != "")
 					{
@@ -696,26 +683,6 @@ class MockMaker
 		}
 	}
 
-
-	/*
-	Returns true if complex type is Void ->Void
-	*/
-	function isVoidVoid(type:ComplexType):Bool
-	{
-		switch(type)
-		{
-			case TFunction(args,ret): 
-				if(args.length == 0 && StringTools.endsWith(TypeTools.toString(ret), "Void"))
-				{
-					return true;
-				}
-			case _:
-				return false;
-		}
-
-		return false;
-	}
- 
 	/**
 	Generates a stub getter function when mocking a FProp on an interface
 	*/
@@ -856,7 +823,7 @@ class MockMaker
 
 		var eSwitch:Expr = null;
 
-		if(f.ret != null && !StringTools.endsWith(TypeTools.toString(f.ret), "Void"))
+		if(f.ret != null && isNotVoid(f.ret))
 		{
 			f.ret = normaliseReturnType(f.ret);
 
@@ -946,6 +913,28 @@ class MockMaker
 		}
 	}
 
+	
+
+	/*
+	Returns true if complex type is Void ->Void
+	*/
+	function isVoidVoid(type:ComplexType):Bool
+	{
+		switch(type)
+		{
+			case TFunction(args,ret): 
+				if(args.length == 0 && !isNotVoid(ret))
+				{
+					return true;
+				}
+			case _:
+				return false;
+		}
+
+		return false;
+	}
+ 
+
 	function updateVoidVoid(type:ComplexType):ComplexType
 	{
 		if(!isVoidVoid(type)) return type;
@@ -1034,7 +1023,7 @@ class MockMaker
 
 		var params:Array<Expr> = [args.toArray()];
 
-		if(f.ret != null && !StringTools.endsWith(TypeTools.toString(f.ret), "Void"))
+		if(f.ret != null && isNotVoid(f.ret))
 		{
 			var ident = normaliseReturnType(f.ret).toString();
 			params.push(EConst(CString(ident)).at());
@@ -1054,6 +1043,13 @@ class MockMaker
 			params:params
 
 		};
+	}
+
+	function isNotVoid(type:ComplexType):Bool
+	{
+		var s = type.toString();
+
+		return s != "Void" && s != "StdTypes.Void";
 	}
 
 	/**
