@@ -521,7 +521,19 @@ class Issue17Class implements Issue17Interface
 // ----------------------------------------------------------------------------- Matchers
 
 
-class SomeMatcherClass
+interface SomeMatcherInterface
+{
+	function fromString(?value:String):Bool;
+	function fromInt(value:Int):Bool;
+	function fromFloat(value:Float):Bool;
+	function fromBool(value:Bool):Bool;
+	function fromArray(value:Array<Int>):Bool;
+	function fromDynamic(value:Dynamic):Bool;
+	function fromEnum(value:SomeEnumType):Bool;
+	function fromInstance(value:SomeClass):Bool;
+}
+
+class SomeMatcherClass implements SomeMatcherInterface
 {
 	public function new(){}
 
@@ -533,4 +545,8 @@ class SomeMatcherClass
 	public function fromDynamic(value:Dynamic):Bool{return false;}
 	public function fromEnum(value:SomeEnumType):Bool{return false;}
 	public function fromInstance(value:SomeClass):Bool{return false;}
+}
+
+interface Something {
+    public function returnSomething(something:String, ?other:Null<Int> = 0):String;
 }

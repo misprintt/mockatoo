@@ -34,23 +34,7 @@ class Types
 		if(type == null)
 			return EConst(CIdent("null")).at();
 
-		var isStaticPlatform:Bool = false;
-		var isFlash:Bool = false;
-
-		var staticPlatforms = ["flash", "cpp", "java", "cs"];
-
-		for(platform in staticPlatforms)
-		{
-			if(Context.defined(platform))
-			{
-				isStaticPlatform = true;
-
-				if(platform == "flash") isFlash = true;
-				break;
-			}
-		}
-
-		if(isStaticPlatform)
+		if(Contexts.isStaticPlatform())
 		{
 			switch(type)
 			{
@@ -67,7 +51,7 @@ class Types
 						case "Int":
 							return EConst(CInt("0")).at();
 						case "Float":
-							if(isFlash)
+							if( Context.defined("flash"))
 								return "Math.NaN".resolve();
 							else
 								return EConst(CFloat("0.0")).at();

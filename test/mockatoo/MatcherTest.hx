@@ -9,12 +9,11 @@ import mockatoo.Mockatoo;
 import mockatoo.Mock;
 import test.TestClasses;
 import util.Asserts;
-
 import haxe.ds.StringMap;
 
 using mockatoo.Mockatoo;
 
-class MatcherTest
+class MatcherTest extends org.hamcrest.MatchersBase
 {
 
 	// ------------------------------------------------------------------------- matchers
@@ -132,12 +131,12 @@ class MatcherTest
 
 		Assert.isFalse(mock.fromInstance(c));
 
-		mock.fromInstance(cast instanceOf(SomeClass)).returns(true);
+		mock.fromInstance(cast Matcher.instanceOf(SomeClass)).returns(true);
 
 		Assert.isTrue(mock.fromInstance(c));
 
 
-		mock.fromDynamic(cast instanceOf(SomeClass)).returns(true);
+		mock.fromDynamic(cast Matcher.instanceOf(SomeClass)).returns(true);
 
 		Assert.isTrue(mock.fromDynamic(c));
 		Assert.isFalse(mock.fromDynamic({value:1}));
@@ -154,7 +153,7 @@ class MatcherTest
 		Assert.isFalse(mock.fromDynamic(c));
 		Assert.isFalse(mock.fromDynamic(o));
 
-		mock.fromDynamic(cast instanceOf(SomeClass)).returns(true);
+		mock.fromDynamic(cast Matcher.instanceOf(SomeClass)).returns(true);
 
 		Assert.isTrue(mock.fromDynamic(c));
 		Assert.isFalse(mock.fromDynamic(o));
@@ -184,7 +183,7 @@ class MatcherTest
 
 		Assert.isFalse(mock.fromString(null));
 
-		mock.fromString(cast any).returns(true);
+		mock.fromString(cast Matcher.any).returns(true);
 
 		Assert.isTrue(mock.fromString(null));
 	}
@@ -206,5 +205,14 @@ class MatcherTest
 
 		Assert.isFalse(mock.fromInt(1));
 		Assert.isTrue(mock.fromInt(100));
+	}
+
+	@Test
+	public function should_match_on_interface()
+	{
+		var m = Mockatoo.mock(Something);
+		assertThat(m.returnSomething("foo"), is(null));
+		m.returnSomething(cast Matcher.anyString,cast Matcher.any).returns("bar");
+		assertThat(m.returnSomething("foo"), is("bar"));
 	}
 }

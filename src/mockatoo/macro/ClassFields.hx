@@ -269,7 +269,6 @@ class ClassFields
 						switch(Context.follow(field.type))
 						{
 							case TFun(args, ret):
-
 								return FFun(
 								{
 									args:convertTFunArgsToFunctionArgs(args, paramMap),
@@ -300,20 +299,11 @@ class ClassFields
 			#else
 			var value:Null<Expr> = arg.opt ? arg.t.toComplex(true).defaultValue() : null;
 			#end
-			
 
-
-			if(arg.opt)
+			if(arg.opt && Contexts.isStaticPlatform())
 			{
 				//NOTE(Dom) - this is to prevent #9 - optional method args without a `?` cause compilation error
 				arg.opt = verifyOptionalArgIsActuallyNullable(arg);
-
-				if(!arg.opt)
-				#if haxe3
-					value = arg.t.toComplexType().defaultValue();
-				#else
-					value = arg.t.toComplex(true).defaultValue();
-				#end
 			}
 
 			var value = 
