@@ -765,6 +765,17 @@ class MockatooTest
 		Assert.areEqual(3, count);
 	}
 
+	@Test
+	public function should_mock_Issue18()
+	{
+		var mock = Mockatoo.mock(Issue18);
+		var o = {};
+		mock.myVal = o;
+		Mockatoo.verify(mock.set_myVal(o));
+
+
+	}
+
 
 
 	// ------------------------------------------------------------------------- utilities

@@ -550,3 +550,9 @@ class SomeMatcherClass implements SomeMatcherInterface
 interface Something {
     public function returnSomething(something:String, ?other:Null<Int> = 0):String;
 }
+
+
+interface Issue18
+{
+	var myVal(null, set): Dynamic;
+}
