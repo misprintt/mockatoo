@@ -132,12 +132,11 @@ class MockMaker
 			var typeParams:Array<TypeParam> = [];
 			for(p in params)
 			{
-				typeParams.push(TPType(haxe.macro.TypeTools.toComplexType(p)));
+				typeParams.push(TPType(p.toComplex()));
 			}
 			var eIsSpy = EConst(CIdent(Std.string(isSpy))).at();
 			generatedExpr = Exprs.instantiate(typeDefinitionId, [eIsSpy], typeParams, pos);
 		}
-
 		Console.log(new Printer().printExpr(generatedExpr));
 		return generatedExpr;	
 	}
