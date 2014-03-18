@@ -6,16 +6,14 @@ import haxe.macro.Compiler;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
-import tink.macro.tools.MacroTools;
-import tink.macro.tools.Printer;
-import tink.macro.tools.ExprTools;
-import tink.macro.tools.TypeTools;
-import tink.macro.tools.FunctionTools;
+import haxe.macro.Printer;
+import tink.macro.Exprs;
+import tink.macro.Types;
+import tink.macro.Functions;
 
-using tink.macro.tools.Printer;
-using tink.macro.tools.ExprTools;
-using tink.macro.tools.TypeTools;
-using tink.core.types.Outcome;
+using tink.macro.Exprs;
+using tink.macro.Types;
+using tink.core.Outcome;
 
 class Types
 {
@@ -31,9 +29,6 @@ class Types
 	*/
 	static public function defaultValue(type:ComplexType):Expr
 	{
-		if(type == null)
-			return EConst(CIdent("null")).at();
-
 		if(Contexts.isStaticPlatform())
 		{
 			switch(type)

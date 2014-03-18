@@ -7,9 +7,9 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
 
-using tink.macro.tools.Printer;
-using tink.macro.tools.ExprTools;
-using tink.macro.tools.TypeTools;
+using haxe.macro.Printer;
+using tink.macro.Exprs;
+using tink.macro.Types;
 
 import mockatoo.exception.VerificationException;
 
@@ -21,7 +21,7 @@ class VerifyMacro
 
 	public static function create(expr:Expr, mode:Expr):Expr
 	{
-		var str = expr.print();
+		var str = expr.toString();
 		// Console.log(str);
 		// Console.log(expr);
 
@@ -37,7 +37,7 @@ class VerifyMacro
 				var ident:String = switch(c)
 				{
 					case CIdent(v): v;
-					default: throw "Invalid arg [" + expr.print() + "]";
+					default: throw "Invalid arg [" + expr.toString() + "]";
 				}
 
 				var exprs = createVerifyExpressions(expr, mode);
@@ -57,7 +57,7 @@ class VerifyMacro
 			case ECast(e, t):
 				return create(e,mode);
 
-			case _: throw "Invalid verify expression [" + expr.print() + "]";
+			case _: throw "Invalid verify expression [" + expr.toString() + "]" + expr;
 		}
 		return expr;
 	}

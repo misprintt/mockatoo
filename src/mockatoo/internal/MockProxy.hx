@@ -155,7 +155,7 @@ class MockProxy
 		{
 			fReturn = function(value:Dynamic)
 			{
-				Reflect.setProperty(target, property, value);
+				Reflect.setField(target, property, value);
 				getMethod.addReturnFor([], [value]);
 				return stub;
 			};

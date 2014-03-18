@@ -5,12 +5,11 @@ import haxe.macro.Compiler;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
-import tink.macro.tools.MacroTools;
-import tink.macro.tools.Printer;
-import tink.macro.tools.ExprTools;
-import tink.macro.tools.TypeTools;
-import tink.macro.tools.FunctionTools;
-import tink.core.types.Outcome;
+import haxe.macro.Printer;
+import tink.macro.Exprs;
+import tink.macro.Types;
+import tink.macro.Functions;
+import tink.core.Outcome;
 import mockatoo.Mock;
 import mockatoo.macro.ClassFields;
 import mockatoo.internal.MockOutcome;
@@ -26,10 +25,10 @@ typedef TypeParamDecl = {
 }
 #end
 
-using tink.macro.tools.Printer;
-using tink.macro.tools.ExprTools;
-using tink.macro.tools.TypeTools;
-using tink.core.types.Outcome;
+using haxe.macro.Printer;
+using tink.macro.Exprs;
+using tink.macro.Types;
+using tink.core.Outcome;
 
 using mockatoo.macro.Types;
 using haxe.macro.Tools;
@@ -102,12 +101,12 @@ class MockMaker
 
 					for(value in values)
 					{
-						var ident = Printer.print(value);
+						var ident = new Printer().printExpr(value);
 						Console.log("  param: " + ident);
 						params.push(Context.getType(ident));
 					}
 
-				default: throw "invalid param [" + Printer.print(paramTypes) + "]";
+				default: throw "invalid param [" + new Printer().printExpr(paramTypes) + "]";
 			}
 		}
 
@@ -130,12 +129,16 @@ class MockMaker
 	{
 		if(generatedExpr == null)
 		{
-			var typeParams = untyped TypeTools.paramsToComplex(params);
+			var typeParams:Array<TypeParam> = [];
+			for(p in params)
+			{
+				typeParams.push(TPType(haxe.macro.TypeTools.toComplexType(p)));
+			}
 			var eIsSpy = EConst(CIdent(Std.string(isSpy))).at();
-			generatedExpr = ExprTools.instantiate(typeDefinitionId, [eIsSpy], typeParams, pos);
+			generatedExpr = Exprs.instantiate(typeDefinitionId, [eIsSpy], typeParams, pos);
 		}
 
-		Console.log(Printer.print(generatedExpr));
+		Console.log(new Printer().printExpr(generatedExpr));
 		return generatedExpr;	
 	}
 
@@ -177,10 +180,10 @@ class MockMaker
 					for(a in functionArgs)
 					{
 
-						fargs.push(FunctionTools.toArg(a.name, toComplexType(a.t) ,a.opt));
+						fargs.push(Functions.toArg(a.name, toComplexType(a.t) ,a.opt));
 					}
 
-					var f = FunctionTools.func(e, fargs, toComplexType(ret), [], true);
+					var f = Functions.func(e, fargs, toComplexType(ret), [], true);
 					arg.expr = EFunction(null, f).at();
 
 				default: throw "Unsupported type [" + field.type + "] for field [" + field.name + "]";
@@ -283,7 +286,7 @@ class MockMaker
 						case ClassKind.KTypeParameter(constrnts):
 							for(const in constrnts)
 							{
-								var complexParam = const.toComplex(true);
+								var complexParam = haxe.macro.TypeTools.toComplexType(const);
 								constraints.push(complexParam);
 							}
 						#else
@@ -310,12 +313,11 @@ class MockMaker
 		Console.log("paramTypes:" + paramTypes);
 		Console.log("super params:" + classType.params);
 
-		var a:Array<Type> = [];
+		var typeParams:Array<TypeParam> = [];
 		for(p in classType.params)
 		{
-			a.push(p.t);
+			typeParams.push(TPType(haxe.macro.TypeTools.toComplexType(p.t)));
 		}
-		var typeParams:Array<TypeParam> = untyped TypeTools.paramsToComplex(a);
 
 		Console.log(typeParams);
 
@@ -323,7 +325,7 @@ class MockMaker
 
 		Console.log(typeParams);
 
-		extendTypePath = TypeTools.asTypePath(extendId, typeParams);
+		extendTypePath = tink.macro.Types.asTypePath(extendId, typeParams);
 
 		Console.log(extendTypePath);
 
@@ -388,7 +390,7 @@ class MockMaker
 			kind: kind,
 			isExtern:false,
 			fields:fields
-		}
+		};
 	}
 
 	/**
@@ -478,7 +480,7 @@ class MockMaker
 
 		for(meta in source)
 		{
-			Console.log(meta.name + ":" + Printer.printExprList("", meta.params));
+			Console.log(meta.name + ":" + new Printer().printExprs(meta.params, ""));
 
 			switch(meta.name)
 			{
@@ -499,7 +501,7 @@ class MockMaker
 	*/
 	function createKind()
 	{
-		var mockInterface = TypeTools.asTypePath("mockatoo.Mock");
+		var mockInterface = tink.macro.Types.asTypePath("mockatoo.Mock");
 
 		var extension:TypePath = null;
 		var interfaces:Array<TypePath> = null;
@@ -786,7 +788,7 @@ class MockMaker
 
 		//deliberately call return before call to super
 		//to prevent target class constructor being executed
-		f.expr = ExprTools.toBlock([eMockConstructorExprs,eReturn, e]);
+		f.expr = Exprs.toBlock([eMockConstructorExprs,eReturn, e]);
 	}
 
 	function createMockConstructorExprs()
@@ -1059,7 +1061,7 @@ class MockMaker
 	function createBlock(?args:Array<Expr>=null):Expr
 	{
 		if(args == null) args = [];
-		var exprs = ExprTools.toBlock(args);
+		var exprs = Exprs.toBlock(args);
 		return exprs;
 	}
 
@@ -1069,7 +1071,7 @@ class MockMaker
 	function createEmptyConstructor():Field
 	{	
 		var constructorExprs = createMockConstructorExprs();
-		var exprs = ExprTools.toBlock([constructorExprs]);
+		var exprs = Exprs.toBlock([constructorExprs]);
 
 
 		var arg = {
@@ -1079,7 +1081,7 @@ class MockMaker
 			name:"spy"
 		}
 
-		var f:Function = FunctionTools.func(exprs, [arg], null, null, false);
+		var f:Function = Functions.func(exprs, [arg], null, null, false);
 		return 
 		{
 			pos:Context.currentPos(),
