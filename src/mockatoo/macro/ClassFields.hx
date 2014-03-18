@@ -7,8 +7,9 @@ import haxe.macro.Context;
 import haxe.macro.Compiler;
 import haxe.macro.Type;
 import haxe.PosInfos;
-import tink.macro.tools.TypeTools;
-import tink.macro.tools.Printer;
+import tink.macro.Types;
+import haxe.macro.Printer;
+import haxe.macro.TypeTools;
 
 #if haxe3
 import haxe.ds.StringMap;
@@ -16,9 +17,8 @@ import haxe.ds.StringMap;
 typedef StringMap<T> = Hash<T>
 #end
 
-using tink.macro.tools.MacroTools;
-using tink.macro.tools.ExprTools;
-using tink.macro.tools.TypeTools;
+using tink.macro.Exprs;
+using tink.macro.Types;
 using mockatoo.macro.Types;
 using haxe.macro.Tools;
 
@@ -170,6 +170,7 @@ class ClassFields
 
 		var kind = getFieldType(field,paramMap);
 
+
 		var access = getFieldAccess(field);
 
 		if(isStatic) access.push(AStatic);
@@ -238,7 +239,7 @@ class ClassFields
 				
 				return TPath({pack:[], name:"StdTypes", sub:"Dynamic", params:[param]});
 			default:
-				return type.toComplex(PRETTY);
+				return haxe.macro.TypeTools.toComplexType(type);
 		}
 	}
 
