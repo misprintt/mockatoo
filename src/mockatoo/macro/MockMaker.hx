@@ -680,7 +680,7 @@ class MockMaker
 			meta: [],
 			kind: FFun(f),
 			doc: null,
-			access: []
+			access: [Access.APublic]
 		}
 	}
 
@@ -701,7 +701,7 @@ class MockMaker
 			meta: [],
 			kind: FFun(f),
 			doc: null,
-			access: []
+			access: [Access.APublic]
 		}
 	}
 

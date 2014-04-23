@@ -13,6 +13,7 @@ Mockatoo library enables mocks creation, verification and stubbing.
 */
 class Mockatoo
 {	
+
 	/**
 	Creates mock object of given class or interface.
 	
@@ -23,7 +24,17 @@ class Mockatoo
 	#if haxe3 macro #else @:macro #end static public function mock<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
 	{
 		InitMacro.init();
-		var mock = new MockMaker(Context.getTypedExpr(Context.typeExpr(typeToMock)), paramTypes);
+		try
+		{
+			var typeExpr = Context.typeExpr(typeToMock);
+			typeToMock = Context.getTypedExpr(typeExpr);
+		}
+		catch(e:Dynamic)
+		{
+			//possibly a typedef structure (cannot)
+		}
+
+		var mock = new MockMaker(typeToMock, paramTypes);
 		return mock.toExpr();
 	}
 
