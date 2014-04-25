@@ -253,17 +253,19 @@ class IntIterableClass extends TypedIterableClass<Int>
 
 // ---------------------- others
 
+
 class ClassWithPrivateReference
 {
+	var arg:PrivateClass;
+
 	public function new()
 	{
-
+		arg = new PrivateClass();
 	}
 
-
-	public function test(arg:PrivateClass):PrivateClass
+	public function test()/*:PrivateClass*/
 	{
-		return arg;
+		return /*arg*/;
 	}
 }
 
