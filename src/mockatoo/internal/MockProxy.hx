@@ -6,7 +6,7 @@ import haxe.PosInfos;
 import haxe.ds.StringMap;
 
 /**
-Responsible for run time mocking behaviour of a Mock instance.
+	Responsible for run time mocking behaviour of a Mock instance.
 */
 class MockProxy
 {
@@ -26,7 +26,7 @@ class MockProxy
 	}
 
 	/**
-	Called by mocked clases when methods are executed. 
+		Called by mocked clases when methods are executed. 
 	*/
 	public function getOutcomeFor(method:String, args:Array<Dynamic>):MockOutcome
 	{
@@ -35,15 +35,15 @@ class MockProxy
 	}
 
 	/**
-	Called by Mockatoo.verify to access verifications for a mock class.
+		Called by Mockatoo.verify to access verifications for a mock class.
 	*/
 	public function verify(?mode:VerificationMode, ?pos:PosInfos):Verification
 	{
-		if(mode == null) mode = VerificationMode.times(1);
+		if (mode == null) mode = VerificationMode.times(1);
 		
 		var temp = new Verification(mode);
 
-		for(proxy in methods.iterator())
+		for (proxy in methods.iterator())
 		{
 			var f = Reflect.makeVarArgs(function(a:Array<Dynamic>)
 			{
@@ -91,7 +91,6 @@ class MockProxy
 				return stub;
 			};
 
-
 		
 		Reflect.setField(stub, "thenReturn", fReturn);
 		Reflect.setField(stub, "thenThrow", fThrow);
@@ -102,11 +101,10 @@ class MockProxy
 		return stub;
 	}
 
-
 	/**
-	Determines how to stub a property based on it's read/write signature
-	thenReturns maps to the getter (if available), otherwise Reflect.setField 
-	thenThrow and thenCall maps to the setter (if available)
+		Determines how to stub a property based on it's read/write signature
+		thenReturns maps to the getter (if available), otherwise Reflect.setField 
+		thenThrow and thenCall maps to the setter (if available)
 	*/
 	public function stubProperty(property:String):Stubber
 	{
@@ -146,8 +144,7 @@ class MockProxy
 			return stub;
 		};
 
-
-		if(getMethod != null)
+		if (getMethod != null)
 		{
 			fReturn = function(value:Dynamic)
 			{
@@ -163,7 +160,7 @@ class MockProxy
 			};
 		}
 
-		if(setMethod != null && getMethod != null)
+		if (setMethod != null && getMethod != null)
 		{
 			fThrow =function(value:Dynamic)
 			{
@@ -186,7 +183,7 @@ class MockProxy
 				return stub;
 			};
 		}
-		else if(getMethod != null)
+		else if (getMethod != null)
 		{
 			fThrow =function(value:Dynamic)
 			{
@@ -206,7 +203,7 @@ class MockProxy
 				return stub;
 			};
 		}
-		else if(setMethod != null)
+		else if (setMethod != null)
 		{
 			fThrow = function(value:Dynamic)
 			{
@@ -237,7 +234,7 @@ class MockProxy
 	}
 
 	/**
-	Resets all stubs/verifications for the mock class
+		Resets all stubs/verifications for the mock class
 	*/
 	public function reset()
 	{
@@ -255,9 +252,9 @@ class MockProxy
 
 	function parsePropertyMetadata(props:Array<MockProperty>)
 	{
-		if(props == null) return;
+		if (props == null) return;
 
-		for(prop in props)
+		for (prop in props)
 		{
 			properties.set(prop.name, prop);
 		}
@@ -267,21 +264,21 @@ class MockProxy
 	{
 		var fieldNames = Type.getInstanceFields(targetClass);
 
-		for(fieldName in fieldNames)
+		for (fieldName in fieldNames)
 		{	
 			#if flash
-				if(Reflect.hasField(target, fieldName))
+				if (Reflect.hasField(target, fieldName))
 				{
-					if(!Reflect.isFunction(Reflect.field(target, fieldName))) continue;
+					if (!Reflect.isFunction(Reflect.field(target, fieldName))) continue;
 				}
 			
 			#else
-				if(Reflect.hasField(target, fieldName)) continue; //only care about methods
+				if (Reflect.hasField(target, fieldName)) continue; //only care about methods
 			#end
 			
 			var fieldMeta = Reflect.field(fields, fieldName);
 
-			if(fieldMeta != null && Reflect.hasField(fieldMeta, "mockatoo"))
+			if (fieldMeta != null && Reflect.hasField(fieldMeta, "mockatoo"))
 			{
 				var mockMeta = Reflect.field(fieldMeta, "mockatoo");
 

@@ -1,6 +1,8 @@
-v3
+v3.0.0
 
 - updated for Haxe 3.1.x
+- removed Haxe 2.x support
+- removed dependency on tink macros
 
 Known Issues
 

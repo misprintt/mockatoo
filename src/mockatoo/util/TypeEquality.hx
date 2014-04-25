@@ -1,16 +1,16 @@
 package mockatoo.util;
 
 /**
-Utilities for checking type equality. Special rules for enums with paramaters.
+	Utilities for checking type equality. Special rules for enums with paramaters.
 */
 class TypeEquality
 {
 	/**
-	Measures equality, including enumTypeEQ - see below
+		Measures equality, including enumTypeEQ - see below
 	*/
 	public static function equals(expected:Dynamic, actual:Dynamic):Bool
 	{
-		switch(Type.typeof(expected))
+		switch (Type.typeof(expected))
 		{
 			case TEnum(_):
 			{
@@ -19,7 +19,7 @@ class TypeEquality
 			default:
 
 				#if cpp
-				switch(Type.typeof(actual))
+				switch (Type.typeof(actual))
 				{
 					case TEnum(e): return false;
 					default: return expected == actual;
@@ -31,15 +31,21 @@ class TypeEquality
 	}
 
 	/**
-	 * Compares enum equality, ignoring any non enum parameters, so that:
-	 *	Fail(IO("One thing happened")) == Fail(IO("Another thing happened"))
-	 * 
-	 * Also allows for wildcard matching by passing through <code>null</code> for
-	 * any params, so that:
-	 *  Fail(IO(null)) matches Fail(IO("Another thing happened"))
-	 *
-	 * @param a the enum value to filter on
-	 * @param b the enum value being checked
+		Compares enum equality, ignoring any non enum parameters, so that:
+		
+		````
+		Fail(IO("One thing happened")) == Fail(IO("Another thing happened"))
+		````
+
+		Also allows for wildcard matching by passing through <code>null</code> for
+		any params, so that:
+		
+		````
+		Fail(IO(null)) matches Fail(IO("Another thing happened"))
+		````
+		
+		@param a the enum value to filter on
+		@param b the enum value being checked
 	*/
 	static public function equalsEnum(a:EnumValue, b:EnumValue)
 	{
@@ -57,7 +63,7 @@ class TypeEquality
 			var bParam = bParams[i];
 
 			if (aParam == null) continue;
-			if(!equals(aParam, bParam)) return false;
+			if (!equals(aParam, bParam)) return false;
 		}
 
 		return true;

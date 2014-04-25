@@ -1,8 +1,9 @@
 package test;
 
 /**
-Contains classes for testing mocking scenarios
+	Contains classes for testing mocking scenarios
 */
+
 // -----------------------------------------------------------------------------
 
 interface SimpleInterface
@@ -23,7 +24,6 @@ class SimpleClass
 		throw "not mocked";
 	}
 }
-
 
 class VariableArgumentsClass
 {
@@ -141,7 +141,6 @@ class ClassWithFields implements IntefaceWithFields
 	public function withOptionalArgs(?arg1:Int, ?arg2:Bool):Void {throw "not mocked";}
 }
 
-
 class ClassWithConstructorAgs
 {
 	public function new(bool:Bool, int:Int)
@@ -173,15 +172,12 @@ class ClassThatIsFinal
 	}
 }
 
-
 // ----------------------------------------------------------------------------- Typed paramaters
-
 
 interface TypedInterface<T>
 {
 	function toTypeWithArg(value:T):T;
 }
-
 
 interface StringTypedInterface extends TypedInterface<String> {}
 interface ImplementsTypedInterface<TFoo, TBar> extends TypedInterface<TBar> {}
@@ -215,7 +211,6 @@ class ExtendsTypedClass<TFoo, TBar> extends TypedClass<TBar>
 	}	
 }
 
-
 class ExtendsTypedExtensionClass extends ExtendsTypedClass<String, String>
 {
 	public function new(foo:String, bar:String)
@@ -248,7 +243,6 @@ class IntIterableClass extends TypedIterableClass<Int>
 
 // ---------------------- others
 
-
 class ClassWithPrivateReference
 {
 	var arg:PrivateClass;
@@ -272,7 +266,6 @@ private class PrivateClass
 	}
 }
 
-
 class ClassWithOptionalArg
 {
 	public function new()
@@ -290,7 +283,6 @@ class ClassWithOptionalArg
 		return "";
 	}
 }
-
 
 class ClassWithTypedConstraint<T:TypedConstraintFoo>
 {
@@ -352,8 +344,6 @@ class TypedConstraintFooBar extends TypedConstraintFoo implements TypedConstrain
 		
 	}
 }
-
-
 
 class BaseTypedParam<T>
 {
@@ -438,9 +428,7 @@ typedef TypedefToStringTypedClass = TypedClass<String>;
 typedef TypedefToImplementsTypedInterface = ImplementsTypedInterface<String, String>;
 typedef TypedefToExtendsTypedClass = ExtendsTypedClass<String, String>;
 
-
 // ----------------------------------------------------------------------------- Typedef Structures
-
 
 typedef TypedefStructure = 
 {
@@ -451,7 +439,6 @@ typedef TypedefStructure =
 	@:optional var optionalTitle:String;
 	@:optional var optionalFunc:Void -> String;
 }
-
 
 enum SomeEnumType
 {
@@ -513,7 +500,6 @@ class Issue17Class implements Issue17Interface
 
 // ----------------------------------------------------------------------------- Matchers
 
-
 interface SomeMatcherInterface
 {
 	function fromString(?value:String):Bool;
@@ -543,7 +529,6 @@ class SomeMatcherClass implements SomeMatcherInterface
 interface Something {
     public function returnSomething(something:String, ?other:Null<Int> = 0):String;
 }
-
 
 interface Issue18
 {

@@ -22,24 +22,24 @@ class ComplexTypes
 	*/
 	static public function getDefaultValue(type:ComplexType):Expr
 	{
-		if(Tools.isStaticPlatform())
+		if (Tools.isStaticPlatform())
 		{
-			switch(type)
+			switch (type)
 			{
 				case TPath(p):
 				{
-					if(p.pack.length != 0) return EConst(CIdent("null")).at();
+					if (p.pack.length != 0) return EConst(CIdent("null")).at();
 
-					if(p.name == "StdTypes") p.name = p.sub;
+					if (p.name == "StdTypes") p.name = p.sub;
 
-					switch(p.name)
+					switch (p.name)
 					{
 						case "Bool":
 							return EConst(CIdent("false")).at();
 						case "Int":
 							return EConst(CInt("0")).at();
 						case "Float":
-							if( Context.defined("flash"))
+							if ( Context.defined("flash"))
 								return "Math.NaN".toFieldExpr();
 							else
 								return EConst(CFloat("0.0")).at();
@@ -52,9 +52,7 @@ class ComplexTypes
 		return EConst(CIdent("null")).at();
 	}
 
-	
-
-	// --- 
+	// ------------------------------------------------------------------------ 
 
 	static var types = new Map<Int,Void->Type>();
 	static var idCounter = 0;
@@ -66,7 +64,10 @@ class ComplexTypes
 		types.set(idCounter, type);
 		return idCounter++;
 	}
-	
+		
+	/**
+		Borrowed idea from tink_macros to create a complexType when haxe.macro.Tools returns null
+	**/
 	static public function toLazyComplexType(type:Type):ComplexType
 	{
 		var f = function() return type;

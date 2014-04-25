@@ -27,4 +27,3 @@ class MockatooUsingVoidTest
 		Mockatoo.when(instance.test()).thenThrow("foo");
 	}
 }
-

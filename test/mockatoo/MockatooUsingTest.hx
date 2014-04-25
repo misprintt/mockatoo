@@ -26,6 +26,4 @@ class MockatooUsingTest
 		instance = mock(VariableArgumentsClass);
 		instance.one(null).returns(2);
 	}
-
 }
-

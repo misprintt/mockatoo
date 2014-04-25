@@ -6,35 +6,29 @@ import haxe.macro.Compiler;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
-
-using haxe.macro.Printer;
-
 import mockatoo.exception.VerificationException;
 
 using haxe.macro.Tools;
 using mockatoo.macro.Tools;
 
 /**
-Macro for remapping a mock's method invocation when using Mockatoo.when()
+	Macro for remapping a mock's method invocation when using Mockatoo.when()
 */
 class VerifyMacro
 {
 	public static function create(expr:Expr, mode:Expr):Expr
 	{
 		var str = expr.toString();
-		// Console.log(str);
-		// Console.log(expr);
 
 		mode = validateModeExpr(mode);
 
-		//converts instance.one(1)
-		//into instance.mockProxy.when("one", [1])
+		//converts instance.one(1) into instance.mockProxy.when("one", [1])
 
-		switch(expr.expr)
+		switch (expr.expr)
 		{
 			case EConst(c):
 				//this is to support the old style - e.g. `verify(mock).doSomething();
-				var ident:String = switch(c)
+				var ident:String = switch (c)
 				{
 					case CIdent(v): v;
 					default: throw "Invalid arg [" + expr.toString() + "]";
@@ -51,7 +45,6 @@ class VerifyMacro
 			case ECall(e, params):
 
 				var actualExpr = convertCallExprToVerification(e.toString(), params, mode);
-				//Console.log(actualExpr.toString());
 				return actualExpr;
 
 			case ECast(e, t):
@@ -67,10 +60,10 @@ class VerifyMacro
 		var eIsNotNull:Expr;
 		var eIsAMock:Expr;
 
-		if(haxe.macro.Compiler.getDefine("cpp") != null)
+		if (haxe.macro.Compiler.getDefine("cpp") != null)
 		{
-			eIsNotNull = macro if($expr == null) throw new mockatoo.exception.VerificationException("Cannot verify [null] mock");
-			eIsAMock = macro if(!Std.is($expr, mockatoo.Mock)) throw new mockatoo.exception.VerificationException("Object is not an instance of mock");
+			eIsNotNull = macro if ($expr == null) throw new mockatoo.exception.VerificationException("Cannot verify [null] mock");
+			eIsAMock = macro if (!Std.is($expr, mockatoo.Mock)) throw new mockatoo.exception.VerificationException("Object is not an instance of mock");
 		}
 		else
 		{
@@ -105,10 +98,10 @@ class VerifyMacro
 
 	static function validateModeExpr(expr:Expr)
 	{
-		switch(expr.expr)
+		switch (expr.expr)
 		{
 			case EConst(c):
-				switch(c)
+				switch (c)
 				{
 					case CInt(_): return macro VerificationMode.times($expr);
 					default: return expr;

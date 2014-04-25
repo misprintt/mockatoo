@@ -12,7 +12,7 @@ using haxe.macro.Tools;
 using mockatoo.macro.Tools;
 
 /**
-Macro for remapping a mock's method invocation when using Mockatoo.when()
+	Macro for remapping a mock's method invocation when using Mockatoo.when()
 */
 class StubbingMacro
 {
@@ -25,7 +25,7 @@ class StubbingMacro
 		//converts instance.one(1)
 		//into instance.mockProxy.when("one", [1])
 
-		switch(expr.expr)
+		switch (expr.expr)
 		{
 			case ECall(e, params):
 
@@ -48,7 +48,6 @@ class StubbingMacro
 				var compilerCheck = EIf(EConst(CIdent("false")).at(), eField, null).at();
 
 				var actualExpr = EBlock([compilerCheck, whenExpr]).at();
-				// Console.log(actualExpr.toString());
 				return actualExpr;
 
 			case EField(e, field):
@@ -66,7 +65,6 @@ class StubbingMacro
 				var compilerCheck = EIf(EConst(CIdent("false")).at(), expr, null).at();
 
 				var actualExpr = EBlock([compilerCheck, whenExpr]).at();
-				// Console.log(actualExpr.toString());
 				return actualExpr;
 
 			default: throw "Invalid expression [" + expr.toString() + "]";
@@ -76,7 +74,7 @@ class StubbingMacro
 
 	static function isMatcher(expr:Expr):Bool
 	{
-		return switch(expr.expr)
+		return switch (expr.expr)
 		{
 			case EConst(CIdent("anyString")): 		true;
 			case EConst(CIdent("anyInt")): 			true;
@@ -125,7 +123,7 @@ class StubbingMacro
 	{
 		whenExpr = createWhen(whenExpr);
 
-		var exprs = switch(whenExpr.expr)
+		var exprs = switch (whenExpr.expr)
 		{
 			case EBlock(e): e;
 			default: [whenExpr];

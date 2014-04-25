@@ -12,7 +12,7 @@ class Exprs
 {
 	static public function at(e:ExprDef, ?pos:Position):Expr
 	{
-		if(pos == null) pos = Context.currentPos();
+		if (pos == null) pos = Context.currentPos();
 		return {expr:e, pos:pos};
 	}
 

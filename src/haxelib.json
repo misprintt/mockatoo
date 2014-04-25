@@ -4,8 +4,8 @@
 	"tags": [],
 	"description": "Mockatoo is a Haxe library for mock creation, verification and stubbing.",
 	"contributors": ["massive"],
-	"releasenote": "Hotfix for mocking getter/setter of type Void->Void",
-	"version": "2.1.1",
+	"releasenote": "Added support for Haxe 3.1.x",
+	"version": "3.0.0",
 	"url": "http://github.com/misprintt/mockatoo",
 	"dependencies": 
 	{

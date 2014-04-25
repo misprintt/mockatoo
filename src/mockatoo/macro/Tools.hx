@@ -10,7 +10,6 @@ typedef TTypes = mockatoo.macro.tool.Types;
 typedef TComplexTypes = mockatoo.macro.tool.ComplexTypes;
 typedef TTypePaths = mockatoo.macro.tool.TypePaths;
 
-
 class Tools
 {
 	/**
@@ -19,14 +18,14 @@ class Tools
 	*/
 	public static function isStaticPlatform():Bool
 	{
-		if(_isStaticPlatform == null)
+		if (_isStaticPlatform == null)
 		{
 			_isStaticPlatform = false;
 			var staticPlatforms = ["flash", "cpp", "java", "cs"];
 
-			for(platform in staticPlatforms)
+			for (platform in staticPlatforms)
 			{
-				if(Context.defined(platform))
+				if (Context.defined(platform))
 				{
 					_isStaticPlatform = true;
 					break;

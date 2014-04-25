@@ -3,8 +3,8 @@ package mockatoo.exception;
 import haxe.PosInfos;
 
 /**
-To be raised when stubbing is invalid.
-@see massive.munit.AssertionException
+	To be raised when stubbing is invalid.
+	@see massive.munit.AssertionException
 */
 class StubbingException extends MockatooException
 {

@@ -19,9 +19,7 @@ typedef Field =
 	name:String,
 	args:Array<Dynamic>
 }
-/**
-* Auto generated MassiveUnit Test Class  for mockatoo.Mockatoo 
-*/
+
 class MockatooTest 
 {
 	public function new() 
@@ -29,28 +27,7 @@ class MockatooTest
 		
 	}
 	
-	@BeforeClass
-	public function beforeClass():Void
-	{
-	}
-	
-	@AfterClass
-	public function afterClass():Void
-	{
-	}
-	
-	@Before
-	public function setup():Void
-	{
-	}
-	
-	@After
-	public function tearDown():Void
-	{
-	}
-
 	// ------------------------------------------------------------------------- mocking
-
 
 	@Test
 	public function should_mock_class():Void
@@ -138,7 +115,6 @@ class MockatooTest
 		var mock = Mockatoo.mock(ClassWithConstructorAgs);
 		assertMock(mock, ClassWithConstructorAgs, fields);
 	}
-
 
 	// ------------------------------------------------------------------------- spying
 
@@ -262,8 +238,6 @@ class MockatooTest
 		Assert.isTrue(Std.is(mock, TypedClass));
 	}
 
-
-
 	@Test
 	public function should_mock_untyped_interface():Void
 	{
@@ -353,7 +327,6 @@ class MockatooTest
 		Assert.isTrue(true);
 	}
 
-
 	@Test
 	public function should_mock_class_with_multiple_typed_constraints()
 	{
@@ -368,7 +341,6 @@ class MockatooTest
 		var mock = Mockatoo.mock(AnyConcreteTypedParam);
 		Assert.isTrue(true);
 	}
-
 
 	// ------------------------------------------------------------------------- typedef structures
 	
@@ -394,7 +366,7 @@ class MockatooTest
 
 		Assert.areEqual(isFunc, Reflect.isFunction(field));
 
-		if(isFunc)
+		if (isFunc)
 		{
 			Assert.areEqual(value, field());
 		}
@@ -429,9 +401,7 @@ class MockatooTest
 		Assert.isTrue(true);//otherwise an expception would have been thrown
 	}
 
-
 	// ------------------------------------------------------------------------- stub properties
-
 
 	@Test
 	public function should_stub_property()
@@ -468,7 +438,6 @@ class MockatooTest
 		catch(e:StubbingException){}
 
 	}
-
 
 	@Test
 	public function should_not_stub_property_with_callback()
@@ -553,7 +522,6 @@ class MockatooTest
 		}
 		catch(e:StubbingException){}
 	}
-
 
 	@Test
 	public function should_stub_getter_property_with_throw()
@@ -678,7 +646,7 @@ class MockatooTest
 	}
 
 	/**
-	Issue #17 - Compiler error when mocking interface with write-only properties (#17)
+		Issue #17 - Compiler error when mocking interface with write-only properties (#17)
 	*/
 	@Test
 	public function should_mock_interface_with_with_property_type_void_void():Void
@@ -744,23 +712,20 @@ class MockatooTest
 		mock.myVal = o;
 		Mockatoo.verify(mock.set_myVal(o));
 
-
 	}
-
-
 
 	// ------------------------------------------------------------------------- utilities
 
 	function assertMock(mock:Mock, cls:Class<Dynamic>, ?fields:Array<Field>, ?pos:haxe.PosInfos)
 	{
-		if(fields == null) fields = [];
+		if (fields == null) fields = [];
 
 		Assert.isTrue(Std.is(mock, cls), pos);
 		Assert.isTrue(Std.is(mock, Mock), pos);
 
 		var className = Type.getClassName(cls);
 
-		for(field in fields)
+		for (field in fields)
 		{
 			try
 			{
@@ -768,7 +733,7 @@ class MockatooTest
 			}
 			catch(e:String)
 			{
-				if(e == "not mocked")
+				if (e == "not mocked")
 				{
 					Assert.fail(className + "." + field.name + " is not mocked.", pos);
 				}
@@ -778,21 +743,21 @@ class MockatooTest
 
 	function addField(fields:Array<Field>, name:String, ?args:Array<Dynamic>)
 	{
-		if(args == null)
+		if (args == null)
 			args = [];
 
 		fields.push({name:name, args:args});
 	}
 
 	/**
-	utility function for haxe3 to create dynamic arrays of arguments for a function
+		utility function for haxe3 to create dynamic arrays of arguments for a function
 	*/
 	function toArgs(?arg1:Dynamic, ?arg2:Dynamic, ?arg3:Dynamic):Array<Dynamic>
 	{
 		var args:Array<Dynamic> = new Array<Dynamic>();
-		if(arg1 != null) args.push(arg1);
-		if(arg2 != null) args.push(arg2);
-		if(arg3 != null) args.push(arg3);
+		if (arg1 != null) args.push(arg1);
+		if (arg2 != null) args.push(arg2);
+		if (arg3 != null) args.push(arg3);
 		return args;
 	}
 

@@ -14,8 +14,6 @@ import haxe.ds.StringMap;
 using haxe.macro.Tools;
 using mockatoo.macro.Tools;
 
-// using musings.Tools;
-
 typedef PropertyMeta = 
 {
 	var get:String;
@@ -24,7 +22,7 @@ typedef PropertyMeta =
 }
 
 /**
-Macro class that generates a Mock implementation of a class or interface
+	Macro class that generates a Mock implementation of a class or interface
 */
 class MockMaker
 {
@@ -53,7 +51,6 @@ class MockMaker
 
 	var generatedExpr:Expr;
 
-
 	var propertyMetas:Array<PropertyMeta>;
 
 	public function new(e:Expr, ?paramTypes:Expr, isSpy:Bool=false)
@@ -76,13 +73,13 @@ class MockMaker
 
 		params = [];
 
-		if(paramTypes != null && isNotNull(paramTypes))
+		if (paramTypes != null && isNotNull(paramTypes))
 		{
-			switch(paramTypes.expr)
+			switch (paramTypes.expr)
 			{
 				case EArrayDecl(values):
 
-					for(value in values)
+					for (value in values)
 					{
 						var ident = value.toString();
 						Console.log("  param: " + ident);
@@ -93,7 +90,7 @@ class MockMaker
 			}
 		}
 
-		switch(actualType)
+		switch (actualType)
 		{
 			case TAnonymous(a):
 				createMockFromStruct(a.get().fields);
@@ -106,19 +103,19 @@ class MockMaker
 	}
 
 	/**
-	Returns the generated expr instanciating an instance of the mock
+		Returns the generated expr instanciating an instance of the mock
 	*/
 	public function toExpr():Expr
 	{
-		if(generatedExpr == null)
+		if (generatedExpr == null)
 		{
 			var typeParams:Array<TypeParam> = [];
-			for(type in params)
+			for (type in params)
 			{	
 				try
 				{
 					var complexType = type.toComplexType();
-					if(complexType == null)
+					if (complexType == null)
 					{
 						complexType = type.toLazyComplexType();
 					}
@@ -146,8 +143,9 @@ class MockMaker
 	{
 		return type.toComplexType();
 	}
+	
 	/**
-	Generates a dynamic object matching a TypeDef structure
+		Generates a dynamic object matching a TypeDef structure
 	*/
 	function createMockFromStruct(fields:Array<ClassField>)
 	{
@@ -155,13 +153,13 @@ class MockMaker
 
 		var arg:{ field : String, expr : Expr };
 
-		for(field in fields)
+		for (field in fields)
 		{
 			Console.log(field.name);
 			arg = {field:field.name, expr:null};
 
 		
-			switch(field.type)
+			switch (field.type)
 			{
 				case TInst(_,_):
 					arg.expr = toComplexType(field.type).getDefaultValue();
@@ -173,7 +171,7 @@ class MockMaker
 					var e = toComplexType(field.type).getDefaultValue();
 					var fargs:Array<FunctionArg> = [];
 
-					for(a in functionArgs)
+					for (a in functionArgs)
 					{
 						var arg = {
 							name: a.name,
@@ -203,7 +201,7 @@ class MockMaker
 	}
 
 	/**
-	Creates a class definition for a mocked class or interface 
+		Creates a class definition for a mocked class or interface 
 	*/
 	function createMockFromClass()
 	{
@@ -212,18 +210,18 @@ class MockMaker
 		Console.log("type: " + type);
 		Console.log("actual: " + actualType);
 		
-		switch(actualType)
+		switch (actualType)
 		{
 			case TInst(t, typeParams):
 				classType = t.get();
 
-				if(params.length == 0)
+				if (params.length == 0)
 					params = typeParams;
 
 			default: throw "not implementend";
 		}
 
-		if(mockedClassMap.exists(id))
+		if (mockedClassMap.exists(id))
 		{
 			typeDefinitionId = mockedClassMap.get(id);
 			Console.log("existing: " + id + ", " + typeDefinitionId);
@@ -232,7 +230,7 @@ class MockMaker
 
 		isInterface = classType.isInterface;
 
-		if(isInterface) isSpy = false;
+		if (isInterface) isSpy = false;
 		
 		Console.log("params: " + params);
 		Console.log("isSpy " +  isSpy);
@@ -254,13 +252,13 @@ class MockMaker
 
 	function isNotNull(expr:Expr):Bool
 	{
-		switch(expr.expr)
+		switch (expr.expr)
 		{
 			case EConst(c):
-				switch(c)
+				switch (c)
 				{
 					case CIdent(id):
-						if(id == "null") return false;
+						if (id == "null") return false;
 					default: null;
 				}
 			default: null;
@@ -269,8 +267,8 @@ class MockMaker
 	}
 
 	/**
-	Returns a new type definition based on the target class or interface that
-	mocks the contents of all function fields
+		Returns a new type definition based on the target class or interface that
+		mocks the contents of all function fields
 	*/
 	function createTypeDefinition():TypeDefinition
 	{
@@ -279,19 +277,19 @@ class MockMaker
 
 		Console.log("classType.params:" + classType.params);
 		
-		for(i in 0...classType.params.length)
+		for (i in 0...classType.params.length)
 		{
 			var param = classType.params[i];
 
 			var constraints:Array<ComplexType> = [];
-			switch(param.t)
+			switch (param.t)
 			{
 				case TInst(t,_):
 				{
-					switch(t.get().kind)
+					switch (t.get().kind)
 					{
 						case ClassKind.KTypeParameter(constrnts):
-							for(const in constrnts)
+							for (const in constrnts)
 							{
 								var complexParam = haxe.macro.TypeTools.toComplexType(const);
 								constraints.push(complexParam);
@@ -311,7 +309,7 @@ class MockMaker
 		Console.log("super params:" + classType.params);
 
 		var typeParams:Array<TypeParam> = [];
-		for(p in classType.params)
+		for (p in classType.params)
 		{
 			typeParams.push(TPType(haxe.macro.TypeTools.toComplexType(p.t)));
 		}
@@ -330,24 +328,24 @@ class MockMaker
 
 		var fields = createFields();
 
-		if(isInterface || !hasConstructor)
+		if (isInterface || !hasConstructor)
 			fields.unshift(createEmptyConstructor());
 
 		var metas = updateMeta(classType.meta.get());
 
-		if(Context.defined("flash"))
+		if (Context.defined("flash"))
 		{
 			var skip = false;
-			for(m in metas)
+			for (m in metas)
 			{
-				if(m.name == ":hack")
+				if (m.name == ":hack")
 				{
 					skip = true;
 					break;
 				}
 			}
 
-			if(skip)
+			if (skip)
 			{
 				Context.error("Cannot mock final class [" + id + "] on flash target.", Context.currentPos());
 				return null;
@@ -356,7 +354,7 @@ class MockMaker
 
 		var eProps:Array<Expr> = [];
 
-		for(prop in propertyMetas)
+		for (prop in propertyMetas)
 		{
 			var args = [];
 			for (field in Reflect.fields(prop))
@@ -391,19 +389,19 @@ class MockMaker
 	}
 
 	/**
-	Hack to remove the constraints from super class type params to ensure type definition
-	can compile.
+		Hack to remove the constraints from super class type params to ensure type definition
+		can compile.
 	*/
 	function removeTypedConsraintsFromTypeParams(types:Array<TypeParam>):Array<TypeParam>
 	{
 		var temp:Array<TypeParam> = [];
 
-		for(type in types)
+		for (type in types)
 		{
-			switch(type)
+			switch (type)
 			{
 				case TPType(t):
-					switch(t)
+					switch (t)
 					{
 						case TPath(path):
 							path.params = [];
@@ -429,11 +427,11 @@ class MockMaker
 	{
 		var metadata:Metadata = [];
 
-		for(meta in source)
+		for (meta in source)
 		{
 			Console.log(meta.name + ":" + new Printer().printExprs(meta.params, ""));
 
-			switch(meta.name)
+			switch (meta.name)
 			{
 				case ":final":
 					metadata.push({pos:Context.currentPos(), name:":hack", params:[]});
@@ -448,7 +446,7 @@ class MockMaker
 	}
 
 	/**
-	Creates the typeDefinition kind that extends the target class
+		Creates the typeDefinition kind that extends the target class
 	*/
 	function createKind()
 	{
@@ -457,7 +455,7 @@ class MockMaker
 		var extension:TypePath = null;
 		var interfaces:Array<TypePath> = null;
 
-		if(isInterface)
+		if (isInterface)
 		{
 			interfaces = [extendTypePath, mockInterface];
 		}
@@ -479,9 +477,8 @@ class MockMaker
 	}
 
 	/**
-	Returns mocked versions of all functions within the target class or interface.
-	Also cleans up constructor to call super (if a class) and to not return Void.
-
+		Returns mocked versions of all functions within the target class or interface.
+		Also cleans up constructor to call super (if a class) and to not return Void.
 	*/
 	function createFields():Array<Field>
 	{
@@ -489,30 +486,29 @@ class MockMaker
 
 		var superFields = ClassFields.getClassFields(classType);
 
-		for(field in superFields)
+		for (field in superFields)
 		{
 			createField(field, fields);
 		}
 
 		fields = appendMockInterfaceFields(fields);
 		return fields;
-
 	}
 
 	/**
-	Generates the mocked verison of a field.
-	Generates additional getter/setter function fields for interface properties
+		Generates the mocked verison of a field.
+		Generates additional getter/setter function fields for interface properties
 	*/
 	function createField(field:Field, fields:Array<Field>)
 	{
 
 		field.meta = updateMeta(field.meta);
 
-		switch(field.kind)
+		switch (field.kind)
 		{
 			case FFun(f):
 
-				if(field.name == "new")
+				if (field.name == "new")
 				{
 					overrideConstructor(field, f);
 				}
@@ -521,7 +517,7 @@ class MockMaker
 					overrideField(field, f);
 				}
 
-				if(field.access.remove(AInline))
+				if (field.access.remove(AInline))
 				{
 					#if no_inline
 						fields.push(field);
@@ -533,19 +529,19 @@ class MockMaker
 					
 				}
 
-				if(Context.defined("flash"))
+				if (Context.defined("flash"))
 				{
 					var skip = false;
-					for(m in field.meta)
+					for (m in field.meta)
 					{
-						if(m.name == ":hack")
+						if (m.name == ":hack")
 						{
 							skip = true;
 							break;
 						}
 					}
 
-					if(skip)
+					if (skip)
 						Context.warning("Cannot mock final method [" + id + "." + field.name + "] on flash target.", Context.currentPos());
 					else
 						fields.push(field);
@@ -556,28 +552,28 @@ class MockMaker
 				}
 					
 			case FVar(_,_):
-				if(isInterface) fields.push(field);
+				if (isInterface) fields.push(field);
 			case FProp(get, set, t,_):
 
 				var getMethod = toGetterSetter(get);
 				var setMethod = toGetterSetter(set);
 
-				if(getMethod != "" || setMethod != "")
+				if (getMethod != "" || setMethod != "")
 					propertyMetas.push({name:field.name, set:setMethod, get:getMethod});
 
-				if(isInterface) 
+				if (isInterface) 
 				{
 					//force concrete property for getter setter
 					addConcretePropertyMetadata(field);
 
 					fields.push(field);
 			 
-					if(getMethod != "")
+					if (getMethod != "")
 					{
 						var getter = createGetterFunction(getMethod, t, field.pos);
 						createField(getter, fields);
 					}
-					if(setMethod != "")
+					if (setMethod != "")
 					{
 						var setter = createSetterFunction(setMethod, t, field.pos);
 						createField(setter, fields);
@@ -590,23 +586,23 @@ class MockMaker
 	function addConcretePropertyMetadata(field:Field)
 	{
 		var isVar = false;
-		for(meta in field.meta)
+		for (meta in field.meta)
 		{
-			if(meta.name == ":isVar")
+			if (meta.name == ":isVar")
 			{
 				isVar = true;
 				break;
 			}
 		}
 
-		if(!isVar)
+		if (!isVar)
 		{
 			field.meta.push({pos:field.pos, params:[], name:":isVar"});
 		}
 	}
 
 	/**
-	Generates a stub setter function when mocking a FProp on an interface
+		Generates a stub setter function when mocking a FProp on an interface
 	*/
 	function createSetterFunction(name:String, ret:ComplexType, pos:Position):Field
 	{
@@ -633,7 +629,7 @@ class MockMaker
 	}
 
 	/**
-	Generates a stub getter function when mocking a FProp on an interface
+		Generates a stub getter function when mocking a FProp on an interface
 	*/
 	function createGetterFunction(name:String, ret:ComplexType, pos:Position ):Field
 	{
@@ -653,10 +649,9 @@ class MockMaker
 		}
 	}
 
-
 	function toGetterSetter(value:String):String
 	{
-		switch(value)
+		switch (value)
 		{
 			case "default", "null", "never": return "";
 			case "dynamic": throw "Not implemented";
@@ -665,20 +660,19 @@ class MockMaker
 		return "";
 	}
 
-
 	/**
-	Appends the fields required by the <code>mockatoo.Mock</code> interface
+		Appends the fields required by the <code>mockatoo.Mock</code> interface
 	*/
 	function appendMockInterfaceFields(fields:Array<Field>):Array<Field>
 	{
 		var mockInterface = Context.getType("mockatoo.Mock");
 
-		switch(mockInterface)
+		switch (mockInterface)
 		{
 			case TInst(t,_):
 				var mockFields = ClassFields.getClassFields(t.get(), false);
 
-				for(field in mockFields)
+				for (field in mockFields)
 				{
 					fields.push(field);
 				}
@@ -689,7 +683,7 @@ class MockMaker
 	}
 
 	/**
-	Override an existing constructor, ensuring super call occurs after return
+		Override an existing constructor, ensuring super call occurs after return
 	*/
 	function overrideConstructor(field:Field, f:Function)
 	{
@@ -704,7 +698,7 @@ class MockMaker
 		var eReturn = isSpy ? eNull : EReturn().at();
 		var e = EConst(CIdent("super")).at();
 
-		if(f.args.length == 0)
+		if (f.args.length == 0)
 		{
 			e = e.call();
 		}
@@ -712,7 +706,7 @@ class MockMaker
 		{
 			var args:Array<Expr> = [];
 
-			for(arg in f.args)
+			for (arg in f.args)
 			{
 				Console.log(arg);
 				var argExpr = arg.type.getDefaultValue();
@@ -742,27 +736,15 @@ class MockMaker
 	function createMockConstructorExprs()
 	{
 		return macro mockProxy = new mockatoo.internal.MockProxy(this,spy);
-		//create mockProxy instance
-		// var eThis =  EConst(CIdent("this")).at();
-		// var eSpy = EConst(CIdent("spy")).at();
-		// var args = [macro this}, macro ${eSpy}];
-		// var eInstance = macro new mockatoo.internal.MockProxy($a{args});
-
-		// var eInstance = macro new mockatoo.internal.MockProxy(this,spy);
-		// return EConst(CIdent("mockProxy")).at().assign(eInstance);
-		
 	}
 
-	//	return binOp(target, value, op == null ? OpAssign : OpAssignOp(op), pos);
-
 	/**
-	Override an existing field, normalising return types and generating default values
+		Override an existing field, normalising return types and generating default values
 	*/
 	function overrideField(field:Field, f:Function)
 	{
-		if(!isInterface)
+		if (!isInterface)
 		field.access.unshift(AOverride);
-
 
 		var args = getFunctionArgIdents(f);
 
@@ -780,7 +762,7 @@ class MockMaker
 
 		var eSwitch:Expr = null;
 
-		if(f.ret != null && isNotVoid(f.ret))
+		if (f.ret != null && isNotVoid(f.ret))
 		{
 			f.ret = normaliseReturnType(f.ret);
 
@@ -790,13 +772,12 @@ class MockMaker
 
 			var eSuper =  ("super." + field.name).toFieldExpr().call(args);
 
-			if(isInterface)
+			if (isInterface)
 				eSuper = eDefaultReturnValue;
-
 
 			var eIf:Expr = macro $eIsSpy ? $eSuper : $eDefaultReturnValue;
 
-			eSwitch = macro switch($eMockOutcome)
+			eSwitch = macro switch ($eMockOutcome)
 			{
 				case $eCaseReturns: return v;
 				case $eCaseThrows: throw v;
@@ -808,18 +789,18 @@ class MockMaker
 				case $eCaseNone: return $eIf;
 			}
 		}
-		else if(isVoidVoid(f.ret))
+		else if (isVoidVoid(f.ret))
 		{	
 			var eReturn = macro function(){};
 
 			var eSuper =  ("super." + field.name).toFieldExpr().call(args);
 
-			if(isInterface)
+			if (isInterface)
 				eSuper = eReturn;
 
 			var eIf:Expr = macro $eIsSpy ? $eSuper : $eReturn;
 
-			eSwitch = macro switch($eMockOutcome)
+			eSwitch = macro switch ($eMockOutcome)
 			{
 				case $eCaseReturns: return v;
 				case $eCaseThrows: throw v;
@@ -835,12 +816,12 @@ class MockMaker
 		{
 			var eSuper =  ("super." + field.name).toFieldExpr().call(args);
 
-			if(isInterface)
+			if (isInterface)
 				eSuper = eNull;
 
 			var eIf:Expr = macro $eIsSpy ? $eSuper : $eNull;
 
-			eSwitch= macro switch($eMockOutcome)
+			eSwitch= macro switch ($eMockOutcome)
 			{
 				case $eCaseThrows: throw v;
 				case $eCaseCalls: 
@@ -852,7 +833,6 @@ class MockMaker
 			}
 		}
 
-
 		f.expr = createBlock([eSwitch]);
 
 		field.kind = FFun(f);
@@ -860,41 +840,36 @@ class MockMaker
 		var fieldMeta = createMockFieldMeta(field, f);
 		field.meta.push(fieldMeta);
 
-
 		//validate optional args
-		for(arg in f.args)
+		for (arg in f.args)
 		{
-			if(!arg.opt) continue;
+			if (!arg.opt) continue;
 
 			Console.log(arg.name + ":" + arg.type.toString());
 		}
 	}
 
-	
-
 	/*
-	Returns true if complex type is Void ->Void
+		Returns true if complex type is Void ->Void
 	*/
 	function isVoidVoid(type:ComplexType):Bool
 	{
-		switch(type)
+		switch (type)
 		{
 			case TFunction(args,ret): 
-				if(args.length == 0 && !isNotVoid(ret))
+				if (args.length == 0 && !isNotVoid(ret))
 				{
 					return true;
 				}
 			case _:
 				return false;
 		}
-
 		return false;
 	}
  
-
 	function updateVoidVoid(type:ComplexType):ComplexType
 	{
-		if(!isVoidVoid(type)) return type;
+		if (!isVoidVoid(type)) return type;
 
 		var tpath = TPath({
 			sub:null,
@@ -903,7 +878,7 @@ class MockMaker
 			pack:[]
 		});
 
-		switch(type)
+		switch (type)
 		{
 			case TFunction(fargs,fret):
 				fargs.push(tpath);
@@ -918,7 +893,7 @@ class MockMaker
 	{
 		var args:Array<Expr> = [];
 
-		for(arg in f.args)
+		for (arg in f.args)
 		{
 			args.push(EConst(CIdent(arg.name)).at());
 		}
@@ -934,19 +909,17 @@ class MockMaker
 		return macro mockProxy.getOutcomeFor(${eName}, ${eArgs});
 	}
 		
-
 	function normaliseReturnType(ret:ComplexType)
 	{
-		var typePath:TypePath = switch(ret)
+		var typePath:TypePath = switch (ret)
 		{
 			case TPath(p): p;
 			default: null;
 		}
 
-		if(typePath == null) return ret;
+		if (typePath == null) return ret;
 
-
-		if(typePath.name == "StdTypes")
+		if (typePath.name == "StdTypes")
 		{
 			typePath.name = typePath.sub;
 			typePath.sub = null;
@@ -956,20 +929,20 @@ class MockMaker
 	}
 
 	/**
-	Creates a @mock metadata value for the field
-	E.g @mock([String, ?foo.Bar], ret)
+		Creates a @mock metadata value for the field
+		E.g @mock([String, ?foo.Bar], ret)
 	*/
 	function createMockFieldMeta(field:Field, f:Function)
 	{
 		var args:Array<Expr> = [];
-		for(arg in f.args)
+		for (arg in f.args)
 		{
 			Console.log(arg);
 
 			var value:String = arg.opt ? "?" : "";
 
 			//add the return type including if optional (?)
-			if(arg.type != null)
+			if (arg.type != null)
 			{
 				// arg.type = updateVoidVoid(arg.type);
 				var ident = normaliseReturnType(arg.type).toString();
@@ -980,12 +953,12 @@ class MockMaker
 
 		var params:Array<Expr> = [EArrayDecl(args).at()];
 
-		if(f.ret != null && isNotVoid(f.ret))
+		if (f.ret != null && isNotVoid(f.ret))
 		{
 			var ident = normaliseReturnType(f.ret).toString();
 			params.push(EConst(CString(ident)).at());
 		}
-		else if(isVoidVoid(f.ret))
+		else if (isVoidVoid(f.ret))
 		{
 			//is of type Void->Void
 			var voidType = updateVoidVoid(f.ret);
@@ -1010,24 +983,22 @@ class MockMaker
 	}
 
 	/**
-	Returns an empty block expression.
-
+		Returns an empty block expression.
 	*/
 	function createBlock(?args:Array<Expr>=null):Expr
 	{
-		if(args == null) args = [];
+		if (args == null) args = [];
 		var exprs = EBlock(args).at();
 		return exprs;
 	}
 
 	/**
-	Returns an empty constructor field.
+		Returns an empty constructor field.
 	*/
 	function createEmptyConstructor():Field
 	{	
 		var constructorExprs = createMockConstructorExprs();
 		var exprs = EBlock([constructorExprs]).at();
-
 
 		var arg = {
 			value: EConst(CIdent("false")).at(),

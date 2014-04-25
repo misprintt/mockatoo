@@ -18,24 +18,24 @@ class TypePaths
 	{
 		// return id.toTypePath(params);
 
-		if(params == null) params = [];
+		if (params == null) params = [];
 
 		var parts:Array<String> = ident.split(".");
 		var sub:String = null;
 		var name:String = parts.pop();
 
-		if(parts.length > 0)
+		if (parts.length > 0)
 		{
 			var char = parts[parts.length-1].split("").shift();
 			
-			if(char == char.toUpperCase())
+			if (char == char.toUpperCase())
 			{
 				sub = name;
 				name = parts.pop();
 			}
 		}
 
-		if(sub == name)
+		if (sub == name)
 			sub = null;
 
 		return {
