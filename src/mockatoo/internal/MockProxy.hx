@@ -3,11 +3,7 @@ import mockatoo.Mockatoo;
 import mockatoo.exception.StubbingException;
 import haxe.PosInfos;
 
-#if haxe3
 import haxe.ds.StringMap;
-#else
-private typedef StringMap<T> = Hash<T>
-#end
 
 /**
 Responsible for run time mocking behaviour of a Mock instance.

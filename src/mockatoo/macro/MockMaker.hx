@@ -13,17 +13,8 @@ import tink.core.Outcome;
 import mockatoo.Mock;
 import mockatoo.macro.ClassFields;
 import mockatoo.internal.MockOutcome;
-
-#if haxe3
 import haxe.ds.StringMap;
-#else
-private typedef StringMap<T> = Hash<T>
-typedef TypeParamDecl = {
-	var name : String;
-	@:optional var constraints : Array<ComplexType>;
-	// @:optional var params : Array<TypeParamDecl>;
-}
-#end
+
 
 using haxe.macro.Printer;
 using tink.macro.Exprs;
@@ -143,11 +134,7 @@ class MockMaker
 
 	function toComplexType(type:Type):ComplexType
 	{
-		#if haxe3
 		return type.toComplexType();
-		#else
-		return type.toComplex(true);
-		#end
 	}
 	/**
 	Generates a dynamic object matching a TypeDef structure
@@ -281,30 +268,19 @@ class MockMaker
 				{
 					switch(t.get().kind)
 					{
-						#if haxe3
 						case ClassKind.KTypeParameter(constrnts):
 							for(const in constrnts)
 							{
 								var complexParam = haxe.macro.TypeTools.toComplexType(const);
 								constraints.push(complexParam);
 							}
-						#else
-						case ClassKind.KTypeParameter:
-							if( t.get().interfaces.length > 0 && params[i] != null)
-								constraints.push(toComplexType(params[i]));//issue #12 - support typed constraints
-						#end
 						default:
 					}
 				}
 				default: null;
 			}
 
-			#if haxe3
 			paramTypes.push({name:param.name, constraints:constraints, params:[]});
-			#else
-			paramTypes.push({name:param.name, constraints:constraints});
-			#end
-			
 		}
 
 		var extendId = classType.module + "." + classType.name;
@@ -420,58 +396,12 @@ class MockMaker
 		return temp;
 	}
 	
-	#if haxe3
 	function debugPrintClass()
 	{
 		var printer = new haxe.macro.Printer();
 		var result = printer.printTypeDefinition(typeDefinition);
 		Console.log(result);
 	}
-
-	#else
-	function debugPrintClass()
-	{
-		var metas = typeDefinition.meta;
-		var fields = typeDefinition.fields;
- 
-		var preview = "";
- 
-		for(meta in metas)
-		{
-			if(meta.name == "mockatoo")
-			{
-				preview += "@" + meta.name;
- 
-				if(meta.params.length > 0)
-					preview += Printer.printExprList("",meta.params, ",");
- 
-				preview += "\n";
-				break;
-			}
-		}
-
-		preview += "class " + id + "Mocked " + (isInterface?"implements":"extends") + " " + id;
-		preview += "\n{";
-
-		for(field in fields)
-		{
-			for(meta in field.meta)
-			{
-				preview += "\n	@" + meta.name;
-
-				if(meta.params.length > 0)
-					preview += Printer.printExprList("",meta.params, ",");
-			}
-
-			preview += "\n	" + Printer.printField("	", field);
-		}
-		preview += "\n}";
-
-		Console.log(preview);
-
-	}
-	#end
-
 
 	function updateMeta(source:Metadata):Metadata
 	{
@@ -571,14 +501,10 @@ class MockMaker
 
 				if(field.access.remove(AInline))
 				{
-					#if haxe3
-						#if no_inline
-							fields.push(field);
-						#else
-							Context.warning("Cannot mock inline method [" + id + "." + field.name + "]. Please set '--no-inline' compiler flag.", Context.currentPos());
-						#end
+					#if no_inline
+						fields.push(field);
 					#else
-						Context.warning("Cannot mock inline method [" + id + "." + field.name + "] please upgrade to Haxe 2.11 and set '--no-inline' compiler flag (See http://code.google.com/p/haxe/issues/detail?id=1231)", Context.currentPos());
+						Context.warning("Cannot mock inline method [" + id + "." + field.name + "]. Please set '--no-inline' compiler flag.", Context.currentPos());
 					#end
 
 					return;

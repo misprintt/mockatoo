@@ -9,11 +9,7 @@ import mockatoo.Mockatoo;
 import mockatoo.Mock;
 import test.TestClasses;
 import util.Asserts;
-
-#if haxe3
 import mockatoo.Mockatoo.*;
-#else
-#end
 
 using mockatoo.Mockatoo;
 
@@ -32,8 +28,6 @@ class MockatooVoidTest
 	{
 		var mock = mock(VariableArgumentsReturnsVoidClass);
 		mock.none();
-
 		mock.none().verify();
 	}
-
 }

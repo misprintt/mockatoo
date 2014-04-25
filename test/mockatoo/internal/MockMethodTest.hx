@@ -9,14 +9,8 @@ import mockatoo.exception.VerificationException;
 import mockatoo.exception.StubbingException;
 import mockatoo.Mockatoo;
 import util.Asserts;
-
-#if haxe3
 import haxe.ds.IntMap;
 import haxe.ds.StringMap;
-#else
-private typedef IntMap<T> = IntHash<T>
-private typedef StringMap<T> = Hash<T>
-#end
 /**
 * Auto generated MassiveUnit Test Class  for mockatoo.internal.MockMethod 
 */

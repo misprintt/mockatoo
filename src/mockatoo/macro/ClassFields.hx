@@ -10,12 +10,7 @@ import haxe.PosInfos;
 import tink.macro.Types;
 import haxe.macro.Printer;
 import haxe.macro.TypeTools;
-
-#if haxe3
 import haxe.ds.StringMap;
-#else
-typedef StringMap<T> = Hash<T>
-#end
 
 using tink.macro.Exprs;
 using tink.macro.Types;
@@ -231,11 +226,7 @@ class ClassFields
 				if(t == null)
 					return TPath({pack:[], name:"StdTypes", sub:"Dynamic", params:[]});
 
-				#if haxe3
 				var param = TPType(t.toComplexType());
-				#else
-				var param = TPType(t.toComplex(true));
-				#end
 				
 				return TPath({pack:[], name:"StdTypes", sub:"Dynamic", params:[param]});
 			default:
@@ -254,10 +245,8 @@ class ClassFields
 				var readAccess = getVarAccess(read);
 				var writeAccess = getVarAccess(write);
 
-				#if haxe3
 				if(readAccess == "property") readAccess = "get_" + field.name;
 				if(writeAccess == "property") writeAccess = "set_" + field.name;
-				#end
 
 				return FProp(readAccess, writeAccess, convertType(field.type, paramMap), expr);
 			}
@@ -295,11 +284,7 @@ class ClassFields
 		{
 			var argType = convertType(arg.t, paramMap);
 
-			#if haxe3
 			var value:Null<Expr> = arg.opt ? arg.t.toComplexType().defaultValue() : null;
-			#else
-			var value:Null<Expr> = arg.opt ? arg.t.toComplex(true).defaultValue() : null;
-			#end
 
 			if(arg.opt && Contexts.isStaticPlatform())
 			{
@@ -343,13 +328,8 @@ class ClassFields
 			case AccNo: "null";
 			case AccNever: "never";
 			case AccResolve: throw "not implemented for VarAccess [" + access + "]";
-			#if haxe3
 			case AccCall: "property";
 			case AccRequire(_,_): throw "not implemented VarAccess [" + access + "]";
-			#else
-			case AccRequire(_): throw "not implemented VarAccess [" + access + "]";
-			case AccCall(m): m;
-			#end
 		}		
 	}
 

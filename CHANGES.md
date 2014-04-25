@@ -1,3 +1,11 @@
+v3
+
+- updated for Haxe 3.1.x
+
+Known Issues
+
+- unable to mock private class references ()
+
 v2.1.1
 - hotfix for mocking getter/setters of type Void-Void (issue #17)
 

@@ -21,7 +21,7 @@ class Mockatoo
 	@return new instance of generated Mock class
 	*/
 
-	#if haxe3 macro #else @:macro #end static public function mock<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
+	macro static public function mock<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
 	{
 		InitMacro.init();
 		try
@@ -46,7 +46,7 @@ class Mockatoo
 	@return new instance of generated Mock class
 	*/
 	
-	#if haxe3 macro #else @:macro #end static public function spy<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
+	macro static public function spy<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
 	{
 		InitMacro.init();
 		var mock = new MockMaker(Context.getTypedExpr(Context.typeExpr(typeToMock)), paramTypes, true);
@@ -80,7 +80,7 @@ class Mockatoo
 	 */
 
 	
-	#if haxe3 macro #else @:macro #end static public function verify(expr:ExprOf<Dynamic>, ?mode:ExprOf<VerificationMode>):ExprOf<mockatoo.internal.Verification>
+	macro static public function verify(expr:ExprOf<Dynamic>, ?mode:ExprOf<VerificationMode>):ExprOf<mockatoo.internal.Verification>
 	{
 		return VerifyMacro.create(Context.getTypedExpr(Context.typeExpr(expr)),mode);
 	}
@@ -125,7 +125,7 @@ class Mockatoo
     @return dynamic Stubber for matching method
     */
 	
-	#if haxe3 macro #else @:macro #end static public function when(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
+	macro static public function when(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
 	{
 		return StubbingMacro.createWhen(expr);
 	}
@@ -143,7 +143,7 @@ class Mockatoo
     </code></pre>
 	*/
 	
-	#if haxe3 macro #else @:macro #end static public function returns(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
+	macro static public function returns(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
 	{
 		return StubbingMacro.returns(Context.getTypedExpr(Context.typeExpr(expr)), value);
 	}
@@ -162,7 +162,7 @@ class Mockatoo
     </code></pre>
 	*/
 	
-	#if haxe3 macro #else @:macro #end static public function throws(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
+	macro static public function throws(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
 	{
 		return StubbingMacro.throws(Context.getTypedExpr(Context.typeExpr(expr)), value);
 	}
@@ -180,7 +180,7 @@ class Mockatoo
     </code></pre>
 	*/
 	
-	#if haxe3 macro #else @:macro #end static public function calls(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
+	macro static public function calls(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
 	{
 		return StubbingMacro.calls(Context.getTypedExpr(Context.typeExpr(expr)), value);
 	}
@@ -198,7 +198,7 @@ class Mockatoo
     Mockatoo.when(mock.someMethod("foo")).thenCallRealMethod();
     </code></pre>
 	*/
-	#if haxe3 macro #else @:macro #end static public function callsRealMethod(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
+	macro static public function callsRealMethod(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
 	{
 		return StubbingMacro.callsRealMethod(Context.getTypedExpr(Context.typeExpr(expr)));
 	}
@@ -215,7 +215,7 @@ class Mockatoo
     Mockatoo.when(mock.someMethod("foo")).thenStub();
     </code></pre>
 	*/
-	#if haxe3 macro #else @:macro #end static public function stub(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
+	macro static public function stub(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
 	{
 		return StubbingMacro.stubs(Context.getTypedExpr(Context.typeExpr(expr)));
 	}
@@ -233,7 +233,6 @@ class Mockatoo
 }
 
 
-#if haxe3 
 /**
 Provides compatibility in haxe3 for "using" Mockatoo on methods that return Void.
 This is not needed when calling static Mockatoo functions directly 
@@ -310,11 +309,6 @@ class MockatooVoid
 		return StubbingMacro.stubs(Context.getTypedExpr(Context.typeExpr(expr)));
 	}
 }
-
-#end
-
-
-
 
 /**
 Allows flexible verification or stubbing of arguments based on type. 

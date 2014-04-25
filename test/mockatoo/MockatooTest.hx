@@ -9,12 +9,7 @@ import mockatoo.Mockatoo;
 import mockatoo.Mock;
 import test.TestClasses;
 import util.Asserts;
-
-#if haxe3
 import haxe.ds.StringMap;
-#else
-private typedef StringMap<T> = Hash<T>
-#end
 
 using mockatoo.Mockatoo;
 
@@ -281,8 +276,6 @@ class MockatooTest
 	}
 
 	// ------------------------------------------------------------------------- edge cases
-
-	#if haxe3
 	@Test
 	public function should_mock_class_with_inlined_methods():Void
 	{
@@ -293,12 +286,6 @@ class MockatooTest
 		var mock = Mockatoo.mock(ClassWithInlinedMethod);
 		assertMock(mock, ClassWithInlinedMethod, fields);
 	}
-	#else
-	@Test @Ignore("Can only override inline methods in Haxe3")
-	public function should_mock_class_with_inlined_methods():Void
-	{
-	}
-	#end
 
 	#if flash
 	@Ignore("Cannot override final methods in AS3")
@@ -321,7 +308,7 @@ class MockatooTest
 
 	#end
 
-	#if haxe3
+	
 	@Test
 	public function should_mock_class_with_private_type_references():Void
 	{
@@ -331,15 +318,7 @@ class MockatooTest
 		var mock = Mockatoo.mock(ClassWithPrivateReference);
 		assertMock(mock, ClassWithPrivateReference, fields);
 	}
-	#else
-	@Test  @Ignore("Requires Haxe 3 and corresponding tink_macros")
-	public function should_mock_class_with_private_type_references():Void
-	{
-		
-	}
-	#end
-
-	#if haxe3
+	
 	@Test
 	public function should_mock_http():Void
 	{
@@ -349,14 +328,6 @@ class MockatooTest
 
 		assertMock(mock, haxe.Http, fields);
 	}
-	#else
-	@Test  @Ignore("Requires Haxe 3 and corresponding tink_macros")
-	public function should_mock_http():Void
-	{
-		
-	}
-	#end
-
 
 	@Test
 	public function should_mock_classes_with_nested_typeParams()

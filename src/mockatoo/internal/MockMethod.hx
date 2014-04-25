@@ -304,9 +304,8 @@ class MockMethod
 
 	function isIterable(value:Dynamic):Bool
 	{
-		if(value == null) return false;
+		if(value == null) return false;	
 		
-		#if haxe3
 		if(Std.is(value, Array) || Std.is(value, Map)) return true;
 		// need to check these dirtectly because 'IntMap' does not return true for Std.is(value,Map)
 		if(Std.is(value, haxe.ds.IntMap)) return true;
@@ -314,9 +313,7 @@ class MockMethod
 		if(Std.is(value, haxe.ds.StringMap)) return true;
 		if(Std.is(value, haxe.ds.WeakMap)) return true;
 		if(Std.is(value, haxe.ds.HashMap)) return true;
-		#else
-		if(Std.is(value, Array) || Std.is(value, Hash) || Std.is(value, IntHash)) return true;
-		#end
+		
 		//Iterable
 		var iterator = Reflect.field(value, "iterator");
 		

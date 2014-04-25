@@ -182,14 +182,9 @@ interface TypedInterface<T>
 	function toTypeWithArg(value:T):T;
 }
 
-#if haxe3
+
 interface StringTypedInterface extends TypedInterface<String> {}
 interface ImplementsTypedInterface<TFoo, TBar> extends TypedInterface<TBar> {}
-#else
-interface StringTypedInterface implements TypedInterface<String> {}
-interface ImplementsTypedInterface<TFoo, TBar> implements TypedInterface<TBar> {}
-#end
-
 
 class TypedClass<T>
 {
@@ -340,11 +335,7 @@ interface TypedConstraintBar
 	function bar():Void;
 }
 
-#if haxe3
 class TypedConstraintFooBar extends TypedConstraintFoo implements TypedConstraintBar
-#else
-class TypedConstraintFooBar extends TypedConstraintFoo, implements TypedConstraintBar
-#end
 {
 	public function new()
 	{
