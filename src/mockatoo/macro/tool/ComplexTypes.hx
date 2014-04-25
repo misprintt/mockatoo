@@ -11,6 +11,17 @@ using mockatoo.macro.Tools;
 
 class ComplexTypes
 {
+
+	#if (haxe_ver < 3.1)
+	/**
+	Generates a ComplexType from a qualified path
+	*/
+	inline static public function toComplex(ident:String):ComplexType
+	{
+		return TPath(ident.toTypePath());
+	}
+	#end
+
 	/**
 		Returns the default 'null' value for a type.
 

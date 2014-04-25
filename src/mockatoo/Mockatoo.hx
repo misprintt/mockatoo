@@ -7,6 +7,7 @@ import mockatoo.macro.MockMaker;
 import mockatoo.macro.VerifyMacro;
 import mockatoo.macro.StubbingMacro;
 
+using mockatoo.macro.Tools;
 /**
 	Mockatoo library enables mocks creation, verification and stubbing.
 */
@@ -21,17 +22,7 @@ class Mockatoo
 	macro static public function mock<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
 	{
 		InitMacro.init();
-		try
-		{
-			var typeExpr = Context.typeExpr(typeToMock);
-			typeToMock = Context.getTypedExpr(typeExpr);
-		}
-		catch(e:Dynamic)
-		{
-			//possibly a typedef structure (cannot)
-		}
-
-		var mock = new MockMaker(typeToMock, paramTypes);
+		var mock = new MockMaker(typeToMock.typed(), paramTypes);
 		return mock.toExpr();
 	}
 
@@ -45,7 +36,7 @@ class Mockatoo
 	macro static public function spy<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
 	{
 		InitMacro.init();
-		var mock = new MockMaker(Context.getTypedExpr(Context.typeExpr(typeToMock)), paramTypes, true);
+		var mock = new MockMaker(typeToMock.typed(), paramTypes, true);
 		return mock.toExpr();
 	}
 
@@ -77,7 +68,7 @@ class Mockatoo
 	
 	macro static public function verify(expr:ExprOf<Dynamic>, ?mode:ExprOf<VerificationMode>):ExprOf<mockatoo.internal.Verification>
 	{
-		return VerifyMacro.create(Context.getTypedExpr(Context.typeExpr(expr)),mode);
+		return VerifyMacro.create(expr.typed(),mode);
 	}
 
 	/**
@@ -121,7 +112,7 @@ class Mockatoo
     */
 	macro static public function when(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
 	{
-		return StubbingMacro.createWhen(expr);
+		return StubbingMacro.createWhen(expr.typed());
 	}
 
 	/**
@@ -138,7 +129,7 @@ class Mockatoo
 	*/
 	macro static public function returns(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
 	{
-		return StubbingMacro.returns(Context.getTypedExpr(Context.typeExpr(expr)), value);
+		return StubbingMacro.returns(expr.typed(), value);
 	}
 
 	/**
@@ -155,7 +146,7 @@ class Mockatoo
 	*/
 	macro static public function throws(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
 	{
-		return StubbingMacro.throws(Context.getTypedExpr(Context.typeExpr(expr)), value);
+		return StubbingMacro.throws(expr.typed(), value);
 	}
 
 	/**
@@ -172,7 +163,7 @@ class Mockatoo
 	*/
 	macro static public function calls(expr:ExprOf<Dynamic>, value:Expr):ExprOf<mockatoo.internal.Stubber>
 	{
-		return StubbingMacro.calls(Context.getTypedExpr(Context.typeExpr(expr)), value);
+		return StubbingMacro.calls(expr.typed(), value);
 	}
 
 	/**
@@ -189,7 +180,7 @@ class Mockatoo
 	*/
 	macro static public function callsRealMethod(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
 	{
-		return StubbingMacro.callsRealMethod(Context.getTypedExpr(Context.typeExpr(expr)));
+		return StubbingMacro.callsRealMethod(expr.typed());
 	}
 
 	/**
@@ -206,7 +197,7 @@ class Mockatoo
 	*/
 	macro static public function stub(expr:ExprOf<Dynamic>):ExprOf<mockatoo.internal.Stubber>
 	{
-		return StubbingMacro.stubs(Context.getTypedExpr(Context.typeExpr(expr)));
+		return StubbingMacro.stubs(expr.typed());
 	}
 
 	/**
@@ -233,7 +224,7 @@ class MockatooVoid
 	*/
 	macro static public function verify(expr:ExprOf<Void>, ?mode:ExprOf<VerificationMode>):ExprOf<mockatoo.internal.Verification>
 	{
-		return VerifyMacro.create(Context.getTypedExpr(Context.typeExpr(expr)),mode);
+		return VerifyMacro.create(expr.typed(),mode);
 	}
 
 	/**
@@ -242,7 +233,7 @@ class MockatooVoid
     */
 	macro static public function when(expr:ExprOf<Void>):ExprOf<mockatoo.internal.Stubber>
 	{
-		return StubbingMacro.createWhen(Context.getTypedExpr(Context.typeExpr(expr)));
+		return StubbingMacro.createWhen(expr.typed());
 	}
 
 	/**
@@ -251,7 +242,7 @@ class MockatooVoid
 	*/
 	macro static public function returns(expr:ExprOf<Void>, value:Expr):ExprOf<mockatoo.internal.Stubber>
 	{
-		return StubbingMacro.returns(Context.getTypedExpr(Context.typeExpr(expr)), value);
+		return StubbingMacro.returns(expr.typed(), value);
 	}
 
 	/**
@@ -260,7 +251,7 @@ class MockatooVoid
 	*/
 	macro static public function throws(expr:ExprOf<Void>, value:Expr):ExprOf<mockatoo.internal.Stubber>
 	{
-		return StubbingMacro.throws(Context.getTypedExpr(Context.typeExpr(expr)), value);
+		return StubbingMacro.throws(expr.typed(), value);
 	}
 
 	/**
@@ -269,7 +260,7 @@ class MockatooVoid
 	*/
 	macro static public function calls(expr:ExprOf<Void>, value:Expr):ExprOf<mockatoo.internal.Stubber>
 	{
-		return StubbingMacro.calls(Context.getTypedExpr(Context.typeExpr(expr)), value);
+		return StubbingMacro.calls(expr.typed(), value);
 	}
 
 	/**
@@ -278,7 +269,7 @@ class MockatooVoid
 	*/
 	macro static public function callsRealMethod(expr:ExprOf<Void>):ExprOf<mockatoo.internal.Stubber>
 	{
-		return StubbingMacro.callsRealMethod(Context.getTypedExpr(Context.typeExpr(expr)));
+		return StubbingMacro.callsRealMethod(expr.typed());
 	}
 
 	/**
@@ -287,7 +278,7 @@ class MockatooVoid
 	*/
 	macro static public function stub(expr:ExprOf<Void>):ExprOf<mockatoo.internal.Stubber>
 	{
-		return StubbingMacro.stubs(Context.getTypedExpr(Context.typeExpr(expr)));
+		return StubbingMacro.stubs(expr.typed());
 	}
 }
 

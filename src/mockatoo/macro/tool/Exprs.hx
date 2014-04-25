@@ -5,7 +5,11 @@ package mockatoo.macro.tool;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 
+#if (haxe_ver >= 3.1)
 using haxe.macro.MacroStringTools;
+#else
+using haxe.macro.Tools;
+#end
 using mockatoo.macro.Tools;
 
 class Exprs
@@ -16,13 +20,29 @@ class Exprs
 		return {expr:e, pos:pos};
 	}
 
+	static public function typed(expr:Expr):Expr
+	{
+		#if (haxe_ver >= 3.1)
+		try
+		{
+			var typeExpr = Context.typeExpr(expr);
+			expr = Context.getTypedExpr(typeExpr);
+		}
+		catch(e:Dynamic)
+		{
+			//possibly a typedef structure (cannot)
+		}
+		#end
+		return expr;
+	}
+
 	/**
 		Converts a qualified path into a EField reference using `haxe.macro.MacroStringTools.toFieldExpr'
 
 		@see haxe.macro.MacroStringTools.toFieldExpr
 	*/
 	inline static public function toFieldExpr(ident:String):Expr
-	{		
+	{	
 		return ident.split(".").toFieldExpr();
 	}
 
