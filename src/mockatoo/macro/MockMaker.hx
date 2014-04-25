@@ -6,23 +6,14 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
 import haxe.macro.Printer;
-import tink.macro.Exprs;
-import tink.macro.Types;
-import tink.macro.Functions;
-import tink.core.Outcome;
 import mockatoo.Mock;
 import mockatoo.macro.ClassFields;
 import mockatoo.internal.MockOutcome;
 import haxe.ds.StringMap;
 
-
-using haxe.macro.Printer;
-using tink.macro.Exprs;
-using tink.macro.Types;
-using tink.core.Outcome;
-
 using mockatoo.macro.Types;
 using haxe.macro.Tools;
+using musings.Tools;
 
 typedef PropertyMeta = 
 {
@@ -77,7 +68,7 @@ class MockMaker
 		pos = e.pos;
 		type = Context.getType(id);
 		Console.log(type);
-		actualType = type.reduce();
+		actualType = type.follow();
 		
 		Console.log(type);
 		Console.log(actualType);
@@ -92,12 +83,12 @@ class MockMaker
 
 					for(value in values)
 					{
-						var ident = new Printer().printExpr(value);
+						var ident = value.toString();
 						Console.log("  param: " + ident);
 						params.push(Context.getType(ident));
 					}
 
-				default: throw "invalid param [" + new Printer().printExpr(paramTypes) + "]";
+				default: throw "invalid param [" + paramTypes.toString() + "]";
 			}
 		}
 
@@ -106,7 +97,7 @@ class MockMaker
 			case TAnonymous(a):
 				createMockFromStruct(a.get().fields);
 			case TInst(_,_):
-				id = actualType.getID().split(".").pop();
+				id = actualType.getId().split(".").pop();
 				createMockFromClass();
 			default:
 				throw new mockatoo.exception.MockatooException("Unsupported type [" + id + "]. Cannot mock");
@@ -121,14 +112,32 @@ class MockMaker
 		if(generatedExpr == null)
 		{
 			var typeParams:Array<TypeParam> = [];
-			for(p in params)
-			{
-				typeParams.push(TPType(p.toComplex()));
+			for(type in params)
+			{	
+				try
+				{
+					var complexType = type.toComplexType();
+					if(complexType == null)
+					{
+						complexType = Types.toLazyComplexType(type);
+					}
+
+					var typeParam = TPType(complexType);
+					typeParams.push(typeParam);
+				}
+				catch(e:Dynamic)
+				{
+					Console.log(type);
+				}
 			}
+
 			var eIsSpy = EConst(CIdent(Std.string(isSpy))).at();
-			generatedExpr = Exprs.instantiate(typeDefinitionId, [eIsSpy], typeParams, pos);
+
+			var typePath = typeDefinitionId.toTypePath(typeParams);
+			generatedExpr = ENew(typePath, [eIsSpy]).at(pos);
 		}
-		Console.log(new Printer().printExpr(generatedExpr));
+
+		Console.log(generatedExpr.toString());
 		return generatedExpr;	
 	}
 
@@ -154,22 +163,34 @@ class MockMaker
 			switch(field.type)
 			{
 				case TInst(_,_):
-					arg.expr = toComplexType(field.type).defaultValue();
+					arg.expr = toComplexType(field.type).getDefaultValue();
 				case TType(_,_):
-					arg.expr = toComplexType(field.type).defaultValue();
+					arg.expr = toComplexType(field.type).getDefaultValue();
 				case TEnum(_,_):
-					arg.expr = toComplexType(field.type).defaultValue();					
+					arg.expr = toComplexType(field.type).getDefaultValue();					
 				case TFun(functionArgs, ret):
-					var e = toComplexType(field.type).defaultValue();
+					var e = toComplexType(field.type).getDefaultValue();
 					var fargs:Array<FunctionArg> = [];
 
 					for(a in functionArgs)
 					{
-
-						fargs.push(Functions.toArg(a.name, toComplexType(a.t) ,a.opt));
+						var arg = {
+							name: a.name,
+							opt: a.opt,
+							type: toComplexType(a.t),
+							value: null
+						};
+					
+						fargs.push(arg);
 					}
 
-					var f = Functions.func(e, fargs, toComplexType(ret), [], true);
+					var f:Function = {
+						args: fargs,
+						ret: toComplexType(ret),
+						params: [],
+						expr: EReturn(e).at(e.pos)
+					}
+
 					arg.expr = EFunction(null, f).at();
 
 				default: throw "Unsupported type [" + field.type + "] for field [" + field.name + "]";
@@ -300,7 +321,7 @@ class MockMaker
 
 		Console.log(typeParams);
 
-		extendTypePath = tink.macro.Types.asTypePath(extendId, typeParams);
+		extendTypePath = extendId.toTypePath(typeParams);
 
 		Console.log(extendTypePath);
 
@@ -430,7 +451,7 @@ class MockMaker
 	*/
 	function createKind()
 	{
-		var mockInterface = tink.macro.Types.asTypePath("mockatoo.Mock");
+		var mockInterface = "mockatoo.Mock".toTypePath();
 
 		var extension:TypePath = null;
 		var interfaces:Array<TypePath> = null;
@@ -693,7 +714,7 @@ class MockMaker
 			for(arg in f.args)
 			{
 				Console.log(arg);
-				var argExpr = arg.type.defaultValue();
+				var argExpr = arg.type.getDefaultValue();
 				args.push(argExpr);
 			}
 			e = e.call(args);
@@ -713,17 +734,25 @@ class MockMaker
 
 		//deliberately call return before call to super
 		//to prevent target class constructor being executed
-		f.expr = Exprs.toBlock([eMockConstructorExprs,eReturn, e]);
+		var exprs:Array<Expr> = [eMockConstructorExprs,eReturn, e];
+		f.expr = EBlock(exprs).at();
 	}
 
 	function createMockConstructorExprs()
 	{
+		return macro mockProxy = new mockatoo.internal.MockProxy(this,spy);
 		//create mockProxy instance
-		var eThis =  EConst(CIdent("this")).at();
-		var eSpy = EConst(CIdent("spy")).at();
-		var eInstance = "mockatoo.internal.MockProxy".instantiate([eThis,eSpy]);
-		return EConst(CIdent("mockProxy")).at().assign(eInstance);
+		// var eThis =  EConst(CIdent("this")).at();
+		// var eSpy = EConst(CIdent("spy")).at();
+		// var args = [macro this}, macro ${eSpy}];
+		// var eInstance = macro new mockatoo.internal.MockProxy($a{args});
+
+		// var eInstance = macro new mockatoo.internal.MockProxy(this,spy);
+		// return EConst(CIdent("mockProxy")).at().assign(eInstance);
+		
 	}
+
+	//	return binOp(target, value, op == null ? OpAssign : OpAssignOp(op), pos);
 
 	/**
 	Override an existing field, normalising return types and generating default values
@@ -746,7 +775,7 @@ class MockMaker
 
 		var eArgs = args.toArray(); //reference to args
 
-		var eIsSpy = "mockProxy.spy".resolve();
+		var eIsSpy = macro mockProxy.spy;
 
 		var eSwitch:Expr = null;
 
@@ -756,9 +785,9 @@ class MockMaker
 
 			Console.log(field.name + ":" + Std.string(f.ret));
 		
-			var eDefaultReturnValue = f.ret.defaultValue(); //default return type (usually 'null')
+			var eDefaultReturnValue = f.ret.getDefaultValue(); //default return type (usually 'null')
 
-			var eSuper =  ("super." + field.name).resolve().call(args);
+			var eSuper =  ("super." + field.name).toFieldExpr().call(args);
 
 			if(isInterface)
 				eSuper = eDefaultReturnValue;
@@ -782,7 +811,7 @@ class MockMaker
 		{	
 			var eReturn = macro function(){};
 
-			var eSuper =  ("super." + field.name).resolve().call(args);
+			var eSuper =  ("super." + field.name).toFieldExpr().call(args);
 
 			if(isInterface)
 				eSuper = eReturn;
@@ -803,7 +832,7 @@ class MockMaker
 		}
 		else
 		{
-			var eSuper =  ("super." + field.name).resolve().call(args);
+			var eSuper =  ("super." + field.name).toFieldExpr().call(args);
 
 			if(isInterface)
 				eSuper = eNull;
@@ -901,7 +930,7 @@ class MockMaker
 		var eArgs = args.toArray(); //reference to args
 		var eName = EConst(CString(field.name)).at(); //name of current method
 
-		return "mockProxy.getOutcomeFor".resolve().call([eName, eArgs]);
+		return macro mockProxy.getOutcomeFor(${eName}, ${eArgs});
 	}
 		
 
@@ -986,7 +1015,7 @@ class MockMaker
 	function createBlock(?args:Array<Expr>=null):Expr
 	{
 		if(args == null) args = [];
-		var exprs = Exprs.toBlock(args);
+		var exprs = EBlock(args).at();
 		return exprs;
 	}
 
@@ -996,7 +1025,7 @@ class MockMaker
 	function createEmptyConstructor():Field
 	{	
 		var constructorExprs = createMockConstructorExprs();
-		var exprs = Exprs.toBlock([constructorExprs]);
+		var exprs = EBlock([constructorExprs]).at();
 
 
 		var arg = {
@@ -1006,7 +1035,13 @@ class MockMaker
 			name:"spy"
 		}
 
-		var f:Function = Functions.func(exprs, [arg], null, null, false);
+		var f:Function = {
+			args: [arg],
+			ret: null,
+			params: [],
+			expr: exprs
+		}
+
 		return 
 		{
 			pos:Context.currentPos(),

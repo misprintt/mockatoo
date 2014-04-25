@@ -8,17 +8,16 @@ import haxe.macro.Expr;
 import haxe.macro.Type;
 
 using haxe.macro.Printer;
-using tink.macro.Exprs;
-using tink.macro.Types;
 
 import mockatoo.exception.VerificationException;
+
+using musings.Tools;
 
 /**
 Macro for remapping a mock's method invocation when using Mockatoo.when()
 */
 class VerifyMacro
 {
-
 	public static function create(expr:Expr, mode:Expr):Expr
 	{
 		var str = expr.toString();
@@ -88,7 +87,7 @@ class VerifyMacro
 		var methodName = parts.pop();
 		var ident = parts.join(".");
 
-		var eInstance = ident.resolve();
+		var eInstance = macro $i{ident};
 		var exprs = createVerifyExpressions(eInstance, mode);
 
 		var verifyExpr = exprs.pop();
@@ -110,7 +109,7 @@ class VerifyMacro
 			case EConst(c):
 				switch(c)
 				{
-					case CInt(_): return "VerificationMode.times".resolve().call([expr]);
+					case CInt(_): return macro VerificationMode.times($expr);
 					default: return expr;
 				}
 			default: return expr;

@@ -8,9 +8,7 @@ import haxe.macro.Expr;
 import haxe.macro.Type;
 import mockatoo.exception.StubbingException;
 
-using haxe.macro.Printer;
-using tink.macro.Exprs;
-using tink.macro.Types;
+using musings.Tools;
 
 /**
 Macro for remapping a mock's method invocation when using Mockatoo.when()
@@ -39,13 +37,14 @@ class StubbingMacro
 
 				ident = parts.join(".");
 
-				var eCast = ECast(ident.resolve(), "mockatoo.Mock".asComplexType()).at();
+
+				var eCast = ECast(ident.toFieldExpr(), "mockatoo.Mock".toComplexType()).at();
 
 				var eMethod = eCast.field("mockProxy").field("stubMethod");
 
 				var whenExpr = eMethod.call([EConst(CString(methodName)).at(), args]);
 
-				var eField = ident.resolve().field(methodName);
+				var eField = ident.toFieldExpr().field(methodName);
 				var compilerCheck = EIf(EConst(CIdent("false")).at(), eField, null).at();
 
 				var actualExpr = EBlock([compilerCheck, whenExpr]).at();
@@ -56,7 +55,7 @@ class StubbingMacro
 
 				var ident = e.toString();
 
-				var eCast = ECast(ident.resolve(), "mockatoo.Mock".asComplexType()).at();
+				var eCast = ECast(ident.toFieldExpr(), "mockatoo.Mock".toComplexType()).at();
 
 				var eMethod = eCast.field("mockProxy").field("stubProperty");
 
@@ -139,7 +138,7 @@ class StubbingMacro
 		exprs.push(actualExpr);
 
 		var ret = EBlock(exprs).at();
-		Console.log(new Printer().printExpr(ret));
+		Console.log(ret.toString());
 
 		return ret;
 	}

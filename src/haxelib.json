@@ -9,8 +9,6 @@
 	"url": "http://github.com/misprintt/mockatoo",
 	"dependencies": 
 	{
-		"mconsole": "",
-		"tink_macro": "",
-		"tink_core": ""
+		"mconsole": ""
 	}
 }

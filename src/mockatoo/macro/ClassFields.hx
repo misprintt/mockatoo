@@ -7,15 +7,11 @@ import haxe.macro.Context;
 import haxe.macro.Compiler;
 import haxe.macro.Type;
 import haxe.PosInfos;
-import tink.macro.Types;
 import haxe.macro.Printer;
 import haxe.macro.TypeTools;
 import haxe.ds.StringMap;
 
-using tink.macro.Exprs;
-using tink.macro.Types;
-using mockatoo.macro.Types;
-using haxe.macro.Tools;
+using musings.Tools;
 
 typedef TypeDeclaration = 
 {
@@ -134,7 +130,7 @@ class ClassFields
 	*/
 	static public function mapType(type:Type, map:Array<TypeDeclaration>):Type
 	{
-		var id = type.getID();
+		var id = type.getId();
 
 		if(id != null)
 		{
@@ -284,9 +280,9 @@ class ClassFields
 		{
 			var argType = convertType(arg.t, paramMap);
 
-			var value:Null<Expr> = arg.opt ? arg.t.toComplexType().defaultValue() : null;
+			var value:Null<Expr> = arg.opt ? arg.t.toComplexType().getDefaultValue() : null;
 
-			if(arg.opt && Contexts.isStaticPlatform())
+			if(arg.opt && Tools.isStaticPlatform())
 			{
 				//NOTE(Dom) - this is to prevent #9 - optional method args without a `?` cause compilation error
 				arg.opt = verifyOptionalArgIsActuallyNullable(arg);
