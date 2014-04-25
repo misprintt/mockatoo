@@ -11,7 +11,8 @@ using haxe.macro.Printer;
 
 import mockatoo.exception.VerificationException;
 
-using musings.Tools;
+using haxe.macro.Tools;
+using mockatoo.macro.Tools;
 
 /**
 Macro for remapping a mock's method invocation when using Mockatoo.when()

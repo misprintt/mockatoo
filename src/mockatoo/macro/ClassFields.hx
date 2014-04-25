@@ -11,7 +11,8 @@ import haxe.macro.Printer;
 import haxe.macro.TypeTools;
 import haxe.ds.StringMap;
 
-using musings.Tools;
+using haxe.macro.Tools;
+using mockatoo.macro.Tools;
 
 typedef TypeDeclaration = 
 {

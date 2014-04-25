@@ -11,9 +11,10 @@ import mockatoo.macro.ClassFields;
 import mockatoo.internal.MockOutcome;
 import haxe.ds.StringMap;
 
-using mockatoo.macro.Types;
 using haxe.macro.Tools;
-using musings.Tools;
+using mockatoo.macro.Tools;
+
+// using musings.Tools;
 
 typedef PropertyMeta = 
 {
@@ -119,7 +120,7 @@ class MockMaker
 					var complexType = type.toComplexType();
 					if(complexType == null)
 					{
-						complexType = Types.toLazyComplexType(type);
+						complexType = type.toLazyComplexType();
 					}
 
 					var typeParam = TPType(complexType);
@@ -773,7 +774,7 @@ class MockMaker
 		var eCaseReal = macro mockatoo.internal.MockOutcome.callsRealMethod;
 		var eCaseNone = macro mockatoo.internal.MockOutcome.none;
 
-		var eArgs = args.toArray(); //reference to args
+		var eArgs = EArrayDecl(args).at(); //reference to args
 
 		var eIsSpy = macro mockProxy.spy;
 
@@ -927,7 +928,7 @@ class MockMaker
 
 	function createMockFieldExprs(field:Field, args:Array<Expr>):Expr
 	{
-		var eArgs = args.toArray(); //reference to args
+		var eArgs = EArrayDecl(args).at(); //reference to args
 		var eName = EConst(CString(field.name)).at(); //name of current method
 
 		return macro mockProxy.getOutcomeFor(${eName}, ${eArgs});
@@ -977,7 +978,7 @@ class MockMaker
 			args.push(EConst(CString(value)).at());
 		}
 
-		var params:Array<Expr> = [args.toArray()];
+		var params:Array<Expr> = [EArrayDecl(args).at()];
 
 		if(f.ret != null && isNotVoid(f.ret))
 		{

@@ -8,7 +8,8 @@ import haxe.macro.Expr;
 import haxe.macro.Type;
 import mockatoo.exception.StubbingException;
 
-using musings.Tools;
+using haxe.macro.Tools;
+using mockatoo.macro.Tools;
 
 /**
 Macro for remapping a mock's method invocation when using Mockatoo.when()
@@ -33,12 +34,11 @@ class StubbingMacro
 				var parts = ident.split(".");
 				var methodName = parts.pop();
 
-				var args = params.toArray();
+				var args = EArrayDecl(params).at();
 
 				ident = parts.join(".");
 
-
-				var eCast = ECast(ident.toFieldExpr(), "mockatoo.Mock".toComplexType()).at();
+				var eCast = ECast(ident.toFieldExpr(), "mockatoo.Mock".toComplex()).at();
 
 				var eMethod = eCast.field("mockProxy").field("stubMethod");
 
@@ -55,7 +55,7 @@ class StubbingMacro
 
 				var ident = e.toString();
 
-				var eCast = ECast(ident.toFieldExpr(), "mockatoo.Mock".toComplexType()).at();
+				var eCast = ECast(ident.toFieldExpr(), "mockatoo.Mock".toComplex()).at();
 
 				var eMethod = eCast.field("mockProxy").field("stubProperty");
 

@@ -4,7 +4,6 @@
 -lib hamcrest
 -cp src
 -lib mconsole
--cp ../musings/src
 -cp test
 -swf-version 9
 -swf bin/test/as3_test.swf
@@ -20,7 +19,6 @@
 -lib hamcrest
 -cp src
 -lib mconsole
--cp ../musings/src
 -cp test
 -js bin/test/js_test.js
 -D MOCKATOO_LOG
