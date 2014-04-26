@@ -353,26 +353,35 @@ class MockatooTest
 
 		assertTypedefMockField(mock, "type", null);
 		assertTypedefMockField(mock, "title", null);
-		assertTypedefMockField(mock, "optionalTitle", null);
+		assertTypedefMockField(mock, "optionalTitle", null, false, true);
 		assertTypedefMockField(mock, "func", null, true);
-		assertTypedefMockField(mock, "optionalFunc", null, true);
+		assertTypedefMockField(mock, "optionalFunc", null, true, true);
 	}
 
-	function assertTypedefMockField(mock:Dynamic, fieldName:String, value:Dynamic, ?isFunc:Bool=false)
+	macro static function isStaticPlatform()
 	{
-		Assert.isTrue(Reflect.hasField(mock, fieldName));
+		var value = mockatoo.macro.Tools.isStaticPlatform();
+
+		return macro $v{value};
+	}
+	function assertTypedefMockField(mock:Dynamic, fieldName:String, value:Dynamic, ?isFunc:Bool=false, ?isOptional:Bool=false, ?pos:haxe.PosInfos)
+	{
+		Assert.isTrue(Reflect.hasField(mock, fieldName), pos);
 
 		var field = Reflect.field(mock, fieldName);
 
-		Assert.areEqual(isFunc, Reflect.isFunction(field));
-
+		if(isStaticPlatform())
+			isFunc = isFunc && !isOptional;
+		
+		Assert.areEqual(isFunc, Reflect.isFunction(field), pos);
+		
 		if (isFunc)
 		{
-			Assert.areEqual(value, field());
+			Assert.areEqual(value, field(), pos);
 		}
 		else
 		{
-			Assert.areEqual(value, field);
+			Assert.areEqual(value, field, pos);
 		}
 	}
 
