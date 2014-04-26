@@ -555,6 +555,8 @@ class MockMaker
 				if (isInterface) fields.push(field);
 			case FProp(get, set, t,_):
 
+				t = normaliseComplexType(t);
+
 				var getMethod = toGetterSetter(get);
 				var setMethod = toGetterSetter(set);
 
@@ -746,8 +748,14 @@ class MockMaker
 		if (!isInterface)
 		field.access.unshift(AOverride);
 
-		var args = getFunctionArgIdents(f);
+		var args:Array<Expr> = [];
 
+		for (arg in f.args)
+		{
+			arg.type = normaliseComplexType(arg.type);
+			args.push(EConst(CIdent(arg.name)).at());
+		}
+		
 		var eMockOutcome = createMockFieldExprs(field, args);
 		var eCaseReturns = macro mockatoo.internal.MockOutcome.returns(v);
 		var eCaseThrows = macro mockatoo.internal.MockOutcome.throws(v);
@@ -764,7 +772,7 @@ class MockMaker
 
 		if (f.ret != null && isNotVoid(f.ret))
 		{
-			f.ret = normaliseReturnType(f.ret);
+			f.ret = normaliseComplexType(f.ret);
 
 			Console.log(field.name + ":" + Std.string(f.ret));
 		
@@ -837,9 +845,9 @@ class MockMaker
 
 		field.kind = FFun(f);
 
-		var fieldMeta = createMockFieldMeta(field, f);
-		field.meta.push(fieldMeta);
-
+		var meta = createMockFieldMeta(field, f);
+		field.meta.push(meta);
+		
 		//validate optional args
 		for (arg in f.args)
 		{
@@ -889,18 +897,6 @@ class MockMaker
 		return type;
 	}
 
-	function getFunctionArgIdents(f:Function)
-	{
-		var args:Array<Expr> = [];
-
-		for (arg in f.args)
-		{
-			args.push(EConst(CIdent(arg.name)).at());
-		}
-
-		return args;
-	}
-
 	function createMockFieldExprs(field:Field, args:Array<Expr>):Expr
 	{
 		var eArgs = EArrayDecl(args).at(); //reference to args
@@ -909,69 +905,102 @@ class MockMaker
 		return macro mockProxy.getOutcomeFor(${eName}, ${eArgs});
 	}
 		
-	function normaliseReturnType(ret:ComplexType)
+	function normaliseComplexType(complexType:ComplexType):ComplexType
 	{
-		var typePath:TypePath = switch (ret)
+		var typePath:TypePath = switch (complexType)
 		{
 			case TPath(p): p;
 			default: null;
 		}
 
-		if (typePath == null) return ret;
+		if (typePath == null) return complexType;
 
 		if (typePath.name == "StdTypes")
 		{
 			typePath.name = typePath.sub;
 			typePath.sub = null;
-			ret = TPath(typePath);
+			complexType = TPath(typePath);
 		}
-		return ret;
+		else if (typePath.sub != null)
+		{
+			var lazy = toPrivateComplexType(typePath);
+			if (lazy != null)
+				complexType = lazy;
+		}
+		return complexType;
+	}
+
+	function toPrivateComplexType(typePath:TypePath):ComplexType
+	{
+		var module = typePath.pack.concat([typePath.name]).join(".");
+		
+		for (type in Context.getModule(module))
+		{
+			var baseType:BaseType = switch (type)
+			{
+				case TInst(t,p): t.get();
+				case TEnum(t,p): t.get();
+				case TType(t,p): t.get();
+				case _: null;
+			}
+
+			if (baseType != null && baseType.name == typePath.sub && baseType.isPrivate)
+			{
+				Console.log("! " + Std.string(type));
+				return type.toLazyComplexType();
+			}
+		}
+		
+		return null;
+
 	}
 
 	/**
-		Creates a @mock metadata value for the field
-		E.g @mock([String, ?foo.Bar], ret)
+		Creates a @mock metadata value for the field that is used at runtime
+		by MockProxy and MockMethod
+
+		For example: 
+		
+			@mock([String, ?foo.Bar], returns.Something)
 	*/
 	function createMockFieldMeta(field:Field, f:Function)
 	{
-		var args:Array<Expr> = [];
+		var mockArgs:Array<Expr> = [];
 		for (arg in f.args)
 		{
 			Console.log(arg);
 
 			var value:String = arg.opt ? "?" : "";
+			var ident:String = "";
 
 			//add the return type including if optional (?)
 			if (arg.type != null)
 			{
-				// arg.type = updateVoidVoid(arg.type);
-				var ident = normaliseReturnType(arg.type).toString();
+				ident = arg.type.toString();
 				value += ident;
 			}
-			args.push(EConst(CString(value)).at());
+			mockArgs.push(EConst(CString(value)).at());
 		}
 
-		var params:Array<Expr> = [EArrayDecl(args).at()];
+		var mockParams:Array<Expr> = [EArrayDecl(mockArgs).at()];
 
 		if (f.ret != null && isNotVoid(f.ret))
 		{
-			var ident = normaliseReturnType(f.ret).toString();
-			params.push(EConst(CString(ident)).at());
+			var ident = f.ret.toString();
+			mockParams.push(EConst(CString(ident)).at());
 		}
 		else if (isVoidVoid(f.ret))
 		{
 			//is of type Void->Void
 			var voidType = updateVoidVoid(f.ret);
-			var ident = normaliseReturnType(voidType).toString();
-			params.push(EConst(CString(ident)).at());
+			var ident = normaliseComplexType(voidType).toString();
+			mockParams.push(EConst(CString(ident)).at());
 		}
 
-		return
-		{
+		return {
 			pos:Context.currentPos(),
 			name:"mockatoo",
-			params:params
-
+			params:mockParams
 		};
 	}
 
