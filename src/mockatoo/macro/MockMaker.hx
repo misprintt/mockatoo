@@ -753,7 +753,7 @@ class MockMaker
 		for (arg in f.args)
 		{
 			arg.type = normaliseComplexType(arg.type);
-			args.push(EConst(CIdent(arg.name)).at());
+			args.push(macro $i{arg.name});
 		}
 		
 		var eMockOutcome = createMockFieldExprs(field, args);
@@ -908,10 +908,14 @@ class MockMaker
 	function normaliseComplexType(complexType:ComplexType):ComplexType
 	{
 		if(complexType == null) return null;
-		
+
 		var typePath:TypePath = switch (complexType)
 		{
 			case TPath(p): p;
+			case TAnonymous(fields):
+				// need to ignore inferred struct in flash or it will cause error
+				// 'overloads parent class with different or incomplete type'
+				return null;
 			default: null;
 		}
 
