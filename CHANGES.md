@@ -1,3 +1,7 @@
+## 3.0.3
+
+- added in dev dependency for hamcrest
+
 ## 3.0.2
 
 - Fix: null return type throws exception on field
