@@ -2,16 +2,15 @@
 	"project": 
 	{
 		"name": "Mockatoo",
-		"version": "2.1.1",
+		"version": "3.0.0",
 		"id": "mockatoo",
 		"dependencies": 
 		{
-			"tink_macro": "3.x",
 			"mconsole": "1.x"
 		},
 		"devDependencies":
 		{
-			"mtask":"2.x",
+			"mtask":"3.x",
 			"munit":"2.x"
 		}
 	},

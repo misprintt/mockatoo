@@ -8,25 +8,24 @@ import haxe.macro.Expr;
 import haxe.macro.Type;
 import mockatoo.exception.StubbingException;
 
-using tink.macro.tools.Printer;
-using tink.macro.tools.ExprTools;
-using tink.macro.tools.TypeTools;
+using haxe.macro.Tools;
+using mockatoo.macro.Tools;
 
 /**
-Macro for remapping a mock's method invocation when using Mockatoo.when()
+	Macro for remapping a mock's method invocation when using Mockatoo.when()
 */
 class StubbingMacro
 {
 	public static function createWhen(expr:Expr):Expr
 	{
-		var str = expr.print();
+		var str = expr.toString();
 		Console.log(str);
 		Console.log(expr);
 
 		//converts instance.one(1)
 		//into instance.mockProxy.when("one", [1])
 
-		switch(expr.expr)
+		switch (expr.expr)
 		{
 			case ECall(e, params):
 
@@ -35,28 +34,27 @@ class StubbingMacro
 				var parts = ident.split(".");
 				var methodName = parts.pop();
 
-				var args = params.toArray();
+				var args = EArrayDecl(params).at();
 
 				ident = parts.join(".");
 
-				var eCast = ECast(ident.resolve(), "mockatoo.Mock".asComplexType()).at();
+				var eCast = ECast(ident.toFieldExpr(), "mockatoo.Mock".toComplex()).at();
 
 				var eMethod = eCast.field("mockProxy").field("stubMethod");
 
 				var whenExpr = eMethod.call([EConst(CString(methodName)).at(), args]);
 
-				var eField = ident.resolve().field(methodName);
+				var eField = ident.toFieldExpr().field(methodName);
 				var compilerCheck = EIf(EConst(CIdent("false")).at(), eField, null).at();
 
 				var actualExpr = EBlock([compilerCheck, whenExpr]).at();
-				// Console.log(actualExpr.toString());
 				return actualExpr;
 
 			case EField(e, field):
 
 				var ident = e.toString();
 
-				var eCast = ECast(ident.resolve(), "mockatoo.Mock".asComplexType()).at();
+				var eCast = ECast(ident.toFieldExpr(), "mockatoo.Mock".toComplex()).at();
 
 				var eMethod = eCast.field("mockProxy").field("stubProperty");
 
@@ -67,17 +65,16 @@ class StubbingMacro
 				var compilerCheck = EIf(EConst(CIdent("false")).at(), expr, null).at();
 
 				var actualExpr = EBlock([compilerCheck, whenExpr]).at();
-				// Console.log(actualExpr.toString());
 				return actualExpr;
 
-			default: throw "Invalid expression [" + expr.print() + "]";
+			default: throw "Invalid expression [" + expr.toString() + "]";
 		}
 		return expr;
 	}
 
 	static function isMatcher(expr:Expr):Bool
 	{
-		return switch(expr.expr)
+		return switch (expr.expr)
 		{
 			case EConst(CIdent("anyString")): 		true;
 			case EConst(CIdent("anyInt")): 			true;
@@ -126,7 +123,7 @@ class StubbingMacro
 	{
 		whenExpr = createWhen(whenExpr);
 
-		var exprs = switch(whenExpr.expr)
+		var exprs = switch (whenExpr.expr)
 		{
 			case EBlock(e): e;
 			default: [whenExpr];
@@ -139,7 +136,7 @@ class StubbingMacro
 		exprs.push(actualExpr);
 
 		var ret = EBlock(exprs).at();
-		Console.log(Printer.print(ret));
+		Console.log(ret.toString());
 
 		return ret;
 	}

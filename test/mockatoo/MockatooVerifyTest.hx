@@ -10,38 +10,14 @@ import test.TestClasses;
 import util.Asserts;
 using mockatoo.Mockatoo;
 
-/**
-* Auto generated MassiveUnit Test Class  for mockatoo.Mockatoo 
-*/
 class MockatooVerifyTest 
 {
 	public function new() 
 	{
 		
 	}
-	
-	@BeforeClass
-	public function beforeClass():Void
-	{
-	}
-	
-	@AfterClass
-	public function afterClass():Void
-	{
-	}
-	
-	@Before
-	public function setup():Void
-	{
-	}
-	
-	@After
-	public function tearDown():Void
-	{
-	}
 
 	// ------------------------------------------------------------------------- verification
-
 	
 	@Test
 	public function should_verify_mock_instance()
@@ -93,12 +69,6 @@ class MockatooVerifyTest
 		Mockatoo.verify(instance.test("foo"), times(1));
 		Mockatoo.verify(instance.test("foo"), 1);
 
-		#if !haxe3
-		//Note Haxe3 doesn't like using + macro for expression that returns void;
-		Mockatoo.verify(instance.test("foo"));
-		instance.test("foo").verify(times(1));
-		instance.test("foo").verify(1);
-		#end
 		Assert.areEqual(1, count);
 	}
 
@@ -114,11 +84,9 @@ class MockatooVerifyTest
 		}
 		catch(e:VerificationException)
 		{
-			// trace(e);
 			Assert.isTrue(true);
 		}
 	}
-
 
 	@Test
 	public function should_throw_exception_if_verify_non_mock()
@@ -131,7 +99,6 @@ class MockatooVerifyTest
 		}
 		catch(e:VerificationException)
 		{
-			// trace(e);
 			Assert.isTrue(true);
 		}
 
@@ -147,7 +114,6 @@ class MockatooVerifyTest
 		Asserts.assertEnumTypeEq(times(1), verification.mode);
 		
 	}
-
 
 	@Test
 	public function should_use_custom_mode()
@@ -171,7 +137,6 @@ class MockatooVerifyTest
 	// }
 
 }
-
 
 class VerifySomeClass
 {

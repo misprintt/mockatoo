@@ -6,38 +6,32 @@ import haxe.macro.Compiler;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
-
-using tink.macro.tools.Printer;
-using tink.macro.tools.ExprTools;
-using tink.macro.tools.TypeTools;
-
 import mockatoo.exception.VerificationException;
 
+using haxe.macro.Tools;
+using mockatoo.macro.Tools;
+
 /**
-Macro for remapping a mock's method invocation when using Mockatoo.when()
+	Macro for remapping a mock's method invocation when using Mockatoo.when()
 */
 class VerifyMacro
 {
-
 	public static function create(expr:Expr, mode:Expr):Expr
 	{
-		var str = expr.print();
-		// Console.log(str);
-		// Console.log(expr);
+		var str = expr.toString();
 
 		mode = validateModeExpr(mode);
 
-		//converts instance.one(1)
-		//into instance.mockProxy.when("one", [1])
+		//converts instance.one(1) into instance.mockProxy.when("one", [1])
 
-		switch(expr.expr)
+		switch (expr.expr)
 		{
 			case EConst(c):
 				//this is to support the old style - e.g. `verify(mock).doSomething();
-				var ident:String = switch(c)
+				var ident:String = switch (c)
 				{
 					case CIdent(v): v;
-					default: throw "Invalid arg [" + expr.print() + "]";
+					default: throw "Invalid arg [" + expr.toString() + "]";
 				}
 
 				var exprs = createVerifyExpressions(expr, mode);
@@ -51,13 +45,12 @@ class VerifyMacro
 			case ECall(e, params):
 
 				var actualExpr = convertCallExprToVerification(e.toString(), params, mode);
-				//Console.log(actualExpr.toString());
 				return actualExpr;
 
 			case ECast(e, t):
 				return create(e,mode);
 
-			case _: throw "Invalid verify expression [" + expr.print() + "]";
+			case _: throw "Invalid verify expression [" + expr.toString() + "]" + expr;
 		}
 		return expr;
 	}
@@ -67,10 +60,10 @@ class VerifyMacro
 		var eIsNotNull:Expr;
 		var eIsAMock:Expr;
 
-		if(haxe.macro.Compiler.getDefine("cpp") != null)
+		if (haxe.macro.Compiler.getDefine("cpp") != null)
 		{
-			eIsNotNull = macro if($expr == null) throw new mockatoo.exception.VerificationException("Cannot verify [null] mock");
-			eIsAMock = macro if(!Std.is($expr, mockatoo.Mock)) throw new mockatoo.exception.VerificationException("Object is not an instance of mock");
+			eIsNotNull = macro if ($expr == null) throw new mockatoo.exception.VerificationException("Cannot verify [null] mock");
+			eIsAMock = macro if (!Std.is($expr, mockatoo.Mock)) throw new mockatoo.exception.VerificationException("Object is not an instance of mock");
 		}
 		else
 		{
@@ -88,7 +81,7 @@ class VerifyMacro
 		var methodName = parts.pop();
 		var ident = parts.join(".");
 
-		var eInstance = ident.resolve();
+		var eInstance = macro $i{ident};
 		var exprs = createVerifyExpressions(eInstance, mode);
 
 		var verifyExpr = exprs.pop();
@@ -105,12 +98,12 @@ class VerifyMacro
 
 	static function validateModeExpr(expr:Expr)
 	{
-		switch(expr.expr)
+		switch (expr.expr)
 		{
 			case EConst(c):
-				switch(c)
+				switch (c)
 				{
-					case CInt(_): return "VerificationMode.times".resolve().call([expr]);
+					case CInt(_): return macro VerificationMode.times($expr);
 					default: return expr;
 				}
 			default: return expr;

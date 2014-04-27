@@ -9,17 +9,9 @@ import mockatoo.exception.VerificationException;
 import mockatoo.exception.StubbingException;
 import mockatoo.Mockatoo;
 import util.Asserts;
-
-#if haxe3
 import haxe.ds.IntMap;
 import haxe.ds.StringMap;
-#else
-private typedef IntMap<T> = IntHash<T>
-private typedef StringMap<T> = Hash<T>
-#end
-/**
-* Auto generated MassiveUnit Test Class  for mockatoo.internal.MockMethod 
-*/
+
 class MockMethodTest 
 {
 	var instance:MockMethod; 
@@ -27,27 +19,6 @@ class MockMethodTest
 	public function new() 
 	{
 		
-	}
-	
-	@BeforeClass
-	public function beforeClass():Void
-	{
-	}
-	
-	@AfterClass
-	public function afterClass():Void
-	{
-	}
-	
-	@Before
-	public function setup():Void
-	{
-
-	}
-	
-	@After
-	public function tearDown():Void
-	{
 	}
 
 	@Test
@@ -238,13 +209,11 @@ class MockMethodTest
 		catch(e:VerificationException) {}
 	}
 
-
 	@Test
 	public function should_not_verify_with_different_number_of_args():Void
 	{
 		var args:Array<Dynamic> = ["foo", "bar"];
 		instance = createInstance();
-
 
 		instance.getOutcomeFor(["foo"]);
 
@@ -262,7 +231,6 @@ class MockMethodTest
 	{
 		instance = createInstance();
 
-
 		instance.getOutcomeFor(["foo"]);
 
 		try
@@ -277,7 +245,6 @@ class MockMethodTest
 		
 
 	}
-
 
 	@Test
 	public function should_verify_null():Void
@@ -385,7 +352,6 @@ class MockMethodTest
 		}
 		catch(e:VerificationException) {}
 
-
 		instance.getOutcomeFor([1.1]);
 		instance.verify(times(1), [anyFloat]);
 
@@ -478,7 +444,6 @@ class MockMethodTest
 		}
 		catch(e:VerificationException) {}
 
-
 		instance.getOutcomeFor([SomeEnum.foo]);
 		instance.verify(times(1), [anyEnum]);
 
@@ -499,14 +464,12 @@ class MockMethodTest
 		}
 		catch(e:VerificationException) {}
 
-
 		instance.getOutcomeFor([SomeEnum.foo]);
 		instance.verify(times(1), [enumOf(SomeEnum)]);
 
 		instance.getOutcomeFor([SomeEnum.bar]);
 		instance.verify(times(2), [enumOf(SomeEnum)]); 
 	}
-
 
 	@Test
 	public function should_verify_anyInstanceOf():Void
@@ -545,8 +508,6 @@ class MockMethodTest
 
 		instance.verify(times(1), [instanceOf(SomeSubClass)]); 
 	}
-
-
 
 	@Test
 	public function should_verify_isNotNull():Void
@@ -604,11 +565,9 @@ class MockMethodTest
 		}
 		catch(e:VerificationException) {}
 
-
 		instance.getOutcomeFor(["foo"]);
 		instance.verify(times(1), [customMatcher(f)]);
 	}
-
 
 	@Test
 	public function should_verify_iterator():Void
@@ -665,9 +624,7 @@ class MockMethodTest
 		instance.verify(times(1), [anyInt, anyString, null , anyIterator]);
 	}
 
-
 	// ------------------------------------------------------------------------- Stubbing
-
 
 	@Test
 	public function should_return_value_for_stub():Void
@@ -779,7 +736,6 @@ class MockMethodTest
 		var result = instance.getOutcomeFor([1]);
 		Asserts.assertEnumTypeEq(returns(1), result);
 
-
 		result = instance.getOutcomeFor([1]);
 
 		Asserts.assertEnumTypeEq(returns(2), result);
@@ -810,8 +766,6 @@ class MockMethodTest
 		Asserts.assertEnumTypeEq(returns(2), result);
 	}
 
-
-
 	@Test
 	public function should_return_value_for_stub_matcher():Void
 	{
@@ -823,7 +777,6 @@ class MockMethodTest
 
 		Asserts.assertEnumTypeEq(returns(666), result);
 	}
-
 
 	@Test
 	public function should_addCallRealMethodFor():Void
@@ -857,7 +810,6 @@ class MockMethodTest
 		Asserts.assertEnumTypeEq(stubs, result);
 	}
 
-
 	@Test
 	public function shouldResultIn100PercentCoverage()
 	{
@@ -867,12 +819,11 @@ class MockMethodTest
 		Assert.isNull(untyped instance.getStubbingForArgs([2], true));
 	}
 
-
 	// ------------------------------------------------------------------------- Internal
 
 	function createInstance(?args:Array<String>,?ret):MockMethod
 	{
-		if(args == null) args = [];
+		if (args == null) args = [];
 		return new MockMethod("ClassName", "fieldName", args, ret);
 	}
 }

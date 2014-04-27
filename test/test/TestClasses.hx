@@ -1,8 +1,9 @@
 package test;
 
 /**
-Contains classes for testing mocking scenarios
+	Contains classes for testing mocking scenarios
 */
+
 // -----------------------------------------------------------------------------
 
 interface SimpleInterface
@@ -23,7 +24,6 @@ class SimpleClass
 		throw "not mocked";
 	}
 }
-
 
 class VariableArgumentsClass
 {
@@ -141,7 +141,6 @@ class ClassWithFields implements IntefaceWithFields
 	public function withOptionalArgs(?arg1:Int, ?arg2:Bool):Void {throw "not mocked";}
 }
 
-
 class ClassWithConstructorAgs
 {
 	public function new(bool:Bool, int:Int)
@@ -173,23 +172,15 @@ class ClassThatIsFinal
 	}
 }
 
-
 // ----------------------------------------------------------------------------- Typed paramaters
-
 
 interface TypedInterface<T>
 {
 	function toTypeWithArg(value:T):T;
 }
 
-#if haxe3
 interface StringTypedInterface extends TypedInterface<String> {}
 interface ImplementsTypedInterface<TFoo, TBar> extends TypedInterface<TBar> {}
-#else
-interface StringTypedInterface implements TypedInterface<String> {}
-interface ImplementsTypedInterface<TFoo, TBar> implements TypedInterface<TBar> {}
-#end
-
 
 class TypedClass<T>
 {
@@ -219,7 +210,6 @@ class ExtendsTypedClass<TFoo, TBar> extends TypedClass<TBar>
 		super();
 	}	
 }
-
 
 class ExtendsTypedExtensionClass extends ExtendsTypedClass<String, String>
 {
@@ -257,9 +247,8 @@ class ClassWithPrivateReference
 {
 	public function new()
 	{
-
+		
 	}
-
 
 	public function test(arg:PrivateClass):PrivateClass
 	{
@@ -274,7 +263,6 @@ private class PrivateClass
 		
 	}
 }
-
 
 class ClassWithOptionalArg
 {
@@ -293,7 +281,6 @@ class ClassWithOptionalArg
 		return "";
 	}
 }
-
 
 class ClassWithTypedConstraint<T:TypedConstraintFoo>
 {
@@ -338,11 +325,7 @@ interface TypedConstraintBar
 	function bar():Void;
 }
 
-#if haxe3
 class TypedConstraintFooBar extends TypedConstraintFoo implements TypedConstraintBar
-#else
-class TypedConstraintFooBar extends TypedConstraintFoo, implements TypedConstraintBar
-#end
 {
 	public function new()
 	{
@@ -359,8 +342,6 @@ class TypedConstraintFooBar extends TypedConstraintFoo, implements TypedConstrai
 		
 	}
 }
-
-
 
 class BaseTypedParam<T>
 {
@@ -445,9 +426,7 @@ typedef TypedefToStringTypedClass = TypedClass<String>;
 typedef TypedefToImplementsTypedInterface = ImplementsTypedInterface<String, String>;
 typedef TypedefToExtendsTypedClass = ExtendsTypedClass<String, String>;
 
-
 // ----------------------------------------------------------------------------- Typedef Structures
-
 
 typedef TypedefStructure = 
 {
@@ -458,7 +437,6 @@ typedef TypedefStructure =
 	@:optional var optionalTitle:String;
 	@:optional var optionalFunc:Void -> String;
 }
-
 
 enum SomeEnumType
 {
@@ -520,7 +498,6 @@ class Issue17Class implements Issue17Interface
 
 // ----------------------------------------------------------------------------- Matchers
 
-
 interface SomeMatcherInterface
 {
 	function fromString(?value:String):Bool;
@@ -550,7 +527,6 @@ class SomeMatcherClass implements SomeMatcherInterface
 interface Something {
     public function returnSomething(something:String, ?other:Null<Int> = 0):String;
 }
-
 
 interface Issue18
 {

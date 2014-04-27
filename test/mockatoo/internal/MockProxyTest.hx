@@ -9,9 +9,7 @@ import mockatoo.Mockatoo;
 import mockatoo.exception.VerificationException;
 import mockatoo.exception.StubbingException;
 import util.Asserts;
-/**
-* Auto generated MassiveUnit Test Class  for mockatoo.internal.MockProxy 
-*/
+
 class MockProxyTest 
 {
 	var instance:MockProxy; 
@@ -20,27 +18,6 @@ class MockProxyTest
 	{
 		
 	}
-	
-	@BeforeClass
-	public function beforeClass():Void
-	{
-	}
-	
-	@AfterClass
-	public function afterClass():Void
-	{
-	}
-	
-	@Before
-	public function setup():Void
-	{
-	}
-	
-	@After
-	public function tearDown():Void
-	{
-	}
-	
 	
 	@Test
 	public function should_verify():Void
@@ -59,7 +36,6 @@ class MockProxyTest
 		instance.getOutcomeFor("two", [1,2]);
 		verification.two(1, anyInt);
 
-
 		instance.getOutcomeFor("three", [1,2,3]);
 		verification.three(1, anyInt, isNotNull);
 	}
@@ -76,7 +52,6 @@ class MockProxyTest
 
 		Asserts.assertEnumTypeEq(none, result);
 	}
-
 
 	@Test
 	public function should_use_verification_mode():Void
@@ -100,7 +75,6 @@ class MockProxyTest
 	}
 
 	// ------------------------------------------------------------------------- stubbing methods
-
 
 	@Test
 	public function should_throw_exception_if_cannot_stub_return_value():Void
@@ -151,7 +125,6 @@ class MockProxyTest
 		Asserts.assertEnumTypeEq(returns(4), result);
 	}
 
-
 	@Test
 	public function should_chain_stubs():Void
 	{
@@ -179,7 +152,6 @@ class MockProxyTest
 		var mock = mockatoo.Mockatoo.mock(ClassToMock);
 		instance = new MockProxy(mock);
 
-
 		var f = function(args:Array<Dynamic>) {}
 
 		instance.stubMethod("two", [1,2]).thenCall(f);
@@ -194,8 +166,6 @@ class MockProxyTest
 	{
 		var mock = mockatoo.Mockatoo.mock(ClassToMock);
 		instance = new MockProxy(mock);
-
-
 
 		instance.stubMethod("two", [1,2]).thenStub();
 
@@ -218,7 +188,6 @@ class MockProxyTest
 	}
 
 	// ------------------------------------------------------------------------- reset
-
 
 	@Test
 	public function should_reset_stubbing():Void
@@ -256,9 +225,7 @@ class MockProxyTest
 		catch(e:VerificationException) {}
 	}
 
-
 	// ------------------------------------------------------------------------- stubbing properties
-
 
 	@Test
 	public function should_stub_property():Void
@@ -293,7 +260,6 @@ class MockProxyTest
 		instance = new MockProxy(cast mock);
 		untyped mock.mockProxy = instance; 
 
-
 		try
 		{
 			instance.stubProperty("prop").thenThrow("foo");
@@ -321,7 +287,6 @@ class MockProxyTest
 			Assert.fail("Expected exception");
 		}
 		catch(e:String) {}
-
 
 		instance.stubProperty("propGetSet").thenThrow("foo");
 
@@ -373,7 +338,6 @@ class MockProxyTest
 		instance.stubProperty("propGetSet").thenCall(f);
 		Assert.areEqual("foo", mock.propGetSet);
 	}
-
 
 	@Test
 	public function should_stub_property_with_realMethod():Void
@@ -444,15 +408,9 @@ class ClassWithPropertiesToMock
 	public var propDefault(default, default):String;
 	public var propNull(default, null):String;
 
-	#if haxe3
 	@:isVar public var propSet(default, set):String;
 	@:isVar public var propGet(get, null):String;
 	@:isVar public var propGetSet(get, set):String;
-	#else
-	public var propSet(default, set_propSet):String;
-	public var propGet(get_propGet, null):String;
-	public var propGetSet(get_propGetSet, set_propGetSet):String;
-	#end
 
 	function set_propSet(value:String):String{propSet = value; return value;}
 
@@ -474,7 +432,6 @@ class ClassWithPropertiesToMock
 
 class ClassToMock
 {
-
 	public function new()
 	{
 
