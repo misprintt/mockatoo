@@ -1,3 +1,8 @@
+## 3.0.2
+
+- Fix: null return type throws exception on field
+- Fix: extending function with untyped arguments of type TAnonymous in flash
+
 ## 3.0.1
 
 - Fixed couple of minor backwards compatibility issues with flash target in Haxe 3.0.1
