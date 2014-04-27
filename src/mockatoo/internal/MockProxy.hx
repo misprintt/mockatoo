@@ -148,7 +148,12 @@ class MockProxy
 		{
 			fReturn = function(value:Dynamic)
 			{
-				Reflect.setField(target, property, value);
+				#if (haxe_ver < 3.1)
+					Reflect.setProperty(target, property, value);
+				#else
+					Reflect.setField(target, property, value);
+				#end
+				
 				getMethod.addReturnFor([], [value]);
 				return stub;
 			};

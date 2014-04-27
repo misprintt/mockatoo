@@ -11,7 +11,9 @@ import test.TestClasses;
 import util.Asserts;
 import haxe.ds.StringMap;
 
+import mockatoo.Mockatoo.*;
 using mockatoo.Mockatoo;
+
 
 typedef AnyArray = Array<Dynamic>;
 typedef Field = 
@@ -164,7 +166,7 @@ class MockatooTest
 		Mockatoo.verify(mock, times(2)).one(10);
 	}
 
-	// ------------------------------------------------------------------------- generics & typdefs
+	// ------------------------------------------------------------------------- generics & typedefs
 
 	@Test
 	public function should_mock_typedef_interface():Void
@@ -336,7 +338,7 @@ class MockatooTest
 	}
 
 	@Test
-	public function should_mock_class_with_typed_constraints_using_typdef_ref()
+	public function should_mock_class_with_typed_constraints_using_typedef_ref()
 	{
 		var mock = Mockatoo.mock(AnyConcreteTypedParam);
 		Assert.isTrue(true);
@@ -345,7 +347,7 @@ class MockatooTest
 	// ------------------------------------------------------------------------- typedef structures
 	
 	@Test
-	public function should_mock_typdef_structure():Void
+	public function should_mock_typedef_structure():Void
 	{
 		var fields:Array<Field> = [];
 		addField(fields, "func", []);
@@ -370,8 +372,12 @@ class MockatooTest
 
 		var field = Reflect.field(mock, fieldName);
 
+		#if (haxe_ver >= 3.1)
+
 		if(isStaticPlatform())
 			isFunc = isFunc && !isOptional;
+
+		#end
 		
 		Assert.areEqual(isFunc, Reflect.isFunction(field), pos);
 		
