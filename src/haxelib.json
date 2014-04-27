@@ -7,7 +7,7 @@
 	"massive"
 ],
 	"releasenote": "Updated for Haxe 3.1.x",
-	"version": "3.0.1",
+	"version": "3.0.2",
 	"url": "http://github.com/misprintt/mockatoo",
 	"dependencies": 
 	{
