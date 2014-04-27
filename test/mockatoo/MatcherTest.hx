@@ -15,9 +15,7 @@ using mockatoo.Mockatoo;
 
 class MatcherTest extends org.hamcrest.MatchersBase
 {
-
 	// ------------------------------------------------------------------------- matchers
-
 	
 	@Test
 	public function should_match_anyString()
@@ -81,7 +79,6 @@ class MatcherTest extends org.hamcrest.MatchersBase
 		Assert.isTrue(mock.fromArray(a));
 	}
 
-
 	@Test
 	public function should_match_anyObject()
 	{
@@ -101,14 +98,12 @@ class MatcherTest extends org.hamcrest.MatchersBase
 	{
 		var mock = Mockatoo.spy(SomeMatcherClass);
 
-
 		Assert.isFalse(mock.fromEnum(SomeEnumType.foo));
 
 		mock.fromEnum(cast anyEnum).returns(true);
 
 		Assert.isTrue(mock.fromEnum(SomeEnumType.foo));
 	}
-
 
 	@Test
 	public function should_match_enumOf()
@@ -135,7 +130,6 @@ class MatcherTest extends org.hamcrest.MatchersBase
 
 		Assert.isTrue(mock.fromInstance(c));
 
-
 		mock.fromDynamic(cast Matcher.instanceOf(SomeClass)).returns(true);
 
 		Assert.isTrue(mock.fromDynamic(c));
@@ -158,9 +152,6 @@ class MatcherTest extends org.hamcrest.MatchersBase
 		Assert.isTrue(mock.fromDynamic(c));
 		Assert.isFalse(mock.fromDynamic(o));
 	}
-
-
-
 
 	@Test
 	public function should_match_isNotNull()

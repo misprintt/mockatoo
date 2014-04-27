@@ -13,9 +13,9 @@ Mockatoo is inspired by **Mockito**'s public API <http://docs.mockito.googlecode
 
 ### Installation
 
-Mockatoo supports Haxe 3 across most platforms (AVM2, JavaScript, Neko, C++, etc)
+Mockatoo supports Haxe 3.1.x across most platforms (AVM2, JavaScript, Neko, C++, etc)
 
-Install current official release from haxelib (2.x)
+Install current official release from haxelib (3.x)
 
 	haxelib install mockatoo
 
@@ -96,6 +96,12 @@ Click here for detailed [documentation and examples](http://github.com/misprintt
 
 
 ## Release Notes
+
+### New in 3.0.0
+
+- added support for Haxe 3.1
+- removed dependency on tink_macros
+- removed support for haxe 2.x
 
 ### New in 2.1.0
 

@@ -5,37 +5,14 @@ import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
 import mockatoo.util.TypeEquality;
 using mockatoo.util.TypeEquality;
-/**
-* Auto generated MassiveUnit Test Class  for mockatoo.util.TypeEquality 
-*/
+
 class TypeEqualityTest 
 {
 	public function new() 
 	{
 		
 	}
-	
-	@BeforeClass
-	public function beforeClass():Void
-	{
-	}
-	
-	@AfterClass
-	public function afterClass():Void
-	{
-	}
-	
-	@Before
-	public function setup():Void
-	{
-	}
-	
-	@After
-	public function tearDown():Void
-	{
-	}
-	
-	
+
 	@Test
 	public function should_equal_same_type():Void
 	{

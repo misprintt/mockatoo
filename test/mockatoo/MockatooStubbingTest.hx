@@ -18,30 +18,9 @@ class MockatooStubbingTest
 	{
 		
 	}
-	
-	@BeforeClass
-	public function beforeClass():Void
-	{
-	}
-	
-	@AfterClass
-	public function afterClass():Void
-	{
-	}
-	
-	@Before
-	public function setup():Void
-	{
-	}
-	
-	@After
-	public function tearDown():Void
-	{
-	}
 
 	// ------------------------------------------------------------------------- when
 
-	
 	@Test
 	public function should_when()
 	{
@@ -69,7 +48,6 @@ class MockatooStubbingTest
 			Assert.areEqual("exception", e);
 		}
 	}
-
 
 	@Test
 	public function should_cast_to_mock_when()
@@ -175,7 +153,6 @@ class MockatooStubbingTest
 
 		Assert.areEqual("bar", result);
 	}
-
 
 	@Test
 	public function should_generate_callsRealMethod()

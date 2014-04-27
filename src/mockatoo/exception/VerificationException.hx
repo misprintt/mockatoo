@@ -3,8 +3,8 @@ package mockatoo.exception;
 import haxe.PosInfos;
 
 /**
-To be raised when a verification failed.
-@see massive.munit.AssertionException
+	To be raised when a verification failed.
+	@see massive.munit.AssertionException
 */
 class VerificationException extends MockatooException
 {

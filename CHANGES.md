@@ -1,3 +1,13 @@
+v3.0.0
+
+- updated for Haxe 3.1.x
+- removed Haxe 2.x support
+- removed dependency on tink macros
+
+Known Issues
+
+- unable to mock private class references ()
+
 v2.1.1
 - hotfix for mocking getter/setters of type Void-Void (issue #17)
 

@@ -4,9 +4,10 @@ import mockatoo.exception.VerificationException;
 
 import mockatoo.Mockatoo.*;
 using mockatoo.Mockatoo;
+
 /**
-Simple example showing mocking for interfaces, classes and typedef alisas.
-Each mock overrides/implements the methods and returns stub values 
+	Simple example showing mocking for interfaces, classes and typedef alisas.
+	Each mock overrides/implements the methods and returns stub values 
 */
 class Main
 {
@@ -20,7 +21,7 @@ class Main
 	
 	static function basicMocking()
 	{
-		//crate a mock;
+		//creat a mock;
 		var mock = mock(math.Calculator);
 
 		//invoke a method and trace stubbed result
@@ -34,7 +35,6 @@ class Main
 
 		//verify 'round' was called with arguments 1.1;
 		mock.round(1.1).verify(); //all good
-
 
 		//attempt to verify with arguments that were not used
 		try
@@ -115,17 +115,13 @@ class Main
 		mock.round(1.1).verify(2);
 	}
 
-	////
-
 	/**
-	Prints the result of the assertion and the value 
+		Prints the result of the assertion and the value 
 	*/
 	static function assertEqual(expected:Dynamic, actual:Dynamic, ?pos:haxe.PosInfos)
 	{
 		var result = (actual == expected);
 
 		trace(result + " : " + Std.string(actual) + ", (line " + pos.lineNumber + ")", pos);
-	}
-
-	
+	}	
 }
