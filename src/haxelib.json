@@ -3,8 +3,10 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "Mockatoo is a Haxe library for mock creation, verification and stubbing.",
-	"contributors": ["massive"],
-	"releasenote": "Added support for Haxe 3.1.x",
+	"contributors": [
+	"massive"
+],
+	"releasenote": "Updated for Haxe 3.1.x",
 	"version": "3.0.0",
 	"url": "http://github.com/misprintt/mockatoo",
 	"dependencies": 
