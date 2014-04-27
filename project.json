@@ -2,16 +2,16 @@
 	"project": 
 	{
 		"name": "Mockatoo",
-		"version": "3.0.0",
+		"version": "3.0.1",
 		"id": "mockatoo",
+		"devDependencies": 
+		{
+			"mtask": "3.x",
+			"munit": "2.x"
+		},
 		"dependencies": 
 		{
 			"mconsole": "1.x"
-		},
-		"devDependencies":
-		{
-			"mtask":"3.x",
-			"munit":"2.x"
 		}
 	},
 	"haxelib": 
