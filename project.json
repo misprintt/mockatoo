@@ -2,10 +2,11 @@
 	"project": 
 	{
 		"name": "Mockatoo",
-		"version": "3.0.2",
+		"version": "3.0.3",
 		"id": "mockatoo",
 		"devDependencies": 
 		{
+			"hamcrest": "1.x",
 			"mtask": "3.x",
 			"munit": "2.x"
 		},
