@@ -907,6 +907,8 @@ class MockMaker
 		
 	function normaliseComplexType(complexType:ComplexType):ComplexType
 	{
+		if(complexType == null) return null;
+		
 		var typePath:TypePath = switch (complexType)
 		{
 			case TPath(p): p;
