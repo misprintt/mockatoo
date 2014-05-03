@@ -746,14 +746,14 @@ class MockMaker
 	function overrideField(field:Field, f:Function)
 	{
 		if (!isInterface)
-		field.access.unshift(AOverride);
+			field.access.unshift(AOverride);
 
 		var args:Array<Expr> = [];
 
 		for (arg in f.args)
 		{
 			arg.type = normaliseComplexType(arg.type);
-			args.push(macro $i{arg.name});
+			args.push(macro cast $i{arg.name});
 		}
 		
 		var eMockOutcome = createMockFieldExprs(field, args);

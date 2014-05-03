@@ -123,7 +123,7 @@ class ClassFields
 	}
 
 	/**
-		Recursively Rreplaces references to an abstract type <T> with a concrete Types
+		Recursively Replaces references to an abstract type <T> with a concrete Types
 		defined in a map (recursively updates param types as well)
 		(e.g. T, Array<T>, Interator<Null<T>>)
 	*/
@@ -255,7 +255,7 @@ class ClassFields
 									args:convertTFunArgsToFunctionArgs(args, paramMap),
 									ret: convertType(ret, paramMap),
 									expr:expr,
-									params:[]
+									params:convertParams(field.params,paramMap)
 								});
 
 							default: throw "not implemented for type [" + field.type + "]";
@@ -264,6 +264,23 @@ class ClassFields
 			}
 		}
 		return null;
+	}
+
+	static function convertParams(params:Array<TypeParameter>, paramMap:Array<TypeDeclaration>):Array<TypeParamDecl>
+	{
+		var results:Array<TypeParamDecl> = [];
+
+		for(param in params)
+		{
+			var complexType = convertType(param.t, paramMap);
+			var result = {
+				name:param.name,
+				constraints:[],
+				params:[]
+			}
+			results.push(result);
+		}
+		return results;
 	}
 
 	static function convertTFunArgsToFunctionArgs(args : Array<{ t : Type, opt : Bool, name : String }>, paramMap:Array<TypeDeclaration>):Array<FunctionArg>
