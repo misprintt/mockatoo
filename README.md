@@ -31,7 +31,7 @@ Or point to your local fork:
 
 ## Features
 
-Import and use the 'using' mixin
+The following examples assume you have imported the static methods of Mockatoo and are using the `using mixin.
 
 	import mockatoo.Mockatoo.*;
 	using mockatoo.Mockatoo;
@@ -42,7 +42,7 @@ Mock any class or interface, including typedef aliases and types with generics (
 	var mockedInterface = mock(SomeInterface);
 	var mockedClassWithTypeParams = mock(Foo,[Bar]); //e.g. Foo<Bar>
 
-Verify a method has been called with specific paramaters (cleaner syntax since 1.3.0)
+Verify a method has been called with specific paramaters
 
 	mock.someMethod().verify();
 	mock.someMethod("foo", "bar").verify();
@@ -54,12 +54,12 @@ Define a stub response when a method is invoked
 
 Custom argument matchers and wildcards
 
-	mock.foo(anyString).returns("hello");
-	mock.foo(anyString).verify();
+	mock.foo(cast anyString).returns("hello");
+	mock.foo(cast anyString).verify();
 
 Verify exact number of invocations 
 
-	mock.foo().verify(2);//raw integers supported since 1.3.0
+	mock.foo().verify(2);
 	mock.foo().verify(times(2));
 	mock.foo().verify(atLeast(2));
 	mock.foo().verify(atLeastOnce);
@@ -92,8 +92,15 @@ Mock properties that are read or write only
 	mock.someGetter.calls(function(){return "foo"});
 
 
-Click here for detailed [documentation and examples](http://github.com/misprintt/mockatoo/wiki/Developer-Guide)
 
+## How it works
+
+Mockatoo generates a sub class of the target class (or an instance of an interface) that implements the mockatoo.Mock.
+
+Each method (including getter/setter) is overriden to prevent the underlying functionality from being executed (by default). Methods requireing a return type will always return the default ‘null’ value associated with that type (e.g. an Int will return 0 on static targets like flash or cpp, and null on dynamic targets like js or neko).
+
+
+Click here for detailed [documentation and examples](http://github.com/misprintt/mockatoo/wiki/Developer-Guide)
 
 ## Release Notes
 
@@ -115,13 +122,6 @@ Click here for detailed [documentation and examples](http://github.com/misprintt
 Due to a limitations in Haxe 3.0 with `using` + `macro` on class references, developers should use static importing avoid explicit references to `Mockatoo.mock` and `Mockatoo.spy`.
 
 
-In Haxe 2
-
-	using mockatoo.Mockatoo;
-	...
-	var mock = SomeClass.mock();
-	var spy SomeClass.spy();
-
 In Haxe 3 the recommended approach is:
 
 	import mockatoo.Mockatoo.*;
@@ -135,19 +135,12 @@ In Haxe 3 the recommended approach is:
 
 #### Matchers
 
-The matcher helper methods in the Mockatoo class have been removed - (e.g. `anyString()`, `anyInt()`, `enumOf(SomeEnum)`) as they are no longer required when using static imports.
+Allows flexible verification or stubbing of arguments based on type. 
 
+> Note: When using 'using', you will need to cast the matcher to avoid a false compilation error
 
-In Haxe 2:
-
-	mock.someMethod(Mockatoo.anyString()).returns("foo");
-
-With Haxe 3 refer to the Matcher enum value directly
-
+	mock.someMethod(cast any).verify();
 	mock.someMethod(cast anyString).returns("foo");
-
-
->Note: As of Mockatoo 2.1, matchers need to be explicitly cast (as in the example above) to circumvent compiler type errors.
 
 
 ### New in 2.0.0
@@ -197,5 +190,3 @@ The syntax for wildcard Matchers has been updated to be compiler-safe when using
 ## Credits
 
 Mockatoo is heavily inspired by **Mockito**'s public API <http://docs.mockito.googlecode.com/hg/latest/org/mockito/Mockito.html>
-
-Mockatoo uses [tink_macro](https://github.com/back2dos/tinkerbell) for a lot of the low level macro manipulations.
