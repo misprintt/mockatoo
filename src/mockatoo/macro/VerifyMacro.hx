@@ -12,7 +12,7 @@ using haxe.macro.Tools;
 using mockatoo.macro.Tools;
 
 /**
-	Macro for remapping a mock's method invocation when using Mockatoo.when()
+	Macro for remapping a mock's method invocation when using Mockatoo.verify()
 */
 class VerifyMacro
 {
@@ -22,7 +22,7 @@ class VerifyMacro
 
 		mode = validateModeExpr(mode);
 
-		//converts instance.one(1) into instance.mockProxy.when("one", [1])
+		//converts instance.one(1) into instance.mockProxy.veryify("one", [1])
 
 		switch (expr.expr)
 		{
@@ -72,6 +72,7 @@ class VerifyMacro
 		}
 
 		var verifyExpr = macro cast($expr, mockatoo.Mock).mockProxy.verify($mode);
+		verifyExpr.pos = Context.currentPos();
 		return [eIsNotNull, eIsAMock, verifyExpr];
 	}
 

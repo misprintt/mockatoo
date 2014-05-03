@@ -134,8 +134,14 @@ class MockatooTest
 		result = mock.one(10);
 
 		Assert.areEqual(2, result);
-		Mockatoo.verify(mock, times(2)).one(10);
+		Mockatoo.verify(mock, times(1)).one(10);
 
+		mock.one(10);
+		mock.one(10);
+
+		Mockatoo.verify(mock, times(2)).one(10);		
+
+		mock.one(10);
 		Mockatoo.reset(mock);
 
 		result = mock.one(10);
@@ -163,7 +169,7 @@ class MockatooTest
 		Assert.areEqual(null, result);
 		#end
 
-		Mockatoo.verify(mock, times(2)).one(10);
+		Mockatoo.verify(mock, times(1)).one(10);
 	}
 
 	// ------------------------------------------------------------------------- generics & typedefs

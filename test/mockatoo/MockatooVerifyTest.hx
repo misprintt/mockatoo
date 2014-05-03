@@ -25,11 +25,15 @@ class MockatooVerifyTest
 		var instance = Mockatoo.mock(VerifySomeClass);
 		
 		instance.test("foo");
-
 		Mockatoo.verify(instance).test("foo");
 
+		instance.test("foo");
 		instance.verify().test("foo");
+
+		instance.test("foo");
 		instance.verify(times(1)).test("foo");
+
+		instance.test("foo");
 		instance.verify(1).test("foo");
 	}
 
@@ -44,8 +48,13 @@ class MockatooVerifyTest
 
 		Mockatoo.verify(this.mock).test("foo");
 
+		mock.test("foo");
 		this.mock.verify().test("foo");
+
+		mock.test("foo");
 		this.mock.verify(times(1)).test("foo");
+
+		mock.test("foo");
 		this.mock.verify(1).test("foo");
 	}
 
@@ -66,10 +75,14 @@ class MockatooVerifyTest
 		instance.test("foo");
 
 		Mockatoo.verify(instance.test("foo"));
+
+		instance.test("foo");
 		Mockatoo.verify(instance.test("foo"), times(1));
+
+		instance.test("foo");
 		Mockatoo.verify(instance.test("foo"), 1);
 
-		Assert.areEqual(1, count);
+		Assert.areEqual(3, count);
 	}
 
 	
@@ -124,6 +137,25 @@ class MockatooVerifyTest
 
 		Asserts.assertEnumTypeEq(never, verification.mode);
 		
+	}
+
+	@Test
+	public function should_verify_no_more_interactions()
+	{
+		var instance = Mockatoo.mock(VerifySomeClass);
+			
+		instance.verifyZeroInteractions();
+		instance.test("foo");
+
+		try
+		{
+			instance.verifyZeroInteractions();
+			Assert.fail("Expected exception for existing invocation");
+		}
+		catch(e:VerificationException)
+		{
+			Assert.isTrue(true);
+		}
 	}
 
 	//NOTE: THESE ARE MEANT TO CAUSE COMPILER ERRORS

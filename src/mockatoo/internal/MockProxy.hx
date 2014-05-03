@@ -55,6 +55,14 @@ class MockProxy
 		return temp;
 	}
 
+	public function verifyZeroInteractions(?pos:haxe.PosInfos)
+	{
+		for(proxy in methods.iterator())
+		{
+			proxy.verifyZeroInteractions(pos);
+		}
+	}
+
 	public function stubMethod(method:String, args:Array<Dynamic>):Stubber
 	{
 		var stub = new Stubber();
