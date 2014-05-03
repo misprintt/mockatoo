@@ -69,7 +69,7 @@ Verify exact number of invocations
 Verify there are no redundant invocations. This is the equivalent of running 
 `verify(never)` on all methods in a mock.
 
-	mock.verifyNoMoreInteractions();
+	mock.verifyZeroInteractions();
 
 Spying on real objects
 
@@ -110,22 +110,26 @@ Click here for detailed [documentation and examples](http://github.com/misprintt
 
 ## Release Notes
 
+### New in 3.0.4
+
+- issue #21 automatic injection of `Matcher.any` for missing arguments on stubs
+- issue #26 add mock.verifyZeroInteractions();
+
+#### Verifying zero invocations
+
+Added the ability to verify that no other methods have been called. This is the equivalent of running `verify(never)` on all methods in a mock.
+
+	mock.verifyZeroInteractions();
+
+> This changes the underlying mechanics of verification - each time a `verify` is made
+the matching invocation is now removed for future verifications.
+
+
 ### New in 3.0.0
 
 - added support for Haxe 3.1
 - removed dependency on tink_macros
 - removed support for haxe 2.x
-- issue #21 automatic injection of `Matcher.any` for missing arguments on stubs
-- issue #26 add mock.verifyNoMoreInteractions();
-
-#### Verifying redundant invocations
-
-Added the ability to verify that no other methods have been called. This is the equivalent of running `verify(never)` on all methods in a mock.
-
-	mock.verifyNoMoreInteractions();
-
-> This changes the underlying mechanics of verification - each time a `verify` is made
-the matching invocation is now removed for future verifications.
 
 
 ### New in 2.1.0

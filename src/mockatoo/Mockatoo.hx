@@ -73,14 +73,14 @@ class Mockatoo
 		Verifies that no other methods have been invoked since last `verify`
 
 		````
-	  	mock.verifyNoMoreInteractions();
+	  	mock.verifyZeroInteractions();
 		````
 
-		@throws VerificationException if any methods have been called
+		@throws VerificationException if a method has been called
 	**/
-	static public function verifyNoMoreInteractions(mock:Mock, ?pos:haxe.PosInfos)
+	static public function verifyZeroInteractions(mock:Mock, ?pos:haxe.PosInfos)
 	{
-		return mock.mockProxy.verifyNoMoreInteractions(pos);
+		return mock.mockProxy.verifyZeroInteractions(pos);
 	}
 
 	/**

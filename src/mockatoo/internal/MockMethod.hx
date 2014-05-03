@@ -179,7 +179,7 @@ class MockMethod
 		return null;
 	}
 
-	public function verifyNoMoreInteractions(?pos:PosInfos)
+	public function verifyZeroInteractions(?pos:PosInfos)
 	{
 		if(invocations.length > 0)
 		{

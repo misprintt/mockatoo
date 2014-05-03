@@ -144,12 +144,12 @@ class MockatooVerifyTest
 	{
 		var instance = Mockatoo.mock(VerifySomeClass);
 			
-		instance.verifyNoMoreInteractions();
+		instance.verifyZeroInteractions();
 		instance.test("foo");
 
 		try
 		{
-			instance.verifyNoMoreInteractions();
+			instance.verifyZeroInteractions();
 			Assert.fail("Expected exception for existing invocation");
 		}
 		catch(e:VerificationException)

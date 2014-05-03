@@ -55,11 +55,11 @@ class MockProxy
 		return temp;
 	}
 
-	public function verifyNoMoreInteractions(?pos:haxe.PosInfos)
+	public function verifyZeroInteractions(?pos:haxe.PosInfos)
 	{
 		for(proxy in methods.iterator())
 		{
-			proxy.verifyNoMoreInteractions(pos);
+			proxy.verifyZeroInteractions(pos);
 		}
 	}
 
