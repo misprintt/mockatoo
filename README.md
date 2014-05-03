@@ -56,6 +56,7 @@ Custom argument matchers and wildcards
 
 	mock.foo(cast anyString).returns("hello");
 	mock.foo(cast anyString).verify();
+	mock.foo().returns("hello"); // automatically injects `any` matcher for missing arguments
 
 Verify exact number of invocations 
 
@@ -109,6 +110,8 @@ Click here for detailed [documentation and examples](http://github.com/misprintt
 - added support for Haxe 3.1
 - removed dependency on tink_macros
 - removed support for haxe 2.x
+- issue #21 automatic injection of `Matcher.any` for missing arguments on stubs
+
 
 ### New in 2.1.0
 

@@ -284,8 +284,6 @@ class MockatooVoid
 
 /**
 	Allows flexible verification or stubbing of arguments based on type. 
-	These values should not need to be called directly, as they are exposed as functions
-	on mockatoo.Mockatoo
 
 	````
 	//if using 'using', you may need to cast the matcher to avoid a false compilation error

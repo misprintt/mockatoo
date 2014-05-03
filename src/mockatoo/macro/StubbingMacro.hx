@@ -38,33 +38,20 @@ class StubbingMacro
 
 				ident = parts.join(".");
 
-				var eCast = ECast(ident.toFieldExpr(), "mockatoo.Mock".toComplex()).at();
+				var eId = ident.toFieldExpr();
+				var eField = (ident + "." + methodName).toFieldExpr();
 
-				var eMethod = eCast.field("mockProxy").field("stubMethod");
+				var whenExpr = macro cast($i{ident}, mockatoo.Mock).mockProxy.stubMethod($v{methodName}, $args);
 
-				var whenExpr = eMethod.call([EConst(CString(methodName)).at(), args]);
+				var actualExpr = macro {if(false) $eField; $whenExpr;};
 
-				var eField = ident.toFieldExpr().field(methodName);
-				var compilerCheck = EIf(EConst(CIdent("false")).at(), eField, null).at();
-
-				var actualExpr = EBlock([compilerCheck, whenExpr]).at();
 				return actualExpr;
 
 			case EField(e, field):
 
 				var ident = e.toString();
-
-				var eCast = ECast(ident.toFieldExpr(), "mockatoo.Mock".toComplex()).at();
-
-				var eMethod = eCast.field("mockProxy").field("stubProperty");
-
-				var eFieldName = EConst(CString(field)).at();
-
-				var whenExpr = eMethod.call([eFieldName]);
-
-				var compilerCheck = EIf(EConst(CIdent("false")).at(), expr, null).at();
-
-				var actualExpr = EBlock([compilerCheck, whenExpr]).at();
+				var whenExpr = macro cast ($i{ident}, mockatoo.Mock).mockProxy.stubProperty($v{field});
+				var actualExpr = macro {if(false) $expr; $whenExpr;};
 				return actualExpr;
 
 			default: throw "Invalid expression [" + expr.toString() + "]";

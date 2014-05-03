@@ -532,3 +532,7 @@ interface Issue18
 {
 	var myVal(null, set): Dynamic;
 }
+
+interface Issue21 {
+    public function returnSomething(something:String, other:Int = 0):String;
+}

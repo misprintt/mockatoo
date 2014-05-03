@@ -84,7 +84,7 @@ class MockatooStubbingTest
 	{
 		var instance = Mockatoo.mock(StubSomeClass);
 
-		Mockatoo.returns(instance.parse(cast anyString), "foo");
+		instance.parse(cast anyString).returns("foo");
 
 		var result = instance.parse("a");
 
@@ -178,6 +178,19 @@ class MockatooStubbingTest
 		result = instance.toString();
 		Assert.isNull(result);
 	}
+
+	@Test
+	public function should_inject_any_matcher_for_unspecified_method_args()
+	{
+		var instance = Mockatoo.mock(VariableArgumentsClass);
+
+		Mockatoo.returns(instance.two(), 100);//should have two arguments
+		
+		var result = instance.two(1,2);
+
+		Assert.areEqual(100, result);
+	}
+
 }
 class StubSomeClass
 {

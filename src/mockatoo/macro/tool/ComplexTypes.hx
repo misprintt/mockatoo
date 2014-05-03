@@ -33,7 +33,7 @@ class ComplexTypes
 	*/
 	static public function getDefaultValue(type:ComplexType):Expr
 	{
-		if (Tools.isStaticPlatform())
+		if (type != null && Tools.isStaticPlatform())
 		{
 			switch (type)
 			{
