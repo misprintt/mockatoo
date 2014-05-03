@@ -20,6 +20,13 @@ typedef TypeDeclaration =
 	type:Type
 }
 
+#if (haxe_ver < 3.1)
+typedef TypeParameter = 
+{
+	name : String,
+	t : Type
+}
+#end
 /**
 	Macro for recursively converting ClassFields to Field types
 */

@@ -80,7 +80,7 @@ class Mockatoo
 	**/
 	static public function verifyZeroInteractions(mock:Mock, ?pos:haxe.PosInfos)
 	{
-		return mock.mockProxy.verifyZeroInteractions(pos);
+		mock.mockProxy.verifyZeroInteractions(pos);
 	}
 
 	/**
