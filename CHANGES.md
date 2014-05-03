@@ -1,3 +1,7 @@
+## 3.1.1
+
+- fixed cpp issues in haxe 3.0.x
+
 ## 3.1.0
 
 - updated read me
