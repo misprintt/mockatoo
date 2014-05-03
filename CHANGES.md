@@ -1,3 +1,11 @@
+## 3.1.0
+
+- updated read me
+- issue #21 - added automatic injection of `Matcher.any` for missing arguments on stubs
+- issue #23 - fixed mock method with type parameters
+- fixed incorrect posInfos on verify exceptions
+- issue #26 - added `mock.verifyZeroInteractions()`
+
 ## 3.0.3
 
 - added in dev dependency for hamcrest
