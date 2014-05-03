@@ -35,7 +35,6 @@
 -lib hamcrest
 -cp src
 -lib mconsole
--cp ../musings/src
 -cp test
 -neko bin/test/neko_test.n
 -D MOCKATOO_LOG
@@ -49,7 +48,6 @@
 -lib hamcrest
 -cp src
 -lib mconsole
--cp ../musings/src
 -cp test
 -D HXCPP_M64
 -cpp bin/test/cpp_test
