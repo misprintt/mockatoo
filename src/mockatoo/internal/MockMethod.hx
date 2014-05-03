@@ -179,6 +179,14 @@ class MockMethod
 		return null;
 	}
 
+	public function verifyNoMoreInteractions(?pos:PosInfos)
+	{
+		if(invocations.length > 0)
+		{
+			verify(VerificationMode.never, invocations[0], pos);
+		}
+	}	
+
 	public function verify(mode:VerificationMode, ?args:Array<Dynamic>, ?pos:PosInfos):Bool
 	{
 		var matchingInvocations = getMatchingArgs(invocations, args);
@@ -231,7 +239,7 @@ class MockMethod
 	{
 		var matches:Array<Array<Dynamic>> = [];
 
-		for (targetArgs in argArrays)
+		for (targetArgs in argArrays.concat([]))
 		{
 
 			if (targetArgs.length != args.length) 
@@ -247,7 +255,10 @@ class MockMethod
 			}
 
 			if (matchingArgs == args.length)
+			{
 				matches.push(targetArgs);
+				argArrays.remove(targetArgs);
+			}
 		}
 
 		return matches;

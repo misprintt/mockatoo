@@ -85,6 +85,7 @@ class MockMethodTest
 		catch(e:VerificationException) {}
 
 		instance.getOutcomeFor(args);
+		instance.getOutcomeFor(args);
 		instance.verify(times(2), args);
 	}
 
@@ -186,7 +187,8 @@ class MockMethodTest
 		catch(e:VerificationException) {}
 
 		instance.getOutcomeFor(args);
-		instance.verify(atLeast(2), args);
+		instance.getOutcomeFor(args);
+		instance.verify(atLeast(1), args);
 	}
 
 	@Test
@@ -202,6 +204,7 @@ class MockMethodTest
 
 		try
 		{
+			instance.getOutcomeFor(args);
 			instance.getOutcomeFor(args);
 			instance.verify(atMost(1), args);
 			Assert.fail("Expected VerificationException");
@@ -356,7 +359,7 @@ class MockMethodTest
 		instance.verify(times(1), [anyFloat]);
 
 		instance.getOutcomeFor([1]);
-		instance.verify(times(2), [anyFloat]); //int is valid flaot
+		instance.verify(times(1), [anyFloat]); //int is valid flaot
 	}
 
 	@Test
@@ -383,6 +386,7 @@ class MockMethodTest
 		instance.getOutcomeFor([true]);
 		instance.verify(times(1), [anyBool]);
 
+		instance.getOutcomeFor([false]);
 		instance.getOutcomeFor([false]);
 		instance.verify(times(2), [anyBool]);
 	}
@@ -420,7 +424,7 @@ class MockMethodTest
 		instance.verify(times(1), [anyObject]);
 
 		instance.getOutcomeFor([new StringMap<String>()]);
-		instance.verify(times(1), [anyObject]); //doesnt count instances - only annonomous objects
+		instance.verify(never, [anyObject]); //doesnt count instances - only annonomous objects
 	}
 
 	@Test
@@ -448,7 +452,7 @@ class MockMethodTest
 		instance.verify(times(1), [anyEnum]);
 
 		instance.getOutcomeFor([SomeOtherEnum.bar]);
-		instance.verify(times(2), [anyEnum]); 
+		instance.verify(times(1), [anyEnum]); 
 	}
 
 	@Test
@@ -468,7 +472,7 @@ class MockMethodTest
 		instance.verify(times(1), [enumOf(SomeEnum)]);
 
 		instance.getOutcomeFor([SomeEnum.bar]);
-		instance.verify(times(2), [enumOf(SomeEnum)]); 
+		instance.verify(times(1), [enumOf(SomeEnum)]); 
 	}
 
 	@Test
@@ -504,8 +508,9 @@ class MockMethodTest
 		instance.verify(times(1), [instanceOf(SomeClass)]);
 
 		instance.getOutcomeFor([new SomeSubClass()]);
-		instance.verify(times(2), [instanceOf(SomeClass)]); 
+		instance.verify(times(1), [instanceOf(SomeClass)]); 
 
+		instance.getOutcomeFor([new SomeSubClass()]);
 		instance.verify(times(1), [instanceOf(SomeSubClass)]); 
 	}
 
@@ -526,13 +531,13 @@ class MockMethodTest
 		instance.verify(times(1), [isNotNull]);
 
 		instance.getOutcomeFor(["foo"]);
-		instance.verify(times(2), [isNotNull]);
+		instance.verify(times(1), [isNotNull]);
 
 		instance.getOutcomeFor([new SomeClass()]);
-		instance.verify(times(3), [isNotNull]);
+		instance.verify(times(1), [isNotNull]);
 
 		instance.getOutcomeFor([SomeEnum.foo]);
-		instance.verify(times(4), [isNotNull]);
+		instance.verify(times(1), [isNotNull]);
 	}
 
 	@Test
@@ -544,7 +549,7 @@ class MockMethodTest
 		instance.verify(times(1), [any]);
 
 		instance.getOutcomeFor([null]);
-		instance.verify(times(2), [any]);
+		instance.verify(times(1), [any]);
 	}
 
 	@Test
@@ -596,24 +601,24 @@ class MockMethodTest
 
 		var array = new Array<Int>();
 		instance.getOutcomeFor([array]);
-		instance.verify(times(2), [anyIterator]);
+		instance.verify(times(1), [anyIterator]);
 
 		
 		var intMap = new IntMap<Int>();
 
 		instance.getOutcomeFor([intMap]);
-		instance.verify(times(3), [anyIterator]);
+		instance.verify(times(1), [anyIterator]);
 		var list = new List<String>();
 		instance.getOutcomeFor([list]);
-		instance.verify(times(4), [anyIterator]);
+		instance.verify(times(1), [anyIterator]);
 
 		var someIterable = new SomeIterable("foo");
 		instance.getOutcomeFor([someIterable]);
-		instance.verify(times(5), [anyIterator]);
+		instance.verify(times(1), [anyIterator]);
 
 		var someIterator = new SomeIterator("foo");
 		instance.getOutcomeFor([someIterator]);
-		instance.verify(times(6), [anyIterator]);
+		instance.verify(times(1), [anyIterator]);
 	}
 
 	@Test
