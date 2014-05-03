@@ -241,6 +241,17 @@ class IntIterableClass extends TypedIterableClass<Int>
 	}
 }
 
+
+class TypedMethod
+{
+	public function new()
+	{
+		
+	}
+	public function test<T>(t:T)
+	{
+	}
+}
 // ---------------------- others
 
 class ClassWithPrivateReference
@@ -533,6 +544,13 @@ interface Issue18
 	var myVal(null, set): Dynamic;
 }
 
-interface Issue21 {
-    public function returnSomething(something:String, other:Int = 0):String;
+class Issue23
+{
+	public function new()
+	{
+
+	}
+	public function test<T>(t:T)
+	{
+	}
 }

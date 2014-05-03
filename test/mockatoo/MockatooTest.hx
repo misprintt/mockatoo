@@ -729,6 +729,18 @@ class MockatooTest
 
 	}
 
+	@Test
+	public function should_mock_Issue23()
+	{
+		var real = new TypedMethod();
+		real.test(1);
+		Assert.isTrue(true);
+		
+		var mock = Mockatoo.mock(TypedMethod);
+		mock.test(1);
+		Mockatoo.verify(mock.test(1));
+	}
+
 	// ------------------------------------------------------------------------- utilities
 
 	function assertMock(mock:Mock, cls:Class<Dynamic>, ?fields:Array<Field>, ?pos:haxe.PosInfos)
