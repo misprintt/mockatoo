@@ -31,6 +31,8 @@ Or point to your local fork:
 
 ## Features
 
+> Please refer to the [Developer Guide](http://github.com/misprintt/mockatoo/wiki/Developer-Guide) for detailed documentation
+
 The following examples assume you have imported the static methods of Mockatoo and are using the `using mixin.
 
 	import mockatoo.Mockatoo.*;
