@@ -862,15 +862,18 @@ class MockMaker
 	*/
 	function isVoidVoid(type:ComplexType):Bool
 	{
-		switch (type)
+		if (type != null)
 		{
-			case TFunction(args,ret): 
-				if (args.length == 0 && !isNotVoid(ret))
-				{
-					return true;
-				}
-			case _:
-				return false;
+			switch (type)
+			{
+				case TFunction(args,ret): 
+					if (args.length == 0 && !isNotVoid(ret))
+					{
+						return true;
+					}
+				case _:
+					return false;
+			}
 		}
 		return false;
 	}
