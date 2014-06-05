@@ -1,3 +1,9 @@
+## 3.1.2
+
+- updated haxelib description
+- Merge pull request #35 from jasononeil/patch-2 Null check on isVoidVoid()
+- Merge pull request #34 from jasononeil/patch-1 Fix for PHP
+
 ## 3.1.1
 
 - fixed cpp issues in haxe 3.0.x
