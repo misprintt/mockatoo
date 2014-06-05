@@ -554,3 +554,21 @@ class Issue23
 	{
 	}
 }
+
+class ClassWithoutTypedArgs
+{
+	public function new()
+	{
+
+	}
+
+	public function untypedArg(arg)
+	{
+
+	}
+
+	public function untypedReturn()
+	{
+		return {};
+	}
+}

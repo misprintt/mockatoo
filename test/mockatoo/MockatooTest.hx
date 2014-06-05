@@ -747,6 +747,18 @@ class MockatooTest
 		Mockatoo.verify(mock.test(1));
 	}
 
+	@Test
+	public function should_support_untyped_method_args_and_returns()
+	{
+		var mock = Mockatoo.mock(ClassWithoutTypedArgs);
+
+		mock.untypedArg("");
+		mock.untypedReturn();
+
+		Mockatoo.verify(mock.untypedArg(""));
+		Mockatoo.verify(mock.untypedReturn());
+	}
+
 	// ------------------------------------------------------------------------- utilities
 
 	function assertMock(mock:Mock, cls:Class<Dynamic>, ?fields:Array<Field>, ?pos:haxe.PosInfos)
