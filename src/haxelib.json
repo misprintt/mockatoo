@@ -6,7 +6,7 @@
 	"contributors": [
 	"massive"
 ],
-	"releasenote": "Updated for Haxe 3.1.x. See https://github.com/misprintt/mockatoo/blob/master/CHANGES.md",
+	"releasenote": "See https://github.com/misprintt/mockatoo/blob/master/CHANGES.md",
 	"version": "3.1.2",
 	"url": "http://github.com/misprintt/mockatoo",
 	"dependencies": 
