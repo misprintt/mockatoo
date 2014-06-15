@@ -70,16 +70,31 @@ class ClassFields
 		
 		for (classField in c.fields.get())
 		{
-			var field = getClassField(classField, paramMap);
-			fieldMap.set(field.name, field);
+			try
+			{
+				var field = getClassField(classField, paramMap);
+				fieldMap.set(field.name, field);
+			}
+			catch(e:Dynamic)
+			{
+				//probaby a macro function
+			}
+			
 		}
 
 		if (includeStatics)
 		{
 			for (classField in c.statics.get())
 			{
-				var field = getClassField(classField, paramMap, true);
-				fieldMap.set(field.name, field);
+				try
+				{
+					var field = getClassField(classField, paramMap, true);
+					fieldMap.set(field.name, field);
+				}
+				catch(e:Dynamic)
+				{
+					//probaby amacro function
+				}
 			}
 		}
 

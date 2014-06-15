@@ -191,6 +191,8 @@ class MockMaker
 					}
 
 					arg.expr = EFunction(null, f).at();
+				case TAbstract(t, params):
+					arg.expr = field.type.toComplexType().getDefaultValue();
 
 				default: throw "Unsupported type [" + field.type + "] for field [" + field.name + "]";
 			}
@@ -770,9 +772,10 @@ class MockMaker
 
 		var eSwitch:Expr = null;
 
-		if (f.ret != null && isNotVoid(f.ret))
+		if (f.ret == null || isNotVoid(f.ret))
 		{
-			f.ret = normaliseComplexType(f.ret);
+			if(f.ret != null)
+				f.ret = normaliseComplexType(f.ret);
 
 			Console.log(field.name + ":" + Std.string(f.ret));
 		
@@ -923,6 +926,24 @@ class MockMaker
 		}
 
 		if (typePath == null) return complexType;
+
+		if(typePath.params != null && typePath.params.length > 0)
+		{
+			for(i in 0...typePath.params.length)
+			{
+				var param = typePath.params[i];
+				typePath.params[i] = switch(param)
+				{
+					case TPType(t): 
+						switch(t)
+						{
+							case TAnonymous(fields): param;
+							case _: TPType(normaliseComplexType(t));
+						}
+					case TPExpr(e): param;
+				}
+			}
+		}
 
 		if (typePath.name == "StdTypes")
 		{

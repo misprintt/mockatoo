@@ -289,7 +289,6 @@ class MockatooTest
 	}
 
 	#end
-
 	
 	@Test
 	public function should_mock_class_with_private_type_references():Void
@@ -299,16 +298,6 @@ class MockatooTest
 
 		var mock = Mockatoo.mock(ClassWithPrivateReference);
 		assertMock(mock, ClassWithPrivateReference, fields);
-	}
-	
-	@Test
-	public function should_mock_http():Void
-	{
-		var fields:Array<Field> = [];
-		addField(fields, "request", [false]);
-		var mock = Mockatoo.mock(haxe.Http);
-
-		assertMock(mock, haxe.Http, fields);
 	}
 
 	@Test
@@ -757,6 +746,14 @@ class MockatooTest
 
 		Mockatoo.verify(mock.untypedArg(""));
 		Mockatoo.verify(mock.untypedReturn());
+	}
+
+	@Test
+	public function should_mock_static_method()
+	{
+		var mock = Mockatoo.mock(ClassWithStaticMethodReference);
+		mock.callsStaticMethod();
+		Mockatoo.verify(mock.callsStaticMethod());
 	}
 
 	// ------------------------------------------------------------------------- utilities

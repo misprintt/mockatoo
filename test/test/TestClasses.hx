@@ -572,3 +572,28 @@ class ClassWithoutTypedArgs
 		return {};
 	}
 }
+
+
+class ClassWithStaticMethodReference
+{
+	static public function publicTest()
+	{
+
+	}
+
+	static function privateTest()
+	{
+
+	}
+
+	public function new()
+	{
+		
+	}
+
+	public function callsStaticMethod()
+	{
+		publicTest();
+		privateTest();
+	}
+}

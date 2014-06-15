@@ -54,3 +54,15 @@
 -D MOCKATOO_LOG
 --no-inline
 
+--next
+## php
+-main TestMain
+-lib munit
+-lib hamcrest
+-cp src
+-lib mconsole
+-cp test
+-php bin/test/php_test
+-D MOCKATOO_LOG
+--no-inline
+
