@@ -56,6 +56,27 @@ class MockatooVerifyTest
 
 		mock.test("foo");
 		this.mock.verify(1).test("foo");
+
+		mock.test("foo");
+		mock.test("foo").verify();
+	}
+
+	@Test
+	public function should_verify_mock_via_using()
+	{
+		mock = Mockatoo.mock(VerifySomeClass);
+		mock.test("foo");
+		mock.test("foo").verify();
+	}
+
+	@Test
+	public function should_verify_this_mock_via_using()
+	{
+		var mock:VerifySomeClass = null;
+
+		this.mock = Mockatoo.mock(VerifySomeClass);
+		this.mock.test("foo");
+		this.mock.test("foo").verify();
 	}
 
 	@Test

@@ -22,7 +22,7 @@ class VerifyMacro
 
 		mode = validateModeExpr(mode);
 
-		//converts instance.one(1) into instance.mockProxy.veryify("one", [1])
+		//converts instance.one(1) into instance.mockProxy.verify("one", [1])
 
 		switch (expr.expr)
 		{
@@ -80,9 +80,10 @@ class VerifyMacro
 	{
 		var parts = path.split(".");
 		var methodName = parts.pop();
+
 		var ident = parts.join(".");
 
-		var eInstance = macro $i{ident};
+		var eInstance = ident.toFieldExpr();
 		var exprs = createVerifyExpressions(eInstance, mode);
 
 		var verifyExpr = exprs.pop();
@@ -101,14 +102,11 @@ class VerifyMacro
 	{
 		switch (expr.expr)
 		{
-			case EConst(c):
-				switch (c)
-				{
-					case CInt(_): return macro VerificationMode.times($expr);
-					default: return expr;
-				}
+			case EConst(CIdent(i)): 
+				if(i == "null") return macro VerificationMode.times(1);
+				else return expr;
+			case EConst(CInt(_)): return macro VerificationMode.times($expr);
 			default: return expr;
-
 		}
 	}
 }

@@ -329,7 +329,7 @@ class ClassFields
 				name : arg.name
 			}
 
-			Console.log(arg.name + ":" + arg + "\n   " + value);
+			// Console.log(arg.name + ":" + arg + "\n   " + value);
 			converted.push(value);
 		}
 		return converted;
