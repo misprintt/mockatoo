@@ -1,3 +1,7 @@
+## 3.1.4
+
+- fixed issue when verifying a mock defined in an instance variable (`this.mock.foo().verify`)
+
 ## 3.1.3
 
 - Fixed issue with abstract types in typedef structures
