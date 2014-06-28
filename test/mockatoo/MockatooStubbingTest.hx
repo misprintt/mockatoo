@@ -191,7 +191,30 @@ class MockatooStubbingTest
 		Assert.areEqual(100, result);
 	}
 
+	var mock:StubSomeClass;
+
+	@Test
+	public function should_generate_returns_for_instance_mock()
+	{
+		mock = Mockatoo.mock(StubSomeClass);
+		mock.toString().returns("bar");
+		
+		var result = mock.toString();
+		Assert.areEqual("bar", result);
+	}
+
+	@Test
+	public function should_generate_returns_for_this_instance_mock()
+	{
+		var mock:StubSomeClass = null;
+		this.mock = Mockatoo.mock(StubSomeClass);
+		this.mock.toString().returns("bar");
+		
+		var result = this.mock.toString();
+		Assert.areEqual("bar", result);
+	}
 }
+
 class StubSomeClass
 {
 	public function new()

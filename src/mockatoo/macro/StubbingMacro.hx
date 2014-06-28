@@ -41,7 +41,9 @@ class StubbingMacro
 				var eId = ident.toFieldExpr();
 				var eField = (ident + "." + methodName).toFieldExpr();
 
-				var whenExpr = macro cast($i{ident}, mockatoo.Mock).mockProxy.stubMethod($v{methodName}, $args);
+				var eIdent = ident.toFieldExpr();
+
+				var whenExpr = macro cast($eIdent, mockatoo.Mock).mockProxy.stubMethod($v{methodName}, $args);
 
 				var actualExpr = macro {if(false) $eField; $whenExpr;};
 
@@ -50,7 +52,8 @@ class StubbingMacro
 			case EField(e, field):
 
 				var ident = e.toString();
-				var whenExpr = macro cast ($i{ident}, mockatoo.Mock).mockProxy.stubProperty($v{field});
+				var eIdent = ident.toFieldExpr();
+				var whenExpr = macro cast ($eIdent, mockatoo.Mock).mockProxy.stubProperty($v{field});
 				var actualExpr = macro {if(false) $expr; $whenExpr;};
 				return actualExpr;
 
