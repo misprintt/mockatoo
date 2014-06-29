@@ -1,6 +1,10 @@
+## 3.1.5
+
+- fixed issue when stubbing an instance variable mock (`this.mock.foo().returns("foo")`)
+
 ## 3.1.4
 
-- fixed issue when verifying a mock defined in an instance variable (`this.mock.foo().verify`)
+- fixed issue when verifying an instance variable mock (`this.mock.foo().verify`)
 
 ## 3.1.3
 
