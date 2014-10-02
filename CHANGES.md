@@ -1,3 +1,7 @@
+## 3.1.6
+
+- Fix: Switch to runtime 'spy' flag in generated Mocks to prevent hardcoded mock/spy behavior after first use
+
 ## 3.1.5
 
 - fixed issue when stubbing an instance variable mock (`this.mock.foo().returns("foo")`)
