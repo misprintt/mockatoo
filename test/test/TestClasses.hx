@@ -597,3 +597,9 @@ class ClassWithStaticMethodReference
 		privateTest();
 	}
 }
+
+abstract AbstractInt(Int) {
+  inline public function new(i:Int) {
+    this = i;
+  }
+}

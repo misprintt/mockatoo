@@ -20,7 +20,7 @@ class MockatooException extends massive.munit.AssertionException
 #else
 class MockatooException
 {
-	var message:String;
+	public var message:String;
 	var info:PosInfos;
 	var type:String;
 

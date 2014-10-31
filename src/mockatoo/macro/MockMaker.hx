@@ -11,6 +11,7 @@ import mockatoo.macro.ClassFields;
 import mockatoo.internal.MockOutcome;
 import haxe.ds.StringMap;
 
+using StringTools;
 using haxe.macro.Tools;
 using mockatoo.macro.Tools;
 
@@ -64,7 +65,24 @@ class MockMaker
 		this.isSpy = isSpy;
 
 		pos = e.pos;
-		type = Context.getType(id);
+
+		try
+		{
+			type = Context.getType(id);	
+		}
+		catch(e:Dynamic)
+		{
+			if (id.endsWith("_Impl_"))
+			{
+				id = id.split("_Impl_").join("");
+				throw new mockatoo.exception.MockatooException("Cannot mock abstract type [" + id + "]");
+			}
+			else
+			{
+				throw new mockatoo.exception.MockatooException("Cannot mock unknown type [" + id + "]");	
+			}
+		}
+		
 		Console.log(type);
 		actualType = type.follow();
 		

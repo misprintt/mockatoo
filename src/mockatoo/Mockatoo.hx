@@ -22,8 +22,16 @@ class Mockatoo
 	macro static public function mock<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
 	{
 		InitMacro.init();
-		var mock = new MockMaker(typeToMock.typed(), paramTypes);
-		return mock.toExpr();
+		try
+		{
+			var mock = new MockMaker(typeToMock.typed(), paramTypes);
+			return mock.toExpr();	
+		}
+		catch(e:mockatoo.exception.MockatooException)
+		{
+			Context.error(e.message, Context.currentPos());
+			return null;
+		}
 	}
 
 	/**
@@ -36,8 +44,17 @@ class Mockatoo
 	macro static public function spy<T>(typeToMock:ExprOf<Class<T>>, ?paramTypes:ExprOf<Array<Class<T>>>):ExprOf<T>
 	{
 		InitMacro.init();
-		var mock = new MockMaker(typeToMock.typed(), paramTypes, true);
-		return mock.toExpr();
+	
+		try
+		{
+			var mock = new MockMaker(typeToMock.typed(), paramTypes, true);
+			return mock.toExpr();
+		}
+		catch(e:mockatoo.exception.MockatooException)
+		{
+			Context.error(e.message, Context.currentPos());
+			return null;
+		}
 	}
 
 	/**

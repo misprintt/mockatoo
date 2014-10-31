@@ -756,6 +756,13 @@ class MockatooTest
 		Mockatoo.verify(mock.callsStaticMethod());
 	}
 
+	// @Test
+	// @Ignore("Triggers compilation error")
+	// public function should_mock_abstract()
+	// {
+	// 	var mock = Mockatoo.mock(AbstractInt);
+	// }
+
 	// ------------------------------------------------------------------------- utilities
 
 	function assertMock(mock:Mock, cls:Class<Dynamic>, ?fields:Array<Field>, ?pos:haxe.PosInfos)
