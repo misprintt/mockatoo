@@ -210,7 +210,7 @@ class MockMaker
 
 					arg.expr = EFunction(null, f).at();
 				case TAbstract(t, params):
-					arg.expr = field.type.toComplexType().getDefaultValue();
+					arg.expr = t.get().type.toComplexType().getDefaultValue();
 
 				default: throw "Unsupported type [" + field.type + "] for field [" + field.name + "]";
 			}
@@ -989,6 +989,11 @@ class MockMaker
 				case TInst(t,p): t.get();
 				case TEnum(t,p): t.get();
 				case TType(t,p): t.get();
+				case TAbstract(t,p): 
+					var id = t.get().type.getId().toComplex();
+
+					
+						null;
 				case _: null;
 			}
 
@@ -1000,7 +1005,6 @@ class MockMaker
 		}
 		
 		return null;
-
 	}
 
 	/**
