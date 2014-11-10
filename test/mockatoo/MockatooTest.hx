@@ -62,6 +62,7 @@ class MockatooTest
 		addField(fields, "toFloat", args);
 		addField(fields, "toString", args);
 		addField(fields, "toDynamic", args);
+		addField(fields, "toMap", args);
 		addField(fields, "toVoid", args);
 
 		addField(fields, "toBoolWithArgs", toArgs(true));
@@ -73,6 +74,7 @@ class MockatooTest
 		addField(fields, "toStringWithArgs", toArgs("string"));
 
 		addField(fields, "toDynamicWithArgs", toArgs({name:"foo"}));
+		addField(fields, "toMapWithArgs", toArgs(new Map<String,Bool>()));
 
 		addField(fields, "toVoidWithArgs", toArgs(1));
 
