@@ -1,3 +1,10 @@
+## 3.1.7
+
+- Fix: better compiler error message when trying to mock Abstract
+- Fix: issue with mocking default 'null' value of abstracts on static platforms
+- Fix: Issue #39 - Check against Map.IMap not `Map` and friends
+- Fix: error in example app
+
 ## 3.1.6
 
 - Fix: Switch to runtime 'spy' flag in generated Mocks to prevent hardcoded mock/spy behavior after first use
