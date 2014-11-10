@@ -756,6 +756,27 @@ class MockatooTest
 		Mockatoo.verify(mock.callsStaticMethod());
 	}
 
+	// @Test
+	// @Ignore("Triggers compilation error")
+	// public function should_mock_abstract()
+	// {
+	// 	var mock = Mockatoo.mock(AbstractInt);
+	// }
+
+	@Test
+	public function should_mock_class_with_abstract_property()
+	{
+		var instance = Mockatoo.mock(ClassWithAbstractProperties);
+	
+		Mockatoo.when(instance.test()).thenReturn(10);
+
+		Assert.areEqual(10, instance.test());
+
+		Mockatoo.when(instance.setter).thenReturn(1);
+
+		Assert.areEqual(1, instance.setter);
+	}
+
 	// ------------------------------------------------------------------------- utilities
 
 	function assertMock(mock:Mock, cls:Class<Dynamic>, ?fields:Array<Field>, ?pos:haxe.PosInfos)

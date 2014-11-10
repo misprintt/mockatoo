@@ -597,3 +597,32 @@ class ClassWithStaticMethodReference
 		privateTest();
 	}
 }
+
+class ClassWithAbstractProperties
+{
+	var property:AbstractInt = new AbstractInt(0);
+
+	public var setter(default, set_setter):AbstractInt;
+
+	function set_setter(value:AbstractInt)
+	{
+		setter = value;
+		return value;
+	}
+
+	public function new()
+	{
+		
+	}
+
+	public function test():AbstractInt
+	{
+		return new AbstractInt(5);
+	}
+}
+
+abstract AbstractInt(Int) {
+  inline public function new(i:Int) {
+    this = i;
+  }
+}
