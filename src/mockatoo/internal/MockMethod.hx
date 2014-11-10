@@ -330,17 +330,11 @@ class MockMethod
 	{
 		if (value == null) return false;	
 		
-		if (Std.is(value, Array) || Std.is(value, Map)) return true;
-		// need to check these dirtectly because 'IntMap' does not return true for Std.is(value,Map)
-		if (Std.is(value, haxe.ds.IntMap)) return true;
-		if (Std.is(value, haxe.ds.ObjectMap)) return true;
-		if (Std.is(value, haxe.ds.StringMap)) return true;
-		if (Std.is(value, haxe.ds.WeakMap)) return true;
-		if (Std.is(value, haxe.ds.HashMap)) return true;
+		// Please note, we cannot check HashMap because it is an abstract, and does not have an iterator function at runtime.
+		if (Std.is(value, Array) || Std.is(value, Map.IMap)) return true;
 		
 		//Iterable
 		var iterator = Reflect.field(value, "iterator");
-		
 		if (Reflect.isFunction(iterator)) return true;
 
 		//Iterator
