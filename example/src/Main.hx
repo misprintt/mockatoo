@@ -92,6 +92,10 @@ class Main
 
 		mock.round(1.0).verify(1);// matches first call
 		mock.round(1.2).verify(atLeast(2));// matches second and third call
+
+		mock.round(1.0);
+		mock.round(1.2);
+		mock.round(1.2);
 		mock.round(cast anyFloat).verify(3);// matches all calls
 	}
 
