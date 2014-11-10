@@ -35,10 +35,13 @@ class ComplexTypes
 	{
 		if (type != null && Tools.isStaticPlatform())
 		{
+			type = extractAbstractType(type);
+			
 			switch (type)
 			{
 				case TPath(p):
 				{
+					Console.log(p);
 					if (p.pack.length != 0) return EConst(CIdent("null")).at();
 
 					if (p.name == "StdTypes") p.name = p.sub;
@@ -46,20 +49,21 @@ class ComplexTypes
 					switch (p.name)
 					{
 						case "Bool":
-							return EConst(CIdent("false")).at();
+							return macro cast false;
 						case "Int":
-							return EConst(CInt("0")).at();
+							return macro cast 0;
 						case "Float":
 							if ( Context.defined("flash"))
 								return "Math.NaN".toFieldExpr();
 							else
-								return EConst(CFloat("0.0")).at();
+								return macro cast 0.0;
 						default: null;
 					}	
 				}
 				default: null;
 			}
 		}
+
 		return EConst(CIdent("null")).at();
 	}
 
@@ -68,6 +72,29 @@ class ComplexTypes
 	static var types = new Map<Int,Void->Type>();
 	static var idCounter = 0;
 	
+	/**
+	Tries to extract the actual type inside an abstract  
+	**/
+	static function extractAbstractType(complexType:ComplexType):ComplexType
+	{
+		try
+		{
+			var type = complexType.toType();
+
+			if(type != null)
+			{
+				complexType = switch(type)
+				{
+					case TAbstract(t,p): t.get().type.toComplexType();
+					case _: complexType;
+				}	
+			}
+		}
+		catch(e:Dynamic){}
+
+		return complexType;
+	}
+
 	@:noUsing macro static public function getType(id:Int):Type
 		return types.get(id)();
 	

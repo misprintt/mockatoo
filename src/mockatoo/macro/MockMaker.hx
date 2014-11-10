@@ -11,6 +11,7 @@ import mockatoo.macro.ClassFields;
 import mockatoo.internal.MockOutcome;
 import haxe.ds.StringMap;
 
+using StringTools;
 using haxe.macro.Tools;
 using mockatoo.macro.Tools;
 
@@ -64,7 +65,24 @@ class MockMaker
 		this.isSpy = isSpy;
 
 		pos = e.pos;
-		type = Context.getType(id);
+
+		try
+		{
+			type = Context.getType(id);	
+		}
+		catch(e:Dynamic)
+		{
+			if (id.endsWith("_Impl_"))
+			{
+				id = id.split("_Impl_").join("");
+				throw new mockatoo.exception.MockatooException("Cannot mock abstract type [" + id + "]");
+			}
+			else
+			{
+				throw new mockatoo.exception.MockatooException("Cannot mock unknown type [" + id + "]");	
+			}
+		}
+		
 		Console.log(type);
 		actualType = type.follow();
 		
@@ -192,7 +210,7 @@ class MockMaker
 
 					arg.expr = EFunction(null, f).at();
 				case TAbstract(t, params):
-					arg.expr = field.type.toComplexType().getDefaultValue();
+					arg.expr = t.get().type.toComplexType().getDefaultValue();
 
 				default: throw "Unsupported type [" + field.type + "] for field [" + field.name + "]";
 			}
@@ -971,6 +989,11 @@ class MockMaker
 				case TInst(t,p): t.get();
 				case TEnum(t,p): t.get();
 				case TType(t,p): t.get();
+				case TAbstract(t,p): 
+					var id = t.get().type.getId().toComplex();
+
+					
+						null;
 				case _: null;
 			}
 
@@ -982,7 +1005,6 @@ class MockMaker
 		}
 		
 		return null;
-
 	}
 
 	/**
