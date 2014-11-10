@@ -121,6 +121,7 @@ class ClassWithFields implements IntefaceWithFields
 	public var float:Float;
 	public var string:String;
 	public var object:Dynamic;
+	public var map:Map<String,Bool>;
 
 	public function toBool():Bool {throw "not mocked"; return true;}
 
@@ -128,13 +129,16 @@ class ClassWithFields implements IntefaceWithFields
 	public function toFloat():Float {throw "not mocked"; return 1.0;}
 	public function toString():String {throw "not mocked"; return "string";}
 	public function toDynamic():Dynamic {throw "not mocked"; return {name:"foo"};}
+	public function toMap():Map<String,Bool> {throw "not mocked"; return new Map<String,Bool>();}
 	public function toVoid():Void {throw "not mocked";}
+	
 
 	public function toBoolWithArgs(arg:Bool):Bool {throw "not mocked"; return true;}
 	public function toIntWithArgs(arg:Int):Int {throw "not mocked";return 1;}
 	public function toFloatWithArgs(arg:Float):Float {throw "not mocked";return 1.0;}
 	public function toStringWithArgs(arg:String):String {throw "not mocked";return "string";}
 	public function toDynamicWithArgs(arg:Dynamic):Dynamic {throw "not mocked";return {name:"foo"};}
+	public function toMapWithArgs(arg:String):Map<String,Bool> {throw "not mocked"; return new Map<String,Bool>();}
 	public function toVoidWithArgs(arg:Int):Void {throw "not mocked";}
 
 	public function withMultipleArgs(arg1:Int, arg2:Bool):Void {throw "not mocked";}
