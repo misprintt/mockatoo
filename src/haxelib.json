@@ -7,7 +7,7 @@
 	"massive"
 ],
 	"releasenote": "See https://github.com/misprintt/mockatoo/blob/master/CHANGES.md",
-	"version": "3.2.0",
+	"version": "3.2.1",
 	"url": "http://github.com/misprintt/mockatoo",
 	"dependencies": 
 	{
