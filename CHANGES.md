@@ -1,3 +1,7 @@
+## 3.2.0
+
+- Add: generate mocks via @:mock and @:spy metadata
+
 ## 3.1.7
 
 - Fix: better compiler error message when trying to mock Abstract
