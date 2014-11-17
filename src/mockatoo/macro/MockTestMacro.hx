@@ -17,57 +17,111 @@ using mockatoo.macro.Tools;
 */
 class MockTestMacro
 {
+	static var META_BEFORE = "Before";
+	static var META_AFTER = "After";
+	static var META_MOCK = ":mock";
+	static var META_SPY = ":spy";
+	static var FIELD_SETUP = "setup";
+	static var FIELD_TEARDOWN = "tearDown";
+
 	static var befores:Array<Expr>;
 	static var afters:Array<Expr>;
+
+	static var beforeField:Field;
+	static var afterField:Field;
 
 	static public function build()
 	{
 		befores = [];
 		afters = [];
+		beforeField = null;
+		afterField = null;
 
 		var fields = Context.getBuildFields();
 
-		for(field in fields)
+		for (field in fields)
 		{
-			if(field.meta == null || field.meta.length == 0) continue;
+			if (field.meta == null || field.meta.length == 0) continue;
 
-			switch(field.kind)
+			switch (field.kind)
 			{
 				case FVar(t,e):
-					for(meta in field.meta)
+					for (meta in field.meta)
 					{
-						if(meta.name == ":mock")
+						if (meta.name == META_MOCK)
 							addMock(field, t, e);
-						else if(meta.name == ":spy")
+						else if (meta.name == META_SPY)
 							addMock(field, t, e, true);
 					}
-					
+				case FFun(f):
+					//check for existing before/after functions
+					for (meta in field.meta)
+					{
+						if (meta.name == META_BEFORE)
+							beforeField = field;
+						else if (meta.name == META_AFTER)
+							afterField = field;
+					}
 				case _:
 			}
 		}
 
-		if(befores.length > 0 || afters.length > 0)
+		if (befores.length == 0 || afters.length == 0) return null;
+
+		if (!Context.defined("munit"))
+			Context.warning("Unable to generate mocks - @:mock and @:spy require munit", Context.currentPos());
+
+		if (beforeField == null)
 		{
-			if(Context.defined("munit"))
-			{
-				fields.push(addField("setupMockatoo", "Before", befores));
-				fields.push(addField("teardownMockatoo", "After", afters));
-			}
-			else
-				Context.warning("Unable to generate mocks: @:mock and @:spy require munit", Context.currentPos());
-			
-			return fields;	
+			beforeField = createField(FIELD_SETUP, META_BEFORE, befores);
+			fields.push(beforeField);
 		}
+		else
+			updateField(beforeField, befores);
 		
-		return null;
+		if (afterField == null)
+		{
+			afterField = createField(FIELD_TEARDOWN, META_AFTER, afters);
+			fields.push(afterField);
+		}
+		else
+			updateField(afterField, afters);
+		
+		return fields;	
+	}
+
+
+	/**
+	Prepends generated expressions to the start of an existing function 
+	**/
+	static function updateField(field:Field, exprs:Array<Expr>)
+	{
+		var localExprs:Array<Expr> = [];
+		var existingExpr:Expr = null;
+
+		switch (field.kind)
+		{
+			case FFun(f):
+				existingExpr = f.expr;
+				switch (existingExpr.expr)
+				{
+					case EBlock(e):
+						localExprs = exprs.concat(e);
+						f.expr = EBlock(localExprs).at();
+					case _:
+
+						localExprs = exprs.concat([existingExpr]);
+						f.expr = EBlock(localExprs).at();
+				}
+			case _:
+		}
 	}
 
 	/**
 	Generates a function containing an array of `exprs`
 	**/
-	static function addField(name:String, meta:String, exprs:Array<Expr>)
+	static function createField(name:String, meta:String, exprs:Array<Expr>)
 	{
-
 		var f:Function = 
 		{
 			args:[],
@@ -98,7 +152,7 @@ class MockTestMacro
 		var before:Expr = null;
 		var after:Expr = null;
 
-		if(isSpy)
+		if (isSpy)
 		{
 			before = macro $i{field.name} = Mockatoo.spy($i{type});
 			after = macro $i{field.name} = null;
@@ -112,7 +166,5 @@ class MockTestMacro
 		befores.push(before);		
 		afters.push(after);		
 	}
-	
 }
 #end
-
