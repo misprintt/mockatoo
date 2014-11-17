@@ -1,3 +1,7 @@
+## 3.2.1
+
+- Fix: issues #44 - @:mock clash with existing setup/teardown functions
+
 ## 3.2.0
 
 - Add: generate mocks via @:mock and @:spy metadata
