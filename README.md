@@ -100,6 +100,21 @@ Mock properties that are read or write only
 	mock.someGetter.calls(function(){return "foo"});
 
 
+Generate mocks via metadata by implementing `Mockatoo.MockTest` (requires munit)
+
+	class SomeTest implements mockatoo.MockTest
+	{
+		@:mock var mock:SomeClass;
+		@:spy var spy:SomeSpy;
+
+		@Test
+		public function someTestCase()
+		{
+			mock.something().returns("hello");
+			...
+		}
+	}
+
 
 ## How it works
 
