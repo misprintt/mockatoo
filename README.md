@@ -127,6 +127,10 @@ Click here for detailed [documentation and examples](http://github.com/misprintt
 
 ## Release Notes
 
+### New in 3.2.0
+
+- added support for generating mocks using @:mock and @:spy metadata.
+
 ### New in 3.0.4
 
 - issue #21 automatic injection of `Matcher.any` for missing arguments on stubs
