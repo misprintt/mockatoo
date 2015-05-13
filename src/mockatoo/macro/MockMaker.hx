@@ -541,7 +541,7 @@ class MockMaker
 				{
 					#if no_inline
 						fields.push(field);
-					#else
+					#elseif !ignore_inline
 						Context.warning("Cannot mock inline method [" + id + "." + field.name + "]. Please set '--no-inline' compiler flag.", Context.currentPos());
 					#end
 
