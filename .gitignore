@@ -16,3 +16,4 @@ bin
 .temp
 /mockatoo.sublime-project
 /mockatoo.sublime-workspace
+/.haxelib
