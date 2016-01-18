@@ -33,7 +33,7 @@ class ComplexTypes
 	*/
 	static public function getDefaultValue(type:ComplexType):Expr
 	{
-		if (type != null && Tools.isStaticPlatform())
+		if (type != null)
 		{
 			type = extractAbstractType(type);
 			
