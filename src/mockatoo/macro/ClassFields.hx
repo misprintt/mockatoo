@@ -315,7 +315,7 @@ class ClassFields
 
 			var value:Null<Expr> = arg.opt ? arg.t.toComplexType().getDefaultValue() : null;
 
-			if (arg.opt && Tools.isStaticPlatform())
+			if (arg.opt)
 			{
 				//NOTE(Dom) - this is to prevent #9 - optional method args without a `?` cause compilation error
 				arg.opt = verifyOptionalArgIsActuallyNullable(arg);
