@@ -297,6 +297,7 @@ class MockMethod
 						case Matcher.isNotNull: return actual != null;
 						case Matcher.any: return true;
 						case Matcher.customMatcher(f): return f(actual);
+						case Matcher.matcherClass(instance): return instance.matches(actual);
 					}
 				}
 			case TClass(_):
