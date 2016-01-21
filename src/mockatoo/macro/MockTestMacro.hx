@@ -68,9 +68,6 @@ class MockTestMacro
 
 		if (befores.length == 0 || afters.length == 0) return null;
 
-		if (!Context.defined("munit"))
-			Context.warning("Unable to generate mocks - @:mock and @:spy require munit", Context.currentPos());
-
 		if (beforeField == null)
 		{
 			beforeField = createField(FIELD_SETUP, META_BEFORE, befores);
