@@ -1,4 +1,5 @@
 package mockatoo.internal;
+import haxe.Constraints.IMap;
 import mockatoo.exception.VerificationException;
 import mockatoo.exception.StubbingException;
 import mockatoo.Mockatoo;
@@ -332,7 +333,7 @@ class MockMethod
 		if (value == null) return false;	
 		
 		// Please note, we cannot check HashMap because it is an abstract, and does not have an iterator function at runtime.
-		if (Std.is(value, Array) || Std.is(value, Map.IMap)) return true;
+		if (Std.is(value, Array) || Std.is(value, IMap)) return true;
 		
 		//Iterable
 		var iterator = Reflect.field(value, "iterator");
