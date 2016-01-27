@@ -2,6 +2,7 @@ package mockatoo;
 
 import haxe.macro.Expr;
 import haxe.macro.Context;
+import mockatoo.internal.MatcherClass;
 import mockatoo.macro.InitMacro;
 import mockatoo.macro.MockMaker;
 import mockatoo.macro.VerifyMacro;
@@ -336,6 +337,7 @@ enum Matcher
 	isNotNull; // any non null value
 	any;  // wildcard for any value
 	customMatcher(f:Dynamic -> Bool); //custom function to verify value
+	matcherClass(instance:MatcherClass); //custom function to verify value
 }
 
 /**
