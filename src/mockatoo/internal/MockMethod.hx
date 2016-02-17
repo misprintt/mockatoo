@@ -331,7 +331,11 @@ class MockMethod
 		if (value == null) return false;	
 		
 		// Please note, we cannot check HashMap because it is an abstract, and does not have an iterator function at runtime.
+#if (haxe_ver <= "3.2")
+		if (Std.is(value, Array) || Std.is(value, haxe.Constraints.IMap)) return true;
+#else
 		if (Std.is(value, Array) || Std.is(value, Map.IMap)) return true;
+#end
 		
 		//Iterable
 		var iterator = Reflect.field(value, "iterator");
