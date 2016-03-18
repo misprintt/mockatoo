@@ -171,6 +171,8 @@ class ClassFields
 				return TEnum(t, mapTypes(params,map));
 			case TType(t, params):
 				return TType(t, mapTypes(params,map));
+			case TFun(args, ret):
+				return TFun([ for (arg in args) { t: mapType(arg.t, map), opt: arg.opt, name: arg.name } ], mapType(ret, map));
 			default:
 				return type;	
 		}
