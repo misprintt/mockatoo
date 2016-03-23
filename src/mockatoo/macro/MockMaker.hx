@@ -812,7 +812,7 @@ class MockMaker
 				case $eCaseThrows: throw v;
 				case $eCaseCalls: 
 					var args:Array<Dynamic> = $eArgs;
-					return v(args);
+					return cast Reflect.callMethod(null, v, args);
 				case $eCaseStubs: return $eDefaultReturnValue;
 				case $eCaseReal: return $eSuper;
 				case $eCaseNone: return $eIf;
@@ -835,7 +835,7 @@ class MockMaker
 				case $eCaseThrows: throw v;
 				case $eCaseCalls: 
 					var args:Array<Dynamic> = $eArgs;
-					return v(args);
+					return cast Reflect.callMethod(null, v, args);
 				case $eCaseStubs: return $eReturn;
 				case $eCaseReal: return $eSuper;
 				default: return $eIf;
@@ -855,7 +855,7 @@ class MockMaker
 				case $eCaseThrows: throw v;
 				case $eCaseCalls: 
 					var args:Array<Dynamic> = $eArgs;
-					v(args);
+					return cast Reflect.callMethod(null, v, args);
 				case $eCaseStubs: $eNull;
 				case $eCaseReal: $eSuper;
 				default: $eIf;
