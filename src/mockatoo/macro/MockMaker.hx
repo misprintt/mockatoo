@@ -673,6 +673,10 @@ class MockMaker
 
 	function toGetterSetter(value:String):String
 	{
+		if (~/^[gs]et_.*/.match(value)) {
+			return "";
+		}
+		
 		switch (value)
 		{
 			case "default", "null", "never": return "";
