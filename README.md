@@ -19,9 +19,9 @@ Install current official release from haxelib (3.x)
 
 	haxelib install mockatoo
 
-Install the latest directly from github:
+Install the latest directly from GitHub:
 
-	haxelib git mockatoo https://github.com/misprintt/mockatoo.git src
+	haxelib git mockatoo https://github.com/misprintt/mockatoo master src
 
 Or point to your local fork:
 
